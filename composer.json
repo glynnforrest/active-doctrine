@@ -1,0 +1,17 @@
+{
+    "name": "glynnforrest/active-doctrine",
+    "description": "A minimal active record implementation on top of the Doctrine DBAL.",
+    "require": {
+        "doctrine/dbal": "2.*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "4.*"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Glynn Forrest",
+            "email": "me@glynnforrest.com"
+        }
+    ]
+}
