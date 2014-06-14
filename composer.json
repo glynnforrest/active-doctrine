@@ -2,6 +2,7 @@
     "name": "glynnforrest/active-doctrine",
     "description": "A minimal active record implementation on top of the Doctrine DBAL.",
     "require": {
+        "php": ">=5.4.0",
         "doctrine/dbal": "2.*"
     },
     "require-dev": {

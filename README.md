@@ -5,7 +5,7 @@ A minimal active record implementation on top of the Doctrine DBAL.
 
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/1027f658-2302-4b09-8c83-916ab9ad08b6/mini.png)](https://insight.sensiolabs.com/projects/1027f658-2302-4b09-8c83-916ab9ad08b6)
 
-# Project goals
+## Project goals
 
 * An active record implementation focusing on simplicity and speed.
 * Support for a large amount of database vendors by leveraging the DBAL.
@@ -14,7 +14,7 @@ A minimal active record implementation on top of the Doctrine DBAL.
   large amount of query possibilities, this builder has a small amount
   of methods that are safe from sql injection.
 
-# Installation
+## Installation
 
 Add the following to your composer.json file:
 
@@ -29,6 +29,6 @@ And run composer to update your dependencies:
 	$ curl -s http://getcomposer.org/installer | php
 	$ php composer.phar update
 
-# License
+## License
 
 MIT
