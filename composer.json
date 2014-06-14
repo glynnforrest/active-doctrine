@@ -13,5 +13,11 @@
             "name": "Glynn Forrest",
             "email": "me@glynnforrest.com"
         }
-    ]
+    ],
+    "autoload": {
+        "psr-4": {
+            "ActiveDoctrine\\": "src/ActiveDoctrine",
+            "ActiveDoctrine\\Tests\\": "tests/ActiveDoctrine/Tests"
+        }
+    }
 }
