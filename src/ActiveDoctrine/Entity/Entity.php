@@ -10,7 +10,15 @@ namespace ActiveDoctrine\Entity;
 abstract class Entity
 {
 
-    protected $values = array();
+    protected static $fields = [];
+
+    protected $values = [];
+    protected $modified = [];
+
+    public function __construct(array $values = array())
+    {
+        $this->values = $values;
+    }
 
     /**
      * Convenience wrapper to get().
@@ -80,7 +88,21 @@ abstract class Entity
      */
     public function setRaw($key, $value)
     {
+        //apply the modified flag if the value has changed
+        if (in_array($key, static::$fields) && $value !== $this->getRaw($key)) {
+            $this->modified[$key] = true;
+        }
         $this->values[$key] = $value;
+    }
+
+    /**
+     * Get a list of modified fields.
+     *
+     * @return array The modified fields
+     */
+    public function getModifiedFields()
+    {
+        return array_keys($this->modified);
     }
 
 }

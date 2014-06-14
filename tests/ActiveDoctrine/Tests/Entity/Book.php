@@ -12,6 +12,12 @@ use ActiveDoctrine\Entity\Entity;
 class Book extends Entity
 {
 
+    protected static $fields = [
+        'id',
+        'name',
+        'author'
+    ];
+
     public function setName($name)
     {
         return strtoupper($name);

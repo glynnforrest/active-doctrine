@@ -46,4 +46,27 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('TEST', $obj->author);
     }
 
+    public function testCreateWithValues()
+    {
+        $obj = new Book(['name' => 'foo', 'author' => 'bar']);
+
+        $this->assertSame('foo', $obj->getRaw('name'));
+        $this->assertSame('bar', $obj->getRaw('author'));
+    }
+
+    public function testGetModified()
+    {
+        $obj = new Book(['name' => 'foo', 'author' => 'bar']);
+        $this->assertSame(array(), $obj->getModifiedFields());
+
+        $obj->setRaw('name', 'foo');
+        $this->assertSame(array(), $obj->getModifiedFields());
+
+        $obj->setRaw('name', 'changed');
+        $this->assertSame(array('name'), $obj->getModifiedFields());
+
+        $obj->setRaw('author', 'changed');
+        $this->assertSame(array('name', 'author'), $obj->getModifiedFields());
+    }
+
 }
