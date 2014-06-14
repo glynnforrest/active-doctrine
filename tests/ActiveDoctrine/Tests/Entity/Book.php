@@ -12,6 +12,7 @@ use ActiveDoctrine\Entity\Entity;
 class Book extends Entity
 {
 
+    protected static $table = 'books';
     protected static $fields = [
         'id',
         'name',

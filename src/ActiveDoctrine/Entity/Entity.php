@@ -2,6 +2,8 @@
 
 namespace ActiveDoctrine\Entity;
 
+use Doctrine\DBAL\Connection;
+
 /**
  * Entity
  *
@@ -10,13 +12,16 @@ namespace ActiveDoctrine\Entity;
 abstract class Entity
 {
 
+    protected static $table;
     protected static $fields = [];
 
+    protected $connection;
     protected $values = [];
     protected $modified = [];
 
-    public function __construct(array $values = array())
+    public function __construct(Connection $connection, array $values = array())
     {
+        $this->connection = $connection;
         $this->values = $values;
     }
 
@@ -156,6 +161,14 @@ abstract class Entity
     public function getModifiedFields()
     {
         return array_keys($this->modified);
+    }
+
+    /**
+     * Persist this entity to the database using an insert query.
+     */
+    public function insert()
+    {
+        $this->connection->insert(static::$table, $this->values);
     }
 
 }
