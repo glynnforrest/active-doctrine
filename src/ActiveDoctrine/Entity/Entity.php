@@ -13,6 +13,7 @@ abstract class Entity
 {
 
     protected static $table;
+    protected static $primary_key = 'id';
     protected static $fields = [];
 
     protected $connection;
@@ -181,7 +182,20 @@ abstract class Entity
         $values = array_intersect_key($this->values, $this->modified);
         $this->connection->insert(static::$table, $values);
         $this->modified = array();
+        //this will only work with some database vendors for now.
+        $this->values[static::$primary_key] = $this->connection->lastInsertId();
         $this->stored = true;
+    }
+
+    /**
+     * Update this entity in the database.
+     */
+    public function update()
+    {
+        $values = array_intersect_key($this->values, $this->modified);
+        $where = array(static::$primary_key => $this->getRaw(static::$primary_key));
+        $this->connection->update(static::$table, $values, $where);
+        $this->modified = array();
     }
 
 }

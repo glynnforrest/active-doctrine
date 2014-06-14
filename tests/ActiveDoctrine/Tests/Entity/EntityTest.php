@@ -193,4 +193,53 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $obj->insert();
     }
 
+    public function testUpdate()
+    {
+        $obj = new Book($this->conn);
+
+        $obj->id = 1;
+        $obj->name = 'foo';
+        $obj->author = 'bar';
+
+        $this->conn->expects($this->once())
+                   ->method('update')
+                   ->with(
+                       'books',
+                       ['id' => 1, 'name' => 'FOO', 'author' => 'bar'],
+                       ['id' => 1]
+                   );
+
+        $obj->update();
+    }
+
+    public function testUpdateAfterInsert()
+    {
+        $obj = new Book($this->conn);
+
+        $obj->name = 'foo';
+        $obj->author = 'bar';
+
+        $this->conn->expects($this->once())
+                   ->method('insert')
+                   ->with('books', ['name' => 'FOO', 'author' => 'bar']);
+
+        $this->conn->expects($this->once())
+                   ->method('lastInsertId')
+                   ->will($this->returnValue(42));
+
+        $obj->insert();
+
+        $obj->author = 'baz';
+
+        $this->conn->expects($this->once())
+                   ->method('update')
+                   ->with(
+                       'books',
+                       ['author' => 'baz'],
+                       ['id' => 42]
+                   );
+
+        $obj->update();
+    }
+
 }
