@@ -337,4 +337,37 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $obj->update();
     }
 
+    public function testDelete()
+    {
+        $obj = new Book($this->conn, ['id' => 1, 'name' => 'bar']);
+        $this->conn->expects($this->once())
+                   ->method('delete')
+                   ->with(
+                       'books',
+                       ['id' => 1]
+                   );
+        $obj->delete();
+    }
+
+    public function testDeleteWithNoPrimaryKey()
+    {
+        $obj = new Book($this->conn);
+        $this->setExpectedException('\LogicException');
+        $obj->delete();
+    }
+
+    public function testDeleteWithUpdatedPrimaryKey()
+    {
+        $obj = new Book($this->conn, ['id' => 1, 'name' => 'bar']);
+        $obj->id = 4;
+
+        $this->conn->expects($this->once())
+                   ->method('delete')
+                   ->with(
+                       'books',
+                       ['id' => 1]
+                   );
+        $obj->delete();
+    }
+
 }

@@ -194,6 +194,22 @@ abstract class Entity
     }
 
     /**
+     * Get the primary key for this entity as it is stored in the
+     * database. If the key has been updated but not saved, the
+     * original value will be returned.
+     *
+     * @return string The primary key of the entity
+     */
+    protected function getPrimaryKey()
+    {
+        if (!isset($this->values[static::$primary_key])) {
+            throw new \LogicException('Primary key not set');
+        }
+
+        return $this->current_index ?: $this->values[static::$primary_key];
+    }
+
+    /**
      * Update this entity in the database.
      */
     public function update()
@@ -202,16 +218,19 @@ abstract class Entity
             return;
         }
         $values = array_intersect_key($this->values, $this->modified);
-
-        //grab the correct index for the where clause
-        if (!isset($this->values[static::$primary_key])) {
-            throw new \LogicException('Unable to update without a primary key');
-        }
-        $index = $this->current_index ?: $this->values[static::$primary_key];
-        $where = array(static::$primary_key => $index);
-
+        $where = [static::$primary_key => $this->getPrimaryKey()];
         $this->connection->update(static::$table, $values, $where);
-        $this->modified = array();
+        $this->modified = [];
+    }
+
+    /**
+     * Delete this entity from the database.
+     */
+    public function delete()
+    {
+        $where = [static::$primary_key => $this->getPrimaryKey()];
+
+        return $this->connection->delete(static::$table, $where);
     }
 
 }
