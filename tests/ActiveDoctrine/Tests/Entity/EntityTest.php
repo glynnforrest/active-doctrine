@@ -242,4 +242,99 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $obj->update();
     }
 
+    public function testUpdateNoChangedFields()
+    {
+        $obj = new Book($this->conn, ['id' => 1, 'name' => 'foo']);
+
+        $this->conn->expects($this->never())
+                   ->method('update');
+
+        $obj->update();
+    }
+
+    public function testUpdateAfterUpdateNoChangedFields()
+    {
+        $obj = new Book($this->conn);
+        $obj->id = 1;
+        $obj->name = 'foo';
+        $obj->author = 'bar';
+
+        $this->conn->expects($this->once())
+                   ->method('update')
+                   ->with(
+                       'books',
+                       ['id' => 1, 'name' => 'FOO', 'author' => 'bar'],
+                       ['id' => 1]
+                   );
+
+        $obj->update();
+        $obj->update();
+    }
+
+    public function testUpdateThrowsExceptionWithNoPrimaryKey()
+    {
+        $obj = new Book($this->conn);
+        $obj->name = 'foo';
+        $this->setExpectedException('\LogicException');
+        $obj->update();
+    }
+
+    public function testUpdateWithPrimaryKeyChange()
+    {
+        $obj = new Book($this->conn, ['name' => 'bar', 'id' => 1]);
+        $obj->name = 'foo';
+        $obj->id = 3;
+
+        $this->conn->expects($this->once())
+                   ->method('update')
+                   ->with(
+                       'books',
+                       ['id' => 3, 'name' => 'FOO'],
+                       //the id of 1 came from a result set so is
+                       //considered to be the id in the database
+                       ['id' => 1]
+                   );
+        $obj->update();
+    }
+
+    public function testUpdateWithManyPrimaryKeyChanges()
+    {
+        $obj = new Book($this->conn, ['name' => 'bar', 'id' => 1]);
+        $obj->name = 'foo';
+        $obj->id = 3;
+        $obj->id = 4;
+        $obj->id = 5;
+
+        $this->conn->expects($this->once())
+                   ->method('update')
+                   ->with(
+                       'books',
+                       ['id' => 5, 'name' => 'FOO'],
+                       //the id of 1 came from a result set so is
+                       //considered to be the id in the database
+                       ['id' => 1]
+                   );
+        $obj->update();
+    }
+
+    public function testUpdateWithPrimaryKeyChangeNotFromResultSet()
+    {
+        $obj = new Book($this->conn);
+        $obj->name = 'foo';
+        $obj->id = 3;
+        $obj->id = 4;
+        $obj->id = 5;
+
+        $this->conn->expects($this->once())
+                   ->method('update')
+                   ->with(
+                       'books',
+                       ['id' => 5, 'name' => 'FOO'],
+                       //since the id didn't come from a result set, 5 is considered
+                       //to be the id in the database
+                       ['id' => 5]
+                   );
+        $obj->update();
+    }
+
 }

@@ -20,11 +20,17 @@ abstract class Entity
     protected $values = [];
     protected $modified = [];
     protected $stored;
+    protected $current_index;
 
     public function __construct(Connection $connection, array $values = array())
     {
         $this->connection = $connection;
         $this->values = $values;
+
+        //keep a copy of the primary key for updating in case it changes
+        if (isset($values[static::$primary_key])) {
+            $this->current_index = $this->values[static::$primary_key];
+        }
     }
 
     /**
@@ -192,8 +198,18 @@ abstract class Entity
      */
     public function update()
     {
+        if (empty($this->modified)) {
+            return;
+        }
         $values = array_intersect_key($this->values, $this->modified);
-        $where = array(static::$primary_key => $this->getRaw(static::$primary_key));
+
+        //grab the correct index for the where clause
+        if (!isset($this->values[static::$primary_key])) {
+            throw new \LogicException('Unable to update without a primary key');
+        }
+        $index = $this->current_index ?: $this->values[static::$primary_key];
+        $where = array(static::$primary_key => $index);
+
         $this->connection->update(static::$table, $values, $where);
         $this->modified = array();
     }
