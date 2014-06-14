@@ -16,7 +16,7 @@ Add the following to your composer.json file:
 
 	{
 		"require": {
-			"glynnforrest/active-dcotrine": "dev-master"
+			"glynnforrest/active-doctrine": "dev-master"
 		}
 	}
 
