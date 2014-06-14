@@ -56,6 +56,32 @@ abstract class Entity
     }
 
     /**
+     * Get all values. get<Key> methods will be called on the values.
+     *
+     * @return array The values
+     */
+    public function getValues()
+    {
+        $return = array();
+        foreach ($this->values as $k => $v) {
+            $return[$k] = $this->get($k);
+        }
+
+        return $return;
+    }
+
+    /**
+     * Get all values. get<Key> methods will not be called on the
+     * values.
+     *
+     * @return array The values
+     */
+    public function getValuesRaw()
+    {
+        return $this->values;
+    }
+
+    /**
      * Convenience wrapper to set().
      */
     public function __set($key, $value)
@@ -64,7 +90,7 @@ abstract class Entity
     }
 
     /**
-     * Set $key to $value. If the method set<Key> exists, $value will
+     * Set field $key to $value. If the method set<Key> exists, $value will
      * be the output of calling this function with $value as an
      * argument.
      *
@@ -81,7 +107,7 @@ abstract class Entity
     }
 
     /**
-     * Set $key to $value, ignoring any set<Key> methods.
+     * Set field $key to $value, ignoring any set<Key> methods.
      *
      * @param string $key   The name of the key to set.
      * @param mixed  $value The value to set.
@@ -93,6 +119,33 @@ abstract class Entity
             $this->modified[$key] = true;
         }
         $this->values[$key] = $value;
+    }
+
+    /**
+     * Set an array of values. set<Key> methods will be called if they
+     * exist.
+     *
+     * @param array $values The array of values to set
+     */
+    public function setValues(array $values = array())
+    {
+        foreach ($values as $k => $v) {
+            $this->set($k, $v);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Set an array of values. set<Key> methods will not be called.
+     *
+     * @param array $values The array of values to set
+     */
+    public function setValuesRaw($values = array())
+    {
+        $this->values = array_merge($this->values, $values);
+
+        return $this;
     }
 
     /**

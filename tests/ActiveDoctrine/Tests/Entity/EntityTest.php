@@ -54,19 +54,47 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('bar', $obj->getRaw('author'));
     }
 
-    public function testGetModified()
+    public function testGetModifiedFields()
     {
         $obj = new Book(['name' => 'foo', 'author' => 'bar']);
-        $this->assertSame(array(), $obj->getModifiedFields());
+        $this->assertSame([], $obj->getModifiedFields());
 
         $obj->setRaw('name', 'foo');
-        $this->assertSame(array(), $obj->getModifiedFields());
+        $this->assertSame([], $obj->getModifiedFields());
 
         $obj->setRaw('name', 'changed');
-        $this->assertSame(array('name'), $obj->getModifiedFields());
+        $this->assertSame(['name'], $obj->getModifiedFields());
 
         $obj->setRaw('author', 'changed');
-        $this->assertSame(array('name', 'author'), $obj->getModifiedFields());
+        $this->assertSame(['name', 'author'], $obj->getModifiedFields());
+    }
+
+    public function testGetAndSetValues()
+    {
+        $obj = new Book();
+        $obj->setValues(['name' => 'foo', 'author' => 'bar']);
+
+        //set methods should have been called in setValues
+        $this->assertSame('FOO', $obj->getRaw('name'));
+        $this->assertSame('bar', $obj->getRaw('author'));
+
+        //get methods should be called in getValues
+        $expected = ['name' => 'FOO', 'author' => 'BAR'];
+        $this->assertSame($expected, $obj->getValues());
+    }
+
+    public function testGetAndSetValuesRaw()
+    {
+        $obj = new Book();
+
+        $obj->setValuesRaw(['name' => 'foo', 'author' => 'bar']);
+        //set methods should not have been called in setValuesRaw
+        $this->assertSame('foo', $obj->getRaw('name'));
+        $this->assertSame('bar', $obj->getRaw('author'));
+
+        //get methods should not be called in getValuesRaw
+        $expected = ['name' => 'foo', 'author' => 'bar'];
+        $this->assertSame($expected, $obj->getValuesRaw());
     }
 
 }
