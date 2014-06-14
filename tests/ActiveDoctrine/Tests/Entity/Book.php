@@ -18,12 +18,12 @@ class Book extends Entity
         'author'
     ];
 
-    public function setName($name)
+    public function setterName($name)
     {
         return strtoupper($name);
     }
 
-    public function getAuthor()
+    public function getterAuthor()
     {
         return strtoupper($this->getRaw('author'));
     }

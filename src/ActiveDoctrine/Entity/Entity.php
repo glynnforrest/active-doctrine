@@ -29,15 +29,15 @@ abstract class Entity
     }
 
     /**
-     * Get the value of $key. If the method get<Key> exists, the return
+     * Get the value of $key. If the method getter<$key> exists, the return
      * value will be the output of calling this function.
      *
      * @param string $key The name of the key to get.
      */
     public function get($key)
     {
-        $method = 'get' . ucfirst($key);
-        if (method_exists($this, $method) && $method !== 'get') {
+        $method = 'getter' . ucfirst($key);
+        if (method_exists($this, $method)) {
             return $this->$method();
         }
 
@@ -56,7 +56,7 @@ abstract class Entity
     }
 
     /**
-     * Get all values. get<Key> methods will be called on the values.
+     * Get all values. Getter methods will be called on the values.
      *
      * @return array The values
      */
@@ -71,7 +71,7 @@ abstract class Entity
     }
 
     /**
-     * Get all values. get<Key> methods will not be called on the
+     * Get all values. Getter methods will not be called on the
      * values.
      *
      * @return array The values
@@ -90,7 +90,7 @@ abstract class Entity
     }
 
     /**
-     * Set field $key to $value. If the method set<Key> exists, $value will
+     * Set field $key to $value. If the method setter<Key> exists, $value will
      * be the output of calling this function with $value as an
      * argument.
      *
@@ -99,7 +99,7 @@ abstract class Entity
      */
     public function set($key, $value)
     {
-        $method = 'set' . ucfirst($key);
+        $method = 'setter' . ucfirst($key);
         if (method_exists($this, $method)) {
             $value = $this->$method($value);
         }
@@ -107,7 +107,7 @@ abstract class Entity
     }
 
     /**
-     * Set field $key to $value, ignoring any set<Key> methods.
+     * Set field $key to $value, ignoring any setter methods.
      *
      * @param string $key   The name of the key to set.
      * @param mixed  $value The value to set.
@@ -122,7 +122,7 @@ abstract class Entity
     }
 
     /**
-     * Set an array of values. set<Key> methods will be called if they
+     * Set an array of values. Setter methods will be called if they
      * exist.
      *
      * @param array $values The array of values to set
@@ -137,7 +137,7 @@ abstract class Entity
     }
 
     /**
-     * Set an array of values. set<Key> methods will not be called.
+     * Set an array of values. Setter methods will not be called.
      *
      * @param array $values The array of values to set
      */
