@@ -1,6 +1,8 @@
 # Active Doctrine
 ### A minimal active record implementation on top of the Doctrine DBAL.
 
+[![Build Status](https://travis-ci.org/glynnforrest/active-doctrine.svg)](https://travis-ci.org/glynnforrest/active-doctrine)
+
 # Project goals
 
 * An active record implementation focusing on simplicity and speed.
