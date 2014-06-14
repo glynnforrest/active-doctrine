@@ -119,11 +119,12 @@ abstract class Entity
      */
     public function setRaw($key, $value)
     {
-        //apply the modified flag if the value has changed
+        //apply the modified flag if the key is one of the fields and
+        //the value has changed
         if (in_array($key, static::$fields) && $value !== $this->getRaw($key)) {
             $this->modified[$key] = true;
+            $this->values[$key] = $value;
         }
-        $this->values[$key] = $value;
     }
 
     /**
@@ -168,7 +169,12 @@ abstract class Entity
      */
     public function insert()
     {
+        if (empty($this->modified)) {
+            return;
+        }
+
         $this->connection->insert(static::$table, $this->values);
+        $this->modified = array();
     }
 
 }

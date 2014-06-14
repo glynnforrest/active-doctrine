@@ -120,4 +120,78 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $obj->insert();
     }
 
+    public function testInsertNotModified()
+    {
+        $obj = new Book($this->conn);
+        $this->conn->expects($this->never())
+                   ->method('insert');
+
+        $obj->insert();
+
+    }
+
+    public function testInsertUnknownFields()
+    {
+        $obj = new Book($this->conn);
+
+        $obj->name = 'foo';
+        $obj->something = 'bar';
+
+        $this->conn->expects($this->once())
+                   ->method('insert')
+                   ->with('books', ['name' => 'FOO']);
+
+        $obj->insert();
+    }
+
+    public function testInsertUnknownFieldsOnly()
+    {
+        $obj = new Book($this->conn);
+
+        $obj->something = 'bar';
+
+        $this->conn->expects($this->never())
+                   ->method('insert');
+
+        $obj->insert();
+    }
+
+    public function testInsertIsExecutedOnce()
+    {
+        $obj = new Book($this->conn);
+
+        $obj->name = 'foo';
+        $obj->author = 'bar';
+
+        $this->conn->expects($this->once())
+                   ->method('insert')
+                   ->with('books', ['name' => 'FOO', 'author' => 'bar']);
+
+        $obj->insert();
+        $obj->insert();
+        $obj->insert();
+        $obj->insert();
+    }
+
+    public function testInsertIsExecutedAfterModification()
+    {
+        $obj = new Book($this->conn);
+
+        $obj->name = 'foo';
+        $obj->author = 'bar';
+
+        $this->conn->expects($this->exactly(2))
+                   ->method('insert')
+                   ->with('books',
+                   $this->logicalOr(
+                       ['name' => 'FOO', 'author' => 'bar'],
+                       ['name' => 'FOO2', 'author' => 'bar']
+                   ));
+
+        $obj->insert();
+
+        $obj->name = 'foo2';
+        $obj->insert();
+    }
+
 }
