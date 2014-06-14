@@ -18,6 +18,7 @@ abstract class Entity
     protected $connection;
     protected $values = [];
     protected $modified = [];
+    protected $stored;
 
     public function __construct(Connection $connection, array $values = array())
     {
@@ -123,8 +124,8 @@ abstract class Entity
         //the value has changed
         if (in_array($key, static::$fields) && $value !== $this->getRaw($key)) {
             $this->modified[$key] = true;
-            $this->values[$key] = $value;
         }
+        $this->values[$key] = $value;
     }
 
     /**
@@ -169,12 +170,18 @@ abstract class Entity
      */
     public function insert()
     {
+        if ($this->stored) {
+            throw new \LogicException("You may not insert an already stored entity");
+        }
+
         if (empty($this->modified)) {
             return;
         }
 
-        $this->connection->insert(static::$table, $this->values);
+        $values = array_intersect_key($this->values, $this->modified);
+        $this->connection->insert(static::$table, $values);
         $this->modified = array();
+        $this->stored = true;
     }
 
 }

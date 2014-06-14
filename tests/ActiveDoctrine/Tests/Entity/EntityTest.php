@@ -136,6 +136,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
 
         $obj->name = 'foo';
         $obj->something = 'bar';
+        $this->assertSame('bar', $obj->something);
 
         $this->conn->expects($this->once())
                    ->method('insert')
@@ -149,6 +150,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $obj = new Book($this->conn);
 
         $obj->something = 'bar';
+        $this->assertSame('bar', $obj->something);
 
         $this->conn->expects($this->never())
                    ->method('insert');
@@ -156,7 +158,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $obj->insert();
     }
 
-    public function testInsertIsExecutedOnce()
+    public function testInsertThrowsExceptionWhenAlreadySaved()
     {
         $obj = new Book($this->conn);
 
@@ -168,29 +170,26 @@ class EntityTest extends \PHPUnit_Framework_TestCase
                    ->with('books', ['name' => 'FOO', 'author' => 'bar']);
 
         $obj->insert();
-        $obj->insert();
-        $obj->insert();
+
+        $this->setExpectedException('\LogicException');
         $obj->insert();
     }
 
-    public function testInsertIsExecutedAfterModification()
+    public function testInsertThrowsExceptionAfterModification()
     {
         $obj = new Book($this->conn);
 
         $obj->name = 'foo';
         $obj->author = 'bar';
 
-        $this->conn->expects($this->exactly(2))
+        $this->conn->expects($this->once())
                    ->method('insert')
-                   ->with('books',
-                   $this->logicalOr(
-                       ['name' => 'FOO', 'author' => 'bar'],
-                       ['name' => 'FOO2', 'author' => 'bar']
-                   ));
+                   ->with('books', ['name' => 'FOO', 'author' => 'bar']);
 
         $obj->insert();
 
         $obj->name = 'foo2';
+        $this->setExpectedException('\LogicException');
         $obj->insert();
     }
 
