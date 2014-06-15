@@ -106,6 +106,21 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($expected, $obj->getValuesRaw());
     }
 
+    public function testSetAndIsStored()
+    {
+        $obj = new Book($this->conn);
+        $this->assertFalse($obj->isStored());
+
+        $obj->setStored();
+        $this->assertTrue($obj->isStored());
+
+        $obj->setStored(false);
+        $this->assertFalse($obj->isStored());
+
+        $obj->setStored(true);
+        $this->assertTrue($obj->isStored());
+    }
+
     public function testInsert()
     {
         $obj = new Book($this->conn);
@@ -117,7 +132,9 @@ class EntityTest extends \PHPUnit_Framework_TestCase
                    ->method('insert')
                    ->with('books', ['name' => 'FOO', 'author' => 'bar']);
 
+        $this->assertFalse($obj->isStored());
         $obj->insert();
+        $this->assertTrue($obj->isStored());
     }
 
     public function testInsertNotModified()
@@ -209,7 +226,9 @@ class EntityTest extends \PHPUnit_Framework_TestCase
                        ['id' => 1]
                    );
 
+        $this->assertFalse($obj->isStored());
         $obj->update();
+        $this->assertTrue($obj->isStored());
     }
 
     public function testUpdateAfterInsert()
@@ -368,6 +387,38 @@ class EntityTest extends \PHPUnit_Framework_TestCase
                        ['id' => 1]
                    );
         $obj->delete();
+    }
+
+    public function testSaveInsert()
+    {
+        $obj = $this->getMockBuilder('ActiveDoctrine\Tests\Entity\Book')
+                    ->disableOriginalConstructor()
+                    ->setMethods(['insert'])
+                    ->getMock();
+
+        $obj->name = 'bar';
+
+        $obj->expects($this->once())
+            ->method('insert');
+
+        $obj->save();
+    }
+
+    public function testSaveUpdate()
+    {
+        $obj = $this->getMockBuilder('ActiveDoctrine\Tests\Entity\Book')
+                    ->disableOriginalConstructor()
+                    ->setMethods(['update'])
+                    ->getMock();
+
+        $obj->id = 2;
+        $obj->name = 'bar';
+        $obj->setStored();
+
+        $obj->expects($this->once())
+            ->method('update');
+
+        $obj->save();
     }
 
 }

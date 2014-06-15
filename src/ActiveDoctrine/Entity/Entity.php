@@ -19,7 +19,7 @@ abstract class Entity
     protected $connection;
     protected $values = [];
     protected $modified = [];
-    protected $stored;
+    protected $stored = false;
     protected $current_index;
 
     public function __construct(Connection $connection, array $values = array())
@@ -221,6 +221,36 @@ abstract class Entity
         $where = [static::$primary_key => $this->getPrimaryKey()];
         $this->connection->update(static::$table, $values, $where);
         $this->modified = [];
+        $this->stored = true;
+    }
+
+    /**
+     * Set whether this entity is stored in the database or not.
+     *
+     * @param bool $stored True if stored, false if not
+     */
+    public function setStored($stored = true)
+    {
+        $this->stored = (bool) $stored;
+    }
+
+    /**
+     * Get whether this entity is stored in the database or not.
+
+     * @return bool True if stored, false if not
+     */
+    public function isStored()
+    {
+        return $this->stored;
+    }
+
+    /**
+     * Save this entity to the database, either with an insert or
+     * update query.
+     */
+    public function save()
+    {
+        return $this->stored ? $this->update() : $this->insert();
     }
 
     /**
