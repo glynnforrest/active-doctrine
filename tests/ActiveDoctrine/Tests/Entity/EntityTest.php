@@ -421,4 +421,13 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $obj->save();
     }
 
+    public function testDeleteAll()
+    {
+        $this->conn->expects($this->once())
+                   ->method('delete')
+                   ->with('books');
+
+        Book::deleteAll($this->conn);
+    }
+
 }

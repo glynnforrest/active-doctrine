@@ -263,4 +263,15 @@ abstract class Entity
         return $this->connection->delete(static::$table, $where);
     }
 
+    /**
+     * Delete all entities from the database.
+     *
+     * @param Connection $connection A connection instance
+     */
+    public static function deleteAll(Connection $connection)
+    {
+        //this feels like a hack, but works for now
+        return $connection->delete(static::$table, [1 => 1]);
+    }
+
 }
