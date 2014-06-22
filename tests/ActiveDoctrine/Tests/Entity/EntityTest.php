@@ -430,4 +430,24 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         Book::deleteAll($this->conn);
     }
 
+    public function testCollection()
+    {
+        $collection = Book::collection($this->conn);
+        $this->assertInstanceOf('ActiveDoctrine\Entity\EntityCollection', $collection);
+        $this->assertSame('books', $collection->getTable());
+        $this->assertSame('id', $collection->getPrimaryKey());
+        $this->assertSame('ActiveDoctrine\Tests\Entity\Book', $collection->getEntityClass());
+    }
+
+    public function testCollectionWithEntities()
+    {
+        $collection = Book::collection($this->conn, 3);
+        $this->assertInstanceOf('ActiveDoctrine\Entity\EntityCollection', $collection);
+        $entities = $collection->getEntities();
+        $this->assertSame(3, count($entities));
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Entity\Book', $entities[0]);
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Entity\Book', $entities[1]);
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Entity\Book', $entities[2]);
+    }
+
 }

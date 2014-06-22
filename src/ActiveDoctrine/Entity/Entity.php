@@ -274,4 +274,38 @@ abstract class Entity
         return $connection->delete(static::$table, [1 => 1]);
     }
 
+    /**
+     * Create a new EntityCollection class. Override this method in
+     * child classes to use a custom collection class.
+     *
+     * @param Connection $conenction A connection instance
+     * @param array      $entities    An array of entities to add to the collection
+     */
+    protected static function newCollection(Connection $connection, array $entities)
+    {
+        return new EntityCollection($connection, $entities);
+    }
+
+    /**
+     * Create a new Collection class, optionally populated with a
+     * number of empty entities.
+     *
+     * @param Connection $conenction A connection instance
+     * @param int        $count      The number of empty entities to add to the collection
+     */
+    public static function collection(Connection $connection, $count = 0)
+    {
+        $entities = array();
+        for ($i = 0; $i < (int) $count; $i++) {
+            $entities[] = new static($connection);
+        }
+        $set = static::newCollection($connection, $entities);
+        $set->setTable(static::$table);
+        $set->setFields(static::$fields);
+        $set->setPrimaryKey(static::$primary_key);
+        $set->setEntityClass(get_called_class());
+
+        return $set;
+    }
+
 }
