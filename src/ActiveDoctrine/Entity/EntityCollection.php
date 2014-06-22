@@ -4,12 +4,14 @@ namespace ActiveDoctrine\Entity;
 
 use Doctrine\DBAL\Connection;
 
+use \Iterator;
+
 /**
  * EntityCollection
  *
  * @author Glynn Forrest <me@glynnforrest.com>
  **/
-class EntityCollection
+class EntityCollection implements Iterator
 {
 
     protected $connection;
@@ -18,6 +20,7 @@ class EntityCollection
     protected $primary_key;
     protected $fields = array();
     protected $entity_class;
+    protected $position;
 
     public function __construct(Connection $connection, array $entities = array())
     {
@@ -144,4 +147,28 @@ class EntityCollection
         return $this->entities;
     }
 
+    public function rewind()
+    {
+        $this->position = 0;
+    }
+
+    public function current()
+    {
+        return $this->entities[$this->position];
+    }
+
+    public function key()
+    {
+        return $this->position;
+    }
+
+    public function next()
+    {
+        $this->position++;
+    }
+
+    public function valid()
+    {
+        return isset($this->entities[$this->position]);
+    }
 }
