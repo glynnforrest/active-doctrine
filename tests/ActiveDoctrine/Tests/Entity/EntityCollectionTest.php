@@ -121,5 +121,21 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($expected, $results);
     }
 
+    public function testIsCountable()
+    {
+        $this->assertInstanceOf('\Countable', new EntityCollection($this->conn));
+    }
+
+    public function testCount()
+    {
+        $collection = new EntityCollection($this->conn);
+        $this->assertSame(0, count($collection));
+        $collection->setEntities([new Book($this->conn)]);
+        $this->assertSame(1, count($collection));
+        $collection->setEntities([new Book($this->conn), new Book($this->conn)]);
+        $this->assertSame(2, count($collection));
+        $collection->setEntities([]);
+        $this->assertSame(0, count($collection));
+    }
 
 }

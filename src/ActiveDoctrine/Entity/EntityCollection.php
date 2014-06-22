@@ -5,13 +5,14 @@ namespace ActiveDoctrine\Entity;
 use Doctrine\DBAL\Connection;
 
 use \Iterator;
+use \Countable;
 
 /**
  * EntityCollection
  *
  * @author Glynn Forrest <me@glynnforrest.com>
  **/
-class EntityCollection implements Iterator
+class EntityCollection implements Iterator, Countable
 {
 
     protected $connection;
@@ -171,4 +172,10 @@ class EntityCollection implements Iterator
     {
         return isset($this->entities[$this->position]);
     }
+
+    public function count()
+    {
+        return count($this->entities);
+    }
+
 }
