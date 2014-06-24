@@ -278,8 +278,8 @@ abstract class Entity
      * Create a new EntityCollection class. Override this method in
      * child classes to use a custom collection class.
      *
-     * @param Connection $conenction A connection instance
-     * @param array      $entities    An array of entities to add to the collection
+     * @param Connection $connection A connection instance
+     * @param array      $entities   An array of entities to add to the collection
      */
     protected static function newCollection(Connection $connection, array $entities)
     {
@@ -290,7 +290,7 @@ abstract class Entity
      * Create a new Collection class, optionally populated with a
      * number of empty entities.
      *
-     * @param Connection $conenction A connection instance
+     * @param Connection $connection A connection instance
      * @param int        $count      The number of empty entities to add to the collection
      */
     public static function collection(Connection $connection, $count = 0)
@@ -306,6 +306,29 @@ abstract class Entity
         $set->setEntityClass(get_called_class());
 
         return $set;
+    }
+
+    /**
+     * Select all entities matching a sql query, and return the
+     * results as a collection.
+     *
+     * @param Connection $connection A connection instance
+     * @param string     $sql        The SQL query
+     * @param array      $parameters Any bound parameters required for the query
+     */
+    public static function selectSQL(Connection $connection, $sql, array $parameters = array())
+    {
+        $stmt = $connection->prepare($sql);
+        $stmt->execute($parameters);
+        $results = array();
+        while ($result = $stmt->fetch()) {
+            $obj = new static($connection, $result);
+            $results[] = $obj;
+        }
+        $collection = static::collection($connection);
+        $collection->setEntities($results);
+
+        return $collection;
     }
 
 }

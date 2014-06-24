@@ -450,4 +450,38 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('ActiveDoctrine\Tests\Entity\Book', $entities[2]);
     }
 
+    public function testSelectSQL()
+    {
+        $statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
+                          ->disableOriginalConstructor()
+                          ->getMock();
+        $sql = 'select * from books';
+        $this->conn->expects($this->once())
+                   ->method('prepare')
+                   ->with($sql)
+                   ->will($this->returnValue($statement));
+
+        for ($i = 1; $i < 4; $i++) {
+            ${'result' . $i} = ['name' => "name$i", 'author' => "author$i"];
+        }
+
+        $statement->expects($this->exactly(4))
+                  ->method('fetch')
+                  ->with()
+                  ->will($this->onConsecutiveCalls($result1, $result2, $result3, false));
+
+
+        $collection = Book::selectSQL($this->conn, $sql);
+
+        $this->assertSame(3, count($collection));
+        $collection->rewind();
+
+        for ($i = 1; $i < 4; $i++) {
+            $book = $collection->current();
+            $this->assertSame("name$i", $book->getRaw('name'));
+            $this->assertSame("author$i", $book->getRaw('author'));
+            $collection->next();
+        }
+    }
+
 }
