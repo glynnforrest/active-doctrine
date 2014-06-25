@@ -1,0 +1,42 @@
+testSimple:
+    mysql: "SELECT * FROM `table`"
+
+testWhereEquals:
+    mysql: "SELECT * FROM `table` WHERE `id` = ?"
+
+params_testWhereEquals: [1]
+
+testWhereLessThan:
+    mysql: "SELECT * FROM `table` WHERE `id` < ?"
+
+params_testWhereLessThan: [4]
+
+testWhereEqualsAndLessThan:
+    mysql: "SELECT * FROM `table` WHERE `id` = ? AND `index` < ?"
+
+params_testWhereEqualsAndLessThan: [4, 10]
+
+testWhereMoreThanOrLessThan:
+    mysql: "SELECT * FROM `table` WHERE `id` > ? OR `id` < ?"
+
+params_testWhereMoreThanOrLessThan: [100, 50]
+
+testLimit:
+    mysql: "SELECT * FROM `table` LIMIT 10"
+
+testLimitOffset:
+    mysql: "SELECT * FROM `table` LIMIT 10 OFFSET 20"
+
+testOrderBy:
+    mysql: "SELECT * FROM `table` ORDER BY `name` ASC"
+
+testOrderByAsc:
+    mysql: "SELECT * FROM `table` ORDER BY `name` ASC"
+
+testOrderByAscDesc:
+    mysql: "SELECT * FROM `table` ORDER BY `name` ASC, `id` DESC"
+
+testMixed1:
+    mysql: "SELECT * FROM `table` WHERE `id` < ? AND `id` > ? ORDER BY `name` DESC, `id` ASC LIMIT 20"
+
+params_testMixed1: [200, 100]
