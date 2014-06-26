@@ -6,13 +6,14 @@ use Doctrine\DBAL\Connection;
 
 use \Iterator;
 use \Countable;
+use \ArrayAccess;
 
 /**
  * EntityCollection
  *
  * @author Glynn Forrest <me@glynnforrest.com>
  **/
-class EntityCollection implements Iterator, Countable
+class EntityCollection implements Iterator, Countable, ArrayAccess
 {
 
     protected $connection;
@@ -176,6 +177,33 @@ class EntityCollection implements Iterator, Countable
     public function count()
     {
         return count($this->entities);
+    }
+
+    public function offsetGet($offset)
+    {
+        return isset($this->entities[$offset]) ? $this->entities[$offset] : null;
+    }
+
+    public function offsetSet($offset, $value)
+    {
+        if (!is_int($offset) && !is_null($offset)) {
+            throw new \InvalidArgumentException('Non numeric keys for EntityCollection are forbidden.');
+        }
+        if (is_null($offset)) {
+            $this->entities[] = $value;
+        } else {
+            $this->entities[$offset] = $value;
+        }
+    }
+
+    public function offsetExists($offset)
+    {
+        return isset($this->entities[$offset]);
+    }
+
+    public function offsetUnset($offset)
+    {
+        unset($this->entities[$offset]);
     }
 
 }
