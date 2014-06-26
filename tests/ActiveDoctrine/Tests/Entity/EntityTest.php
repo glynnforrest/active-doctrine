@@ -484,4 +484,19 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    public function testSelect()
+    {
+        $driver = $this->getMock('Doctrine\DBAL\Driver');
+        $driver->expects($this->once())
+               ->method('getName')
+               ->will($this->returnValue('pdo_mysql'));
+        $this->conn->expects($this->once())
+             ->method('getDriver')
+             ->will($this->returnValue($driver));
+
+        $selector = Book::select($this->conn);
+        $this->assertInstanceOf('ActiveDoctrine\Entity\EntitySelector', $selector);
+        $this->assertSame('SELECT * FROM `books`', $selector->getSQL());
+    }
+
 }

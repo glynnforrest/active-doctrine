@@ -331,4 +331,15 @@ abstract class Entity
         return $collection;
     }
 
+    /**
+     * Select entities using an EntitySelector instance.
+     *
+     * @param  Connection     $connection A connection instance
+     * @return EntitySelector A selector instance
+     */
+    public static function select(Connection $connection)
+    {
+        return new EntitySelector($connection, get_called_class(), static::$table);
+    }
+
 }
