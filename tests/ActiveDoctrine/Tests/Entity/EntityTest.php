@@ -484,6 +484,52 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    public function testSelectOneSQL()
+    {
+        $statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
+                          ->disableOriginalConstructor()
+                          ->getMock();
+        $sql = 'select * from books where id = ?';
+        $this->conn->expects($this->once())
+                   ->method('prepare')
+                   ->with($sql)
+                   ->will($this->returnValue($statement));
+
+        $result = ['name' => 'foo', 'author' => 'bar'];
+
+        $statement->expects($this->once())
+                  ->method('execute')
+                  ->with([1]);
+
+        $statement->expects($this->once())
+                  ->method('fetch')
+                  ->will($this->returnValue($result));
+
+        $book = Book::selectOneSQL($this->conn, $sql, [1]);
+
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Entity\Book', $book);
+        $this->assertSame('foo', $book->getRaw('name'));
+        $this->assertSame('bar', $book->getRaw('author'));
+    }
+
+    public function testSelectOneSQLReturnsNull()
+    {
+        $statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
+                          ->disableOriginalConstructor()
+                          ->getMock();
+        $sql = 'select * from books where id = ?';
+        $this->conn->expects($this->once())
+                   ->method('prepare')
+                   ->with($sql)
+                   ->will($this->returnValue($statement));
+
+        $statement->expects($this->once())
+                  ->method('fetch')
+                  ->will($this->returnValue(false));
+
+        $this->assertNull(Book::selectOneSQL($this->conn, $sql, [1]));
+    }
+
     public function testSelect()
     {
         $driver = $this->getMock('Doctrine\DBAL\Driver');

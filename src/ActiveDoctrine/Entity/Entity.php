@@ -309,12 +309,13 @@ abstract class Entity
     }
 
     /**
-     * Select all entities matching a sql query, and return the
+     * Select all entities matching an SQL query, and return the
      * results as a collection.
      *
-     * @param Connection $connection A connection instance
-     * @param string     $sql        The SQL query
-     * @param array      $parameters Any bound parameters required for the query
+     * @param  Connection       $connection A connection instance
+     * @param  string           $sql        The SQL query
+     * @param  array            $parameters Any bound parameters required for the query
+     * @return EntityCollection A collection containing the selected entities
      */
     public static function selectSQL(Connection $connection, $sql, array $parameters = array())
     {
@@ -329,6 +330,28 @@ abstract class Entity
         $collection->setEntities($results);
 
         return $collection;
+    }
+
+    /**
+     * Select a single entity matching an SQL query. If more than one
+     * row is matched by the query, only the first entity will be
+     * returned.
+     *
+     * @param  Connection  $connection A connection instance
+     * @param  string      $sql        The SQL query
+     * @param  array       $parameters Any bound parameters required for the query
+     * @return Entity|null The selected Entity, or null if no entity was found
+     */
+    public static function selectOneSQL(Connection $connection, $sql, array $parameters = [])
+    {
+        $stmt = $connection->prepare($sql);
+        $stmt->execute($parameters);
+        $result = $stmt->fetch();
+        if ($result) {
+            return new static($connection, $result);
+        }
+
+        return null;
     }
 
     /**
