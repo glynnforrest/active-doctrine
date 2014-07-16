@@ -45,7 +45,8 @@ class MysqlSelector extends AbstractSelector
         $query .= sprintf(' WHERE `%s` %s ?', $where[0], $where[1]);
         $this->addParam($where[2]);
 
-        for ($i = 1; $i < count($this->where); $i++) {
+        $count = count($this->where);
+        for ($i = 1; $i < $count; $i++) {
             $where = $this->where[$i];
             $query .= sprintf(' %s `%s` %s ?', $where[3], $where[0], $where[1]);
             $this->addParam($where[2]);
@@ -56,7 +57,8 @@ class MysqlSelector extends AbstractSelector
     {
         $order = $this->order_by[0];
         $query .= sprintf(' ORDER BY `%s` %s', $order[0], $order[1]);
-        for ($i = 1; $i < count($this->order_by); $i++) {
+        $count = count($this->order_by);
+        for ($i = 1; $i < $count; $i++) {
             $order = $this->order_by[$i];
             $query .= sprintf(', `%s` %s', $order[0], $order[1]);
         }
