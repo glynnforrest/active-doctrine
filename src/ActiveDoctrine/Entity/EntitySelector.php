@@ -17,6 +17,7 @@ class EntitySelector
     protected $entity_class;
     protected $connection;
     protected $selector;
+    protected $single;
 
     public function __construct(Connection $connection, $entity_class, $table)
     {
@@ -48,6 +49,14 @@ class EntitySelector
         return $this->selector->getSQL();
     }
 
+    public function one()
+    {
+        $this->limit(1);
+        $this->single = true;
+
+        return $this;
+    }
+
     /**
      * Execute the query and return the selected entities.
      *
@@ -56,6 +65,10 @@ class EntitySelector
     public function execute()
     {
         $class = $this->entity_class;
+
+        if ($this->single) {
+            return $class::selectOneSQL($this->connection, $this->selector->getSQL(), $this->selector->getParams());
+        }
 
         $collection = $class::selectSQL($this->connection, $this->selector->getSQL(), $this->selector->getParams());
 

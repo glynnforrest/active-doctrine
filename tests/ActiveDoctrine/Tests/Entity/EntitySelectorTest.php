@@ -77,4 +77,26 @@ class EntitySelectorTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('foo', $book->getRaw('author'));
     }
 
+    public function testExecuteWithOne()
+    {
+        $statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
+                          ->disableOriginalConstructor()
+                          ->getMock();
+        $result = ['name' => 'something', 'author' => 'foo'];
+        $statement->expects($this->once())
+                  ->method('fetch')
+                  ->will($this->returnValue($result));
+
+        $this->conn->expects($this->once())
+                   ->method('prepare')
+                   ->with('SELECT * FROM `books` WHERE `author` = ? LIMIT 1')
+                   ->will($this->returnValue($statement));
+
+        $this->assertSame($this->selector, $this->selector->one());
+        $book = $this->selector->where('author', '=', 'foo')->execute();
+        $this->assertInstanceOf('ActiveDoctrine\Entity\Entity', $book);
+        $this->assertSame('something', $book->getRaw('name'));
+        $this->assertSame('foo', $book->getRaw('author'));
+    }
+
 }
