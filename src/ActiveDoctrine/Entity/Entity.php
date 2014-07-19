@@ -365,4 +365,17 @@ abstract class Entity
         return new EntitySelector($connection, get_called_class(), static::$table);
     }
 
+    /**
+     * Select a single entity using an EntitySelector instance.
+     *
+     * @param  Connection     $connection A connection instance
+     * @return EntitySelector A selector instance
+     */
+    public static function selectOne(Connection $connection)
+    {
+        $selector = new EntitySelector($connection, get_called_class(), static::$table);
+
+        return $selector->one();
+    }
+
 }
