@@ -49,6 +49,12 @@ class EntitySelector
         return $this->selector->getSQL();
     }
 
+    /**
+     * Return a single Entity instead of an EntityCollection when this
+     * query is executed. The a limit of 1 will be applied to the
+     * underlying SQL query. If the query returns more than one
+     * result, the first will be returned.
+     */
     public function one()
     {
         $this->limit(1);
