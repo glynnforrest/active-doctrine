@@ -34,10 +34,10 @@ class MysqlSelector extends AbstractSelector
         /**
          * $this->where is of the form
          * [
-         *     [$column, $expression, $value, $logic],
+         *     [$column, $expression, $value, $type],
          *     //etc
          * ]
-         * e.g. array('id', '=', 1, 'AND')
+         * e.g. ['id', '=', 1, 'self::AND_WHERE']
          */
 
         //for the first where, there is no AND / OR logic
@@ -48,7 +48,17 @@ class MysqlSelector extends AbstractSelector
         $count = count($this->where);
         for ($i = 1; $i < $count; $i++) {
             $where = $this->where[$i];
-            $query .= sprintf(' %s `%s` %s ?', $where[3], $where[0], $where[1]);
+            switch ($where[3]) {
+            case self::AND_WHERE:
+                $query .= sprintf(' AND `%s` %s ?', $where[0], $where[1]);
+                break;
+            case self::OR_WHERE:
+                $query .= sprintf(' OR `%s` %s ?', $where[0], $where[1]);
+                break;
+            default:
+                throw new \InvalidArgumentException('Unknown where clause type "%s"', $where[3]);
+            }
+
             $this->addParam($where[2]);
         }
     }

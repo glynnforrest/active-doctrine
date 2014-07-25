@@ -23,6 +23,9 @@ use Doctrine\DBAL\DBALException;
 abstract class AbstractSelector
 {
 
+    const AND_WHERE = 1;
+    const OR_WHERE = 2;
+
     protected $query = array();
     protected $params = array();
     protected $table;
@@ -90,12 +93,10 @@ abstract class AbstractSelector
      * @param string $column     The column name
      * @param string $expression The comparison, e.g. '=' or '<'
      * @param string $value      The value
-     * @param string $logic      If this is an 'AND' or 'OR' where clause
      */
-    public function where($column, $expression, $value, $logic = 'AND')
+    public function where($column, $expression, $value)
     {
-        $logic = strtoupper($logic);
-        $this->where[] = [$column, $expression, $value, $logic];
+        $this->where[] = [$column, $expression, $value, self::AND_WHERE];
 
         return $this;
     }
@@ -109,7 +110,7 @@ abstract class AbstractSelector
      */
     public function andWhere($column, $expression, $value)
     {
-        return $this->where($column, $expression, $value, 'AND');
+        return $this->where($column, $expression, $value);
     }
 
     /**
@@ -121,7 +122,9 @@ abstract class AbstractSelector
      */
     public function orWhere($column, $expression, $value)
     {
-        return $this->where($column, $expression, $value, 'OR');
+        $this->where[] = [$column, $expression, $value, self::OR_WHERE];
+
+        return $this;
     }
 
     /**
