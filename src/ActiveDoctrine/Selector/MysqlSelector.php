@@ -40,27 +40,50 @@ class MysqlSelector extends AbstractSelector
          * e.g. ['id', '=', 1, 'self::AND_WHERE']
          */
 
-        //for the first where, there is no AND / OR logic
-        $where = $this->where[0];
-        $query .= sprintf(' WHERE `%s` %s ?', $where[0], $where[1]);
-        $this->addParam($where[2]);
+        $query .= ' WHERE ';
 
+        //for the first where, there is no AND / OR logic. Just make
+        //the distinction between an ordinary where and a where in
+        $where = $this->where[0];
+        if ($where[3] === self::AND_WHERE_IN || $where[3] === self::OR_WHERE_IN) {
+            $this->addWhereInSegment($query, $where);
+        } else {
+            $query .= sprintf('`%s` %s ?', $where[0], $where[1]);
+            $this->addParam($where[2]);
+        }
+
+        //loop through the remaining where segments, adding AND/OR
+        //plus the segment.
         $count = count($this->where);
         for ($i = 1; $i < $count; $i++) {
             $where = $this->where[$i];
             switch ($where[3]) {
             case self::AND_WHERE:
                 $query .= sprintf(' AND `%s` %s ?', $where[0], $where[1]);
+                $this->addParam($where[2]);
                 break;
             case self::OR_WHERE:
                 $query .= sprintf(' OR `%s` %s ?', $where[0], $where[1]);
+                $this->addParam($where[2]);
+                break;
+            case self::AND_WHERE_IN:
+                $query .= ' AND ';
+                $this->addWhereInSegment($query, $where);
+                break;
+            case self::OR_WHERE_IN:
+                $query .= ' OR ';
+                $this->addWhereInSegment($query, $where);
                 break;
             default:
-                throw new \InvalidArgumentException('Unknown where clause type "%s"', $where[3]);
+                throw new \InvalidArgumentException(sprintf('Unknown where clause type "%s"', $where[3]));
             }
-
-            $this->addParam($where[2]);
         }
+    }
+
+    protected function addWhereInSegment(&$query, $where)
+    {
+        $query .= sprintf('`%s` IN (%s)', $where[0], substr(str_repeat('?, ', count($where[1])), 0, -2));
+        $this->addParam($where[1]);
     }
 
     protected function addOrderBy(&$query)

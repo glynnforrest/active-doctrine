@@ -129,4 +129,39 @@ abstract class SelectorTestCase extends \PHPUnit_Framework_TestCase
         $this->assertSame($this->getYamlParams(__FUNCTION__), $s->getParams());
     }
 
+    public function testWhereIn()
+    {
+        $s = $this->getSelector()
+                  ->whereIn('id', [1, 2, 3, 4, 5, 20]);
+        $this->assertSame($this->getYaml(__FUNCTION__), $s->getSQL());
+        $this->assertSame($this->getYamlParams(__FUNCTION__), $s->getParams());
+    }
+
+    public function testWhereInAndWhereIn()
+    {
+        $s = $this->getSelector()
+                  ->whereIn('id', [1, 2, 3])
+                  ->andWhereIn('name', ['foo', 'bar', 'baz']);
+        $this->assertSame($this->getYaml(__FUNCTION__), $s->getSQL());
+        $this->assertSame($this->getYamlParams(__FUNCTION__), $s->getParams());
+    }
+
+    public function testWhereInOrWhereIn()
+    {
+        $s = $this->getSelector()
+                  ->whereIn('id', [1, 2, 3])
+                  ->orWhereIn('name', ['foo', 'bar', 'baz']);
+        $this->assertSame($this->getYaml(__FUNCTION__), $s->getSQL());
+        $this->assertSame($this->getYamlParams(__FUNCTION__), $s->getParams());
+    }
+
+    public function testWhereAndWhereIn()
+    {
+        $s = $this->getSelector()
+                  ->where('name', '=', 'bar')
+                  ->andWhereIn('id', [1, 2, 3]);
+        $this->assertSame($this->getYaml(__FUNCTION__), $s->getSQL());
+        $this->assertSame($this->getYamlParams(__FUNCTION__), $s->getParams());
+    }
+
 }

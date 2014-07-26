@@ -25,6 +25,8 @@ abstract class AbstractSelector
 
     const AND_WHERE = 1;
     const OR_WHERE = 2;
+    const AND_WHERE_IN = 3;
+    const OR_WHERE_IN = 4;
 
     protected $query = array();
     protected $params = array();
@@ -84,6 +86,12 @@ abstract class AbstractSelector
      */
     protected function addParam($value)
     {
+        if (is_array($value)) {
+            $this->params = array_merge($this->params, $value);
+
+            return;
+        }
+
         $this->params[] = $value;
     }
 
@@ -123,6 +131,45 @@ abstract class AbstractSelector
     public function orWhere($column, $expression, $value)
     {
         $this->where[] = [$column, $expression, $value, self::OR_WHERE];
+
+        return $this;
+    }
+
+    /**
+     * Add a 'where in' clause to the query.
+     *
+     * @param string $column The column name
+     * @param array  $values A list of values to query with
+     */
+    public function whereIn($column, array $values)
+    {
+        $this->where[] = [$column, $values, null, self::AND_WHERE_IN];
+
+        return $this;
+    }
+
+    /**
+     * Add an 'and where in' clause to the query.
+     *
+     * @param string $column The column name
+     * @param array  $values A list of values to query with
+     */
+    public function andWhereIn($column, array $values)
+    {
+        $this->where[] = [$column, $values, null, self::AND_WHERE_IN];
+
+        return $this;
+    }
+
+    /**
+     * Add an 'or where in' clause to the query.
+     *
+     * @param string $column The column name
+     * @param array  $values A list of values to query with
+     */
+    public function orWhereIn($column, array $values)
+    {
+        $this->where[] = [$column, $values, null, self::OR_WHERE_IN];
 
         return $this;
     }
