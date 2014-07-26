@@ -118,7 +118,9 @@ abstract class AbstractSelector
      */
     public function andWhere($column, $expression, $value)
     {
-        return $this->where($column, $expression, $value);
+        $this->where[] = [$column, $expression, $value, self::AND_WHERE];
+
+        return $this;
     }
 
     /**
