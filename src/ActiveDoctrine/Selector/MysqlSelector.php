@@ -12,7 +12,7 @@ class MysqlSelector extends AbstractSelector
 
     public function getSQL()
     {
-        $query = 'SELECT * FROM `' . $this->table . '`';
+        $query = sprintf('SELECT * FROM `%s`', $this->table);
         if ($this->where) {
             $this->addWhere($query);
         }
