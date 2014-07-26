@@ -530,7 +530,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $this->assertNull(Book::selectOneSQL($this->conn, $sql, [1]));
     }
 
-    public function testSelect()
+    protected function expectDriver()
     {
         $driver = $this->getMock('Doctrine\DBAL\Driver');
         $driver->expects($this->once())
@@ -539,7 +539,12 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $this->conn->expects($this->once())
              ->method('getDriver')
              ->will($this->returnValue($driver));
+        return $driver;
+    }
 
+    public function testSelect()
+    {
+        $this->expectDriver();
         $selector = Book::select($this->conn);
         $this->assertInstanceOf('ActiveDoctrine\Entity\EntitySelector', $selector);
         $this->assertSame('SELECT * FROM `books`', $selector->getSQL());
@@ -547,14 +552,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
 
     public function testSelectOne()
     {
-        $driver = $this->getMock('Doctrine\DBAL\Driver');
-        $driver->expects($this->once())
-               ->method('getName')
-               ->will($this->returnValue('pdo_mysql'));
-        $this->conn->expects($this->once())
-             ->method('getDriver')
-             ->will($this->returnValue($driver));
-
+        $this->expectDriver();
         $selector = Book::selectOne($this->conn);
         $this->assertInstanceOf('ActiveDoctrine\Entity\EntitySelector', $selector);
         $this->assertSame('SELECT * FROM `books` LIMIT 1', $selector->getSQL());
