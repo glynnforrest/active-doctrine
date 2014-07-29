@@ -15,12 +15,14 @@ abstract class Entity
     protected static $table;
     protected static $primary_key = 'id';
     protected static $fields = [];
+    protected static $relations = [];
 
     protected $connection;
     protected $values = [];
     protected $modified = [];
     protected $stored = false;
     protected $current_index;
+    protected $relation_objects = [];
 
     public function __construct(Connection $connection, array $values = array())
     {
@@ -66,6 +68,66 @@ abstract class Entity
     public function getRaw($key)
     {
         return isset($this->values[$key]) ? $this->values[$key] : null;
+    }
+
+    /**
+     * Get the named related object. If the database has not been
+     * queried it will be fetched automatically. If the database has
+     * been queried the original result will be returned.
+     *
+     * @param string $name The name of the relation
+     */
+    public function getRelation($name)
+    {
+        if (!isset(static::$relations[$name])) {
+            throw new \Exception("Relation '$name' is not defined");
+        }
+
+        $relation = static::$relations[$name];
+
+        if (isset($this->relation_objects[$name])) {
+            return $this->relation_objects[$name];
+        }
+
+        $this->relation_objects[$name] = $this->fetchRelation($relation);
+
+        return $this->relation_objects[$name];
+    }
+
+    /**
+     * Fetch a related entity from the database.
+     *
+     * @param array $relation The relation to fetch.
+     */
+    protected function fetchRelation(array $relation)
+    {
+        /* a relation is of the form
+         * [$type, $foreign_class, $foreign_column, $column],
+         */
+        if (count($relation) !== 4) {
+            throw new \Exception('Invalid relation specified');
+        }
+        list($type, $foreign_class, $foreign_column, $column) = $relation;
+
+        switch ($type) {
+        case 'has_one':
+            return $this->fetchOneToOne($foreign_class, $foreign_column, $column);
+        default:
+        }
+    }
+
+    /**
+     * Query the database for a one to one relationship.
+     *
+     * @param string $foreign_class  The class name of the related entity
+     * @param string $foreign_column The name of the column on the other table
+     * @param string $column         The name of column on this table
+     */
+    protected function fetchOneToOne($foreign_class, $foreign_column, $column)
+    {
+        return $foreign_class::selectOne($this->connection)
+            ->where($foreign_column, '=', $this->get($column))
+            ->execute();
     }
 
     /**
@@ -133,6 +195,17 @@ abstract class Entity
             $this->modified[$key] = true;
         }
         $this->values[$key] = $value;
+    }
+
+    /**
+     * Set the named related object.
+     *
+     * @param string $name           The name of the relation
+     * @param Entity $related_object The related object
+     */
+    public function setRelation($name, Entity $related_object)
+    {
+        $this->relation_objects[$name] = $related_object;
     }
 
     /**

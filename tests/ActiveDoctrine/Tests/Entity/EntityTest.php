@@ -539,7 +539,6 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $this->conn->expects($this->once())
              ->method('getDriver')
              ->will($this->returnValue($driver));
-        return $driver;
     }
 
     public function testSelect()
@@ -556,6 +555,37 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $selector = Book::selectOne($this->conn);
         $this->assertInstanceOf('ActiveDoctrine\Entity\EntitySelector', $selector);
         $this->assertSame('SELECT * FROM `books` LIMIT 1', $selector->getSQL());
+    }
+
+    public function testGetRelation()
+    {
+        $book = new Book($this->conn);
+        $driver = $this->expectDriver();
+        $statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
+                          ->disableOriginalConstructor()
+                          ->getMock();
+        $this->conn->expects($this->once())
+               ->method('prepare')
+               ->with('SELECT * FROM `authors` WHERE `id` = ? LIMIT 1')
+               ->will($this->returnValue($statement));
+        $result = ['name' => 'foo'];
+        $statement->expects($this->once())
+                  ->method('fetch')
+                  ->will($this->returnValue($result));
+
+        $author = $book->getRelation('author');
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Entity\Author', $author);
+        $this->assertSame('foo', $author->name);
+        /* the query should not be executed more than once */
+        $book->getRelation('author');
+    }
+
+    public function testSetRelation()
+    {
+        $book = new Book($this->conn);
+        $author = new Author($this->conn);
+        $book->setRelation('author', $author);
+        $this->assertSame($author, $book->getRelation('author'));
     }
 
 }
