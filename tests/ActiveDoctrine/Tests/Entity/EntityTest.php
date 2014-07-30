@@ -588,4 +588,24 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($author, $book->getRelation('author'));
     }
 
+    public function testGetRelationDefintion()
+    {
+        $relation = Book::getRelationDefinition('author');
+        $this->assertSame(['has_one', 'ActiveDoctrine\\Tests\\Entity\\Author', 'id', 'author_id'], $relation);
+    }
+
+    public function testGetRelationDefintionThrowsExceptionOnUnknownRelation()
+    {
+        $msg = 'Relation "unknown" of Entity "ActiveDoctrine\Tests\Entity\Book" is not defined';
+        $this->setExpectedException('\Exception', $msg);
+        Book::getRelationDefinition('unknown');
+    }
+
+    public function testGetRelationDefintionThrowsExceptionOnInvalidRelation()
+    {
+        $msg = 'Relation "invalid" of Entity "ActiveDoctrine\Tests\Entity\Book" is invalid';
+        $this->setExpectedException('\Exception', $msg);
+        Book::getRelationDefinition('invalid');
+    }
+
 }

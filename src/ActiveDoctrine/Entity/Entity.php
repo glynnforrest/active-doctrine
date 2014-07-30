@@ -36,6 +36,27 @@ abstract class Entity
     }
 
     /**
+     * Get the relation definition for a named relation. The
+     * definition is a list with the form
+     * [$type, $foreign_class, $foreign_column, $column].
+     *
+     * @param  string $name The name of the relation
+     * @return array  The relation definition
+     */
+    public static function getRelationDefinition($name)
+    {
+        if (!isset(static::$relations[$name])) {
+            throw new \Exception(sprintf('Relation "%s" of Entity "%s" is not defined', $name, get_called_class()));
+        }
+        $relation = static::$relations[$name];
+        if (count($relation) !== 4) {
+            throw new \Exception(sprintf('Relation "%s" of Entity "%s" is invalid', $name, get_called_class()));
+        }
+
+        return $relation;
+    }
+
+    /**
      * Convenience wrapper to get().
      */
     public function __get($key)
@@ -79,15 +100,11 @@ abstract class Entity
      */
     public function getRelation($name)
     {
-        if (!isset(static::$relations[$name])) {
-            throw new \Exception("Relation '$name' is not defined");
-        }
-
-        $relation = static::$relations[$name];
-
         if (isset($this->relation_objects[$name])) {
             return $this->relation_objects[$name];
         }
+
+        $relation = self::getRelationDefinition($name);
 
         $this->relation_objects[$name] = $this->fetchRelation($relation);
 
@@ -102,11 +119,8 @@ abstract class Entity
     protected function fetchRelation(array $relation)
     {
         /* a relation is of the form
-         * [$type, $foreign_class, $foreign_column, $column],
+         * [$type, $foreign_class, $foreign_column, $column]
          */
-        if (count($relation) !== 4) {
-            throw new \Exception('Invalid relation specified');
-        }
         list($type, $foreign_class, $foreign_column, $column) = $relation;
 
         switch ($type) {

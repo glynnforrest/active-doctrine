@@ -20,7 +20,9 @@ class Book extends Entity
         'author_id'
     ];
     protected static $relations = [
-        'author' => ['has_one', 'ActiveDoctrine\Tests\Entity\Author', 'id', 'author_id']
+        'author' => ['has_one', 'ActiveDoctrine\Tests\Entity\Author', 'id', 'author_id'],
+        //invalid relation for the sake of testing errors
+        'invalid' => 'fooo'
     ];
 
     public function setterName($name)
