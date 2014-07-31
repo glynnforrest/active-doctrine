@@ -17,10 +17,10 @@ class Book extends Entity
         'id',
         'name',
         'description',
-        'author_id'
+        'authors_id'
     ];
     protected static $relations = [
-        'author' => ['has_one', 'ActiveDoctrine\Tests\Entity\Author', 'id', 'author_id'],
+        'author' => ['has_one', 'ActiveDoctrine\Tests\Entity\Author', 'id', 'authors_id'],
         //invalid relation for the sake of testing errors
         'invalid' => 'fooo'
     ];

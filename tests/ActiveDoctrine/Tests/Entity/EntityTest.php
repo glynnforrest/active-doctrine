@@ -557,9 +557,9 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('SELECT * FROM `books` LIMIT 1', $selector->getSQL());
     }
 
-    public function testGetRelation()
+    public function testGetRelationHasOne()
     {
-        $book = new Book($this->conn);
+        $book = new Book($this->conn, ['authors_id' => 5]);
         $driver = $this->expectDriver();
         $statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
                           ->disableOriginalConstructor()
@@ -568,6 +568,9 @@ class EntityTest extends \PHPUnit_Framework_TestCase
                ->method('prepare')
                ->with('SELECT * FROM `authors` WHERE `id` = ? LIMIT 1')
                ->will($this->returnValue($statement));
+        $statement->expects($this->once())
+                  ->method('execute')
+                  ->with([5]);
         $result = ['name' => 'foo'];
         $statement->expects($this->once())
                   ->method('fetch')
@@ -591,7 +594,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
     public function testGetRelationDefintion()
     {
         $relation = Book::getRelationDefinition('author');
-        $this->assertSame(['has_one', 'ActiveDoctrine\\Tests\\Entity\\Author', 'id', 'author_id'], $relation);
+        $this->assertSame(['has_one', 'ActiveDoctrine\\Tests\\Entity\\Author', 'id', 'authors_id'], $relation);
     }
 
     public function testGetRelationDefintionThrowsExceptionOnUnknownRelation()

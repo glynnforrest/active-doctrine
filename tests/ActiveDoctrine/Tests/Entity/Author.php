@@ -17,5 +17,8 @@ class Author extends Entity
         'id',
         'name',
     ];
+    protected static $relations = [
+        'books' => ['has_many', 'ActiveDoctrine\Tests\Entity\Book', 'authors_id', 'id']
+    ];
 
 }
