@@ -611,4 +611,39 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         Book::getRelationDefinition('invalid');
     }
 
+    public function testGetRelationHasMany()
+    {
+        $author = new Author($this->conn, ['id' => 2]);
+        $driver = $this->expectDriver();
+        $statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
+                          ->disableOriginalConstructor()
+                          ->getMock();
+        $this->conn->expects($this->once())
+               ->method('prepare')
+               ->with('SELECT * FROM `books` WHERE `authors_id` = ?')
+               ->will($this->returnValue($statement));
+        $statement->expects($this->once())
+                  ->method('execute')
+                  ->with([2]);
+        $result1 = ['name' => 'foo'];
+        $result2 = ['name' => 'bar'];
+        $statement->expects($this->exactly(3))
+                  ->method('fetch')
+                  ->will($this->onConsecutiveCalls($result1, $result2, false));
+
+        $books = $author->getRelation('books');
+        $this->assertInstanceOf('ActiveDoctrine\Entity\EntityCollection', $books);
+        $this->assertSame(2, count($books));
+
+        $first = $books[0];
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Entity\Book', $first);
+        $this->assertSame('foo', $first->name);
+
+        $second = $books[1];
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Entity\Book', $second);
+        $this->assertSame('bar', $second->name);
+
+        /* the query should not be executed more than once */
+        $author->getRelation('books');
+    }
 }

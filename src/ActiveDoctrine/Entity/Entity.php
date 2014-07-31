@@ -126,6 +126,8 @@ abstract class Entity
         switch ($type) {
         case 'has_one':
             return $this->fetchOneToOne($foreign_class, $foreign_column, $column);
+        case 'has_many':
+            return $this->fetchOneToMany($foreign_class, $foreign_column, $column);
         default:
         }
     }
@@ -140,6 +142,20 @@ abstract class Entity
     protected function fetchOneToOne($foreign_class, $foreign_column, $column)
     {
         return $foreign_class::selectOne($this->connection)
+            ->where($foreign_column, '=', $this->get($column))
+            ->execute();
+    }
+
+    /**
+     * Query the database for a one to many relationship.
+     *
+     * @param string $foreign_class  The class name of the related entity
+     * @param string $foreign_column The name of the column on the other table
+     * @param string $column         The name of column on this table
+     */
+    protected function fetchOneToMany($foreign_class, $foreign_column, $column)
+    {
+        return $foreign_class::select($this->connection)
             ->where($foreign_column, '=', $this->get($column))
             ->execute();
     }
