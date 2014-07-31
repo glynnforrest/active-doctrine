@@ -52,9 +52,9 @@ class EntitySelector
 
     /**
      * Return a single Entity instead of an EntityCollection when this
-     * query is executed. The a limit of 1 will be applied to the
-     * underlying SQL query. If the query returns more than one
-     * result, the first will be returned.
+     * query is executed. A limit of 1 will be applied to the
+     * underlying SQL query. If the limit on the query is modified and
+     * it returns more than one result, the first will be returned.
      */
     public function one()
     {
@@ -65,10 +65,13 @@ class EntitySelector
     }
 
     /**
-     * Eagerly load related entities with this query.
+     * Eagerly load related entities with this query. A new
+     * EntitySelector instance will be created which can be configured
+     * with a supplied callback (including loading relations of those
+     * entities).
      *
-     * @param string $relation The name of the relation
-     * @param Closure|null An optional callback for the resulting EntitySelector
+     * @param string       $relation The name of the relation
+     * @param Closure|null $callback An optional callback for the resulting EntitySelector
      */
     public function with($relation, \Closure $callback = null)
     {
