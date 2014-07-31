@@ -25,23 +25,23 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $obj->setRaw('name', 'test');
         $this->assertSame('test', $obj->getRaw('name'));
 
-        $obj->setRaw('author', 'test');
-        $this->assertSame('test', $obj->getRaw('author'));
+        $obj->setRaw('description', 'test');
+        $this->assertSame('test', $obj->getRaw('description'));
     }
 
     public function testGetAndSet()
     {
         $obj = new Book($this->conn);
 
-        //book has a set method that uppercases author
+        //book has a set method that uppercases name
         $obj->set('name', 'test');
         $this->assertSame('TEST', $obj->getRaw('name'));
         $this->assertSame('TEST', $obj->get('name'));
 
-        //book has a get method that uppercases author
-        $obj->set('author', 'test');
-        $this->assertSame('test', $obj->getRaw('author'));
-        $this->assertSame('TEST', $obj->get('author'));
+        //book has a get method that uppercases description
+        $obj->set('description', 'test');
+        $this->assertSame('test', $obj->getRaw('description'));
+        $this->assertSame('TEST', $obj->get('description'));
     }
 
     public function testMagicGetAndSet()
@@ -51,21 +51,21 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $obj->name = 'test';
         $this->assertSame('TEST', $obj->name);
 
-        $obj->author = 'test';
-        $this->assertSame('TEST', $obj->author);
+        $obj->description = 'test';
+        $this->assertSame('TEST', $obj->description);
     }
 
     public function testCreateWithValues()
     {
-        $obj = new Book($this->conn, ['name' => 'foo', 'author' => 'bar']);
+        $obj = new Book($this->conn, ['name' => 'foo', 'description' => 'bar']);
 
         $this->assertSame('foo', $obj->getRaw('name'));
-        $this->assertSame('bar', $obj->getRaw('author'));
+        $this->assertSame('bar', $obj->getRaw('description'));
     }
 
     public function testGetModifiedFields()
     {
-        $obj = new Book($this->conn, ['name' => 'foo', 'author' => 'bar']);
+        $obj = new Book($this->conn, ['name' => 'foo', 'description' => 'bar']);
         $this->assertSame([], $obj->getModifiedFields());
 
         $obj->setRaw('name', 'foo');
@@ -74,21 +74,21 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $obj->setRaw('name', 'changed');
         $this->assertSame(['name'], $obj->getModifiedFields());
 
-        $obj->setRaw('author', 'changed');
-        $this->assertSame(['name', 'author'], $obj->getModifiedFields());
+        $obj->setRaw('description', 'changed');
+        $this->assertSame(['name', 'description'], $obj->getModifiedFields());
     }
 
     public function testGetAndSetValues()
     {
         $obj = new Book($this->conn);
-        $obj->setValues(['name' => 'foo', 'author' => 'bar']);
+        $obj->setValues(['name' => 'foo', 'description' => 'bar']);
 
         //set methods should have been called in setValues
         $this->assertSame('FOO', $obj->getRaw('name'));
-        $this->assertSame('bar', $obj->getRaw('author'));
+        $this->assertSame('bar', $obj->getRaw('description'));
 
         //get methods should be called in getValues
-        $expected = ['name' => 'FOO', 'author' => 'BAR'];
+        $expected = ['name' => 'FOO', 'description' => 'BAR'];
         $this->assertSame($expected, $obj->getValues());
     }
 
@@ -96,13 +96,13 @@ class EntityTest extends \PHPUnit_Framework_TestCase
     {
         $obj = new Book($this->conn);
 
-        $obj->setValuesRaw(['name' => 'foo', 'author' => 'bar']);
+        $obj->setValuesRaw(['name' => 'foo', 'description' => 'bar']);
         //set methods should not have been called in setValuesRaw
         $this->assertSame('foo', $obj->getRaw('name'));
-        $this->assertSame('bar', $obj->getRaw('author'));
+        $this->assertSame('bar', $obj->getRaw('description'));
 
         //get methods should not be called in getValuesRaw
-        $expected = ['name' => 'foo', 'author' => 'bar'];
+        $expected = ['name' => 'foo', 'description' => 'bar'];
         $this->assertSame($expected, $obj->getValuesRaw());
     }
 
@@ -126,11 +126,11 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $obj = new Book($this->conn);
 
         $obj->name = 'foo';
-        $obj->author = 'bar';
+        $obj->description = 'bar';
 
         $this->conn->expects($this->once())
                    ->method('insert')
-                   ->with('books', ['name' => 'FOO', 'author' => 'bar']);
+                   ->with('books', ['name' => 'FOO', 'description' => 'bar']);
 
         $this->assertFalse($obj->isStored());
         $obj->insert();
@@ -180,11 +180,11 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $obj = new Book($this->conn);
 
         $obj->name = 'foo';
-        $obj->author = 'bar';
+        $obj->description = 'bar';
 
         $this->conn->expects($this->once())
                    ->method('insert')
-                   ->with('books', ['name' => 'FOO', 'author' => 'bar']);
+                   ->with('books', ['name' => 'FOO', 'description' => 'bar']);
 
         $obj->insert();
 
@@ -197,11 +197,11 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $obj = new Book($this->conn);
 
         $obj->name = 'foo';
-        $obj->author = 'bar';
+        $obj->description = 'bar';
 
         $this->conn->expects($this->once())
                    ->method('insert')
-                   ->with('books', ['name' => 'FOO', 'author' => 'bar']);
+                   ->with('books', ['name' => 'FOO', 'description' => 'bar']);
 
         $obj->insert();
 
@@ -216,13 +216,13 @@ class EntityTest extends \PHPUnit_Framework_TestCase
 
         $obj->id = 1;
         $obj->name = 'foo';
-        $obj->author = 'bar';
+        $obj->description = 'bar';
 
         $this->conn->expects($this->once())
                    ->method('update')
                    ->with(
                        'books',
-                       ['id' => 1, 'name' => 'FOO', 'author' => 'bar'],
+                       ['id' => 1, 'name' => 'FOO', 'description' => 'bar'],
                        ['id' => 1]
                    );
 
@@ -236,11 +236,11 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $obj = new Book($this->conn);
 
         $obj->name = 'foo';
-        $obj->author = 'bar';
+        $obj->description = 'bar';
 
         $this->conn->expects($this->once())
                    ->method('insert')
-                   ->with('books', ['name' => 'FOO', 'author' => 'bar']);
+                   ->with('books', ['name' => 'FOO', 'description' => 'bar']);
 
         $this->conn->expects($this->once())
                    ->method('lastInsertId')
@@ -248,13 +248,13 @@ class EntityTest extends \PHPUnit_Framework_TestCase
 
         $obj->insert();
 
-        $obj->author = 'baz';
+        $obj->description = 'baz';
 
         $this->conn->expects($this->once())
                    ->method('update')
                    ->with(
                        'books',
-                       ['author' => 'baz'],
+                       ['description' => 'baz'],
                        ['id' => 42]
                    );
 
@@ -276,13 +276,13 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $obj = new Book($this->conn);
         $obj->id = 1;
         $obj->name = 'foo';
-        $obj->author = 'bar';
+        $obj->description = 'bar';
 
         $this->conn->expects($this->once())
                    ->method('update')
                    ->with(
                        'books',
-                       ['id' => 1, 'name' => 'FOO', 'author' => 'bar'],
+                       ['id' => 1, 'name' => 'FOO', 'description' => 'bar'],
                        ['id' => 1]
                    );
 
@@ -462,7 +462,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
                    ->will($this->returnValue($statement));
 
         for ($i = 1; $i < 4; $i++) {
-            ${'result' . $i} = ['name' => "name$i", 'author' => "author$i"];
+            ${'result' . $i} = ['name' => "name$i", 'description' => "description$i"];
         }
 
         $statement->expects($this->exactly(4))
@@ -479,7 +479,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         for ($i = 1; $i < 4; $i++) {
             $book = $collection->current();
             $this->assertSame("name$i", $book->getRaw('name'));
-            $this->assertSame("author$i", $book->getRaw('author'));
+            $this->assertSame("description$i", $book->getRaw('description'));
             $collection->next();
         }
     }
@@ -495,7 +495,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
                    ->with($sql)
                    ->will($this->returnValue($statement));
 
-        $result = ['name' => 'foo', 'author' => 'bar'];
+        $result = ['name' => 'foo', 'description' => 'bar'];
 
         $statement->expects($this->once())
                   ->method('execute')
@@ -509,7 +509,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('ActiveDoctrine\Tests\Entity\Book', $book);
         $this->assertSame('foo', $book->getRaw('name'));
-        $this->assertSame('bar', $book->getRaw('author'));
+        $this->assertSame('bar', $book->getRaw('description'));
     }
 
     public function testSelectOneSQLReturnsNull()
@@ -530,7 +530,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $this->assertNull(Book::selectOneSQL($this->conn, $sql, [1]));
     }
 
-    public function testSelect()
+    protected function expectDriver()
     {
         $driver = $this->getMock('Doctrine\DBAL\Driver');
         $driver->expects($this->once())
@@ -539,7 +539,11 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $this->conn->expects($this->once())
              ->method('getDriver')
              ->will($this->returnValue($driver));
+    }
 
+    public function testSelect()
+    {
+        $this->expectDriver();
         $selector = Book::select($this->conn);
         $this->assertInstanceOf('ActiveDoctrine\Entity\EntitySelector', $selector);
         $this->assertSame('SELECT * FROM `books`', $selector->getSQL());
@@ -547,17 +551,61 @@ class EntityTest extends \PHPUnit_Framework_TestCase
 
     public function testSelectOne()
     {
-        $driver = $this->getMock('Doctrine\DBAL\Driver');
-        $driver->expects($this->once())
-               ->method('getName')
-               ->will($this->returnValue('pdo_mysql'));
-        $this->conn->expects($this->once())
-             ->method('getDriver')
-             ->will($this->returnValue($driver));
-
+        $this->expectDriver();
         $selector = Book::selectOne($this->conn);
         $this->assertInstanceOf('ActiveDoctrine\Entity\EntitySelector', $selector);
         $this->assertSame('SELECT * FROM `books` LIMIT 1', $selector->getSQL());
+    }
+
+    public function testGetRelation()
+    {
+        $book = new Book($this->conn);
+        $driver = $this->expectDriver();
+        $statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
+                          ->disableOriginalConstructor()
+                          ->getMock();
+        $this->conn->expects($this->once())
+               ->method('prepare')
+               ->with('SELECT * FROM `authors` WHERE `id` = ? LIMIT 1')
+               ->will($this->returnValue($statement));
+        $result = ['name' => 'foo'];
+        $statement->expects($this->once())
+                  ->method('fetch')
+                  ->will($this->returnValue($result));
+
+        $author = $book->getRelation('author');
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Entity\Author', $author);
+        $this->assertSame('foo', $author->name);
+        /* the query should not be executed more than once */
+        $book->getRelation('author');
+    }
+
+    public function testSetRelation()
+    {
+        $book = new Book($this->conn);
+        $author = new Author($this->conn);
+        $book->setRelation('author', $author);
+        $this->assertSame($author, $book->getRelation('author'));
+    }
+
+    public function testGetRelationDefintion()
+    {
+        $relation = Book::getRelationDefinition('author');
+        $this->assertSame(['has_one', 'ActiveDoctrine\\Tests\\Entity\\Author', 'id', 'author_id'], $relation);
+    }
+
+    public function testGetRelationDefintionThrowsExceptionOnUnknownRelation()
+    {
+        $msg = 'Relation "unknown" of Entity "ActiveDoctrine\Tests\Entity\Book" is not defined';
+        $this->setExpectedException('\Exception', $msg);
+        Book::getRelationDefinition('unknown');
+    }
+
+    public function testGetRelationDefintionThrowsExceptionOnInvalidRelation()
+    {
+        $msg = 'Relation "invalid" of Entity "ActiveDoctrine\Tests\Entity\Book" is invalid';
+        $this->setExpectedException('\Exception', $msg);
+        Book::getRelationDefinition('invalid');
     }
 
 }

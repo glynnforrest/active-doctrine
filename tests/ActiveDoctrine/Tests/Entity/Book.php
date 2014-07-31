@@ -16,7 +16,13 @@ class Book extends Entity
     protected static $fields = [
         'id',
         'name',
-        'author'
+        'description',
+        'author_id'
+    ];
+    protected static $relations = [
+        'author' => ['has_one', 'ActiveDoctrine\Tests\Entity\Author', 'id', 'author_id'],
+        //invalid relation for the sake of testing errors
+        'invalid' => 'fooo'
     ];
 
     public function setterName($name)
@@ -24,9 +30,9 @@ class Book extends Entity
         return strtoupper($name);
     }
 
-    public function getterAuthor()
+    public function getterDescription()
     {
-        return strtoupper($this->getRaw('author'));
+        return strtoupper($this->getRaw('description'));
     }
 
 }
