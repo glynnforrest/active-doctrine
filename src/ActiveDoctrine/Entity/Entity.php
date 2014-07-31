@@ -215,10 +215,17 @@ abstract class Entity
      * Set the named related object.
      *
      * @param string $name           The name of the relation
-     * @param Entity $related_object The related object
+     * @param mixed  $related_object The related object
      */
-    public function setRelation($name, Entity $related_object)
+    public function setRelation($name, $related_object)
     {
+        //if no related object is supplied, set it to false (an array
+        //value of null will not pass an isset() check on the
+        //relation_objects array).
+        if (!$related_object) {
+            $related_object = false;
+        }
+
         $this->relation_objects[$name] = $related_object;
     }
 
