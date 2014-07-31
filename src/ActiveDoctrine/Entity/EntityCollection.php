@@ -149,6 +149,22 @@ class EntityCollection implements Iterator, Countable, ArrayAccess
         return $this->entities;
     }
 
+    /**
+     * Get the values of a single key from all entities in this collection.
+     *
+     * @param  string $name The name of the column
+     * @return array  A list of values
+     */
+    public function getColumn($name)
+    {
+        $results = [];
+        foreach ($this->entities as $entity) {
+            $results[] = $entity->get($name);
+        }
+
+        return $results;
+    }
+
     public function rewind()
     {
         $this->position = 0;

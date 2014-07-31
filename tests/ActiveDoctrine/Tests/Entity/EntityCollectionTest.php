@@ -188,4 +188,13 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
         $collection['foo'] = new Book($this->conn);
     }
 
+    public function testGetColumn()
+    {
+        $collection = new EntityCollection($this->conn);
+        $collection[] = new Book($this->conn, ['name' => 'foo']);
+        $collection[] = new Book($this->conn);
+        $collection[] = new Book($this->conn, ['name' => 'bar']);
+        $this->assertSame(['foo', null, 'bar'], $collection->getColumn('name'));
+    }
+
 }
