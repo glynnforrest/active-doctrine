@@ -111,10 +111,14 @@ class EntitySelector
                 case 'has_one':
                     $selector = $foreign_class::selectOne($this->connection)
                         ->where($foreign_column, '=', $result->get($column));
+                case 'has_many':
+                    $selector = $foreign_class::select($this->connection)
+                        ->where($foreign_column, '=', $result->get($column));
                 default:
                     //throw exception for invalid relation
                 }
                 //configure the selector with the supplied callback
+                $callback($selector);
                 //execute
                 $related_object = $selector->execute();
                 //set the relation
