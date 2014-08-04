@@ -391,7 +391,7 @@ abstract class Entity
      * @param Connection $connection A connection instance
      * @param array      $entities   An array of entities to add to the collection
      */
-    protected static function newCollection(Connection $connection, array $entities)
+    public static function newCollection(Connection $connection, array $entities)
     {
         return new EntityCollection($connection, $entities);
     }

@@ -133,54 +133,106 @@ class EntitySelector
     {
         $collection = $entity_class::selectSQL($this->connection, $this->selector->getSQL(), $this->selector->getParams());
 
-        //fetch any relations that have been specified if we have a result
-        if (!empty($this->with) && count($collection) !== 0) {
-            foreach ($this->with as $name => $callback) {
-                //create a new selector for the relation
-                list($type, $foreign_class, $foreign_column, $column) = $entity_class::getRelationDefinition($name);
-                switch ($type) {
-                case 'has_one':
-                    $values = array_unique($collection->getColumn($column));
-                    $selector = $foreign_class::select($this->connection)
-                        ->whereIn($foreign_column, $values);
-                default:
-                    //throw exception for invalid relation
-                }
+        //exit early if there are no relations requested or no result
+        if (empty($this->with) || count($collection) === 0) {
+            return $collection;
+        }
 
-                //configure the selector with the supplied callback
-                $callback($selector);
+        //fetch relations that have been specified
+        foreach ($this->with as $name => $callback) {
+            $relation = $entity_class::getRelationDefinition($name);
+            list($type, $foreign_class, $foreign_column, $column) = $relation;
 
-                //fetch the related entities
-                $foreign_collection = $selector->execute();
+            //create a new selector for the relation using the values
+            //of the joining column. Unique values prevents duplicate
+            //entities
+            $values = array_unique($collection->getColumn($column));
+            $selector = $foreign_class::select($this->connection)
+                ->whereIn($foreign_column, $values);
 
-                //create an indexed list of related entities, indexed
-                //by the key joining them.
-                $indexed = [];
-                foreach ($foreign_collection as $foreign_entity) {
-                    $index = $foreign_entity->getRaw($foreign_column);
-                    $indexed[$index] = $foreign_entity;
-                }
+            //configure the selector with the supplied callback
+            $callback($selector);
 
-                //loop through the original collection and set the
-                //relation if it exists in the indexed result set
-                foreach ($collection as $entity) {
-                    $index = $entity->getRaw($column);
-                    if (isset($indexed[$index])) {
-                        $entity->setRelation($name, $indexed[$index]);
-                    } else {
-                        //the relation doesn't exist, but we need to notify the
-                        //entity of that so it won't attempt to fetch
-                        //it.
-                        $entity->setRelation($name, null);
-                    }
-                }
+            //fetch the related entities
+            $foreign_collection = $selector->execute();
 
-                //finally, set the foreign collection as a relation of
-                //this collection
+            //exit early if there are no related entities
+            if (empty($foreign_collection)) {
+                continue;
             }
+
+            //match up the entities from the query with the current
+            //entities
+            switch ($type) {
+            case 'has_one':
+                $this->hydrateHasOne($name, $relation, $collection, $foreign_collection);
+                break;
+            case 'has_many':
+                $this->hydrateHasMany($name, $relation, $collection, $foreign_collection);
+                break;
+            default:
+                //throw exception for invalid relation
+            }
+
+            //finally, set the foreign collection as a relation of
+            //this collection
         }
 
         return $collection;
+    }
+
+    protected function hydrateHasOne($relation_name, array $relation, EntityCollection $collection, EntityCollection $foreign_collection)
+    {
+        list($type, $foreign_class, $foreign_column, $column) = $relation;
+        //create an indexed list of related entities, indexed
+        //by the key joining them.
+        $indexed = [];
+        foreach ($foreign_collection as $foreign_entity) {
+            $index = $foreign_entity->getRaw($foreign_column);
+            $indexed[$index] = $foreign_entity;
+        }
+
+        //loop through the original collection and set the
+        //relation if it exists in the indexed result set
+        foreach ($collection as $entity) {
+            $index = $entity->getRaw($column);
+            if (isset($indexed[$index])) {
+                $entity->setRelation($relation_name, $indexed[$index]);
+            } else {
+                //the relation doesn't exist, but we need to notify the
+                //entity of that so it won't attempt to fetch
+                //it.
+                $entity->setRelation($relation_name, null);
+            }
+        }
+    }
+
+    protected function hydrateHasMany($relation_name, array $relation, EntityCollection $collection, EntityCollection $foreign_collection)
+    {
+        list($type, $foreign_class, $foreign_column, $column) = $relation;
+        //create an indexed list of related entities, indexed
+        //by the key joining them. Each index can have
+        //more than one entity and is represented as an
+        //array.
+        $indexed = [];
+        foreach ($foreign_collection as $foreign_entity) {
+            $index = $foreign_entity->getRaw($foreign_column);
+            $indexed[$index][] = $foreign_entity;
+        }
+
+        //loop through the original collection and set the
+        //relation if it exists in the indexed result set
+        foreach ($collection as $entity) {
+            $index = $entity->getRaw($column);
+            if (isset($indexed[$index])) {
+                $foreign_child_collection = $foreign_class::newCollection($this->connection, $indexed[$index]);
+                $entity->setRelation($relation_name, $foreign_child_collection);
+            } else {
+                //the relation doesn't exist and we need to notify the
+                //entity of that so it won't attempt to fetch it.
+                $entity->setRelation($relation_name, null);
+            }
+        }
     }
 
 }
