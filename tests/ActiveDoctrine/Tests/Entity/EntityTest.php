@@ -111,13 +111,13 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $obj = new Book($this->conn);
         $this->assertFalse($obj->isStored());
 
-        $obj->setStored();
+        $this->assertSame($obj, $obj->setStored());
         $this->assertTrue($obj->isStored());
 
-        $obj->setStored(false);
+        $this->assertSame($obj, $obj->setStored(false));
         $this->assertFalse($obj->isStored());
 
-        $obj->setStored(true);
+        $this->assertSame($obj, $obj->setStored(true));
         $this->assertTrue($obj->isStored());
     }
 
@@ -510,6 +510,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('ActiveDoctrine\Tests\Entity\Book', $book);
         $this->assertSame('foo', $book->getRaw('name'));
         $this->assertSame('bar', $book->getRaw('description'));
+        $this->assertTrue($book->isStored());
     }
 
     public function testSelectOneSQLReturnsNull()

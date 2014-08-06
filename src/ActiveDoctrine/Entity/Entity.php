@@ -342,6 +342,8 @@ abstract class Entity
     public function setStored($stored = true)
     {
         $this->stored = (bool) $stored;
+
+        return $this;
     }
 
     /**
@@ -458,7 +460,9 @@ abstract class Entity
         $stmt->execute($parameters);
         $result = $stmt->fetch();
         if ($result) {
-            return new static($connection, $result);
+            $entity = new static($connection, $result);
+
+            return $entity->setStored();
         }
 
         return null;
