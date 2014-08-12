@@ -7,12 +7,12 @@ A minimal active record implementation on top of the Doctrine DBAL.
 
 ## Project goals
 
-* An active record implementation focusing on simplicity and speed.
+* An active record implementation focusing on simplicity and ease of use.
 * Support for a large amount of database vendors by leveraging the DBAL.
-* An approximate subset of Doctrine's QueryBuilder for selecting
-  entities. Unlike the Doctrine builder which is designed to cover a
-  large amount of query possibilities, this builder has a small amount
-  of methods that are safe from sql injection.
+* A select-only query builder for selecting entities. Unlike the
+  Doctrine query builder which is designed to cover a large amount of
+  query possibilities, this builder has a small amount of methods that
+  are safe from sql injection.
 
 ## Installation
 
