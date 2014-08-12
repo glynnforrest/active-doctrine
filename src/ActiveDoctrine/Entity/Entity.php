@@ -436,6 +436,7 @@ abstract class Entity
         $results = array();
         while ($result = $stmt->fetch()) {
             $obj = new static($connection, $result);
+            $obj->setStored();
             $results[] = $obj;
         }
         $collection = static::collection($connection);

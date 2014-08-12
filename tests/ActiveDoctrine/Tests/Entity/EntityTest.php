@@ -480,6 +480,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
             $book = $collection->current();
             $this->assertSame("name$i", $book->getRaw('name'));
             $this->assertSame("description$i", $book->getRaw('description'));
+            $this->assertTrue($book->isStored());
             $collection->next();
         }
     }
