@@ -86,13 +86,7 @@ abstract class AbstractSelector
      */
     protected function addParam($value)
     {
-        if (is_array($value)) {
-            $this->params = array_merge($this->params, $value);
-
-            return;
-        }
-
-        $this->params[] = $value;
+        $this->params = array_merge($this->params, (array) $value);
     }
 
     /**
