@@ -20,9 +20,9 @@ class MysqlSelector extends AbstractSelector
             $this->addOrderBy($query);
         }
         if ($this->limit) {
-            $query .= ' LIMIT ' . $this->limit;
+            $query .= sprintf(' LIMIT %s', (int) $this->limit);
             if ($this->offset) {
-                $query .= ' OFFSET ' . $this->offset;
+                $query .= sprintf(' OFFSET %s', (int) $this->offset);
             }
         }
 
