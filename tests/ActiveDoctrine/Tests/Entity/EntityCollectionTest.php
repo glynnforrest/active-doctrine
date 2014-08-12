@@ -197,4 +197,19 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(['foo', null, 'bar'], $collection->getColumn('name'));
     }
 
+    public function testGetEntitiesChunked()
+    {
+        $collection = new EntityCollection($this->conn);
+        for ($i = 1; $i < 9; $i++) {
+            ${'book' . $i} = new Book($this->conn);
+            $collection[] = ${'book' . $i};
+        }
+        $expected = [
+            [$book1, $book2, $book3],
+            [$book4, $book5, $book6],
+            [$book7, $book8]
+        ];
+        $this->assertSame($expected, $collection->getEntitiesChunked(3));
+    }
+
 }

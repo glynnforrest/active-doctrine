@@ -142,11 +142,22 @@ class EntityCollection implements Iterator, Countable, ArrayAccess
     /**
      * Return the entities in this collection.
      *
-     * @return array The array of entities
+     * @return array An array of entities
      */
     public function getEntities()
     {
         return $this->entities;
+    }
+
+    /**
+     * Return the entities in this collection, split into chunks.
+     *
+     * @param  int   $size The size of each chunk
+     * @return array An array of entities
+     */
+    public function getEntitiesChunked($chunk)
+    {
+        return array_chunk($this->entities, $chunk);
     }
 
     /**
