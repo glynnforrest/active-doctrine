@@ -3,8 +3,6 @@ A minimal active record implementation on top of the Doctrine DBAL.
 
 [![Build Status](https://travis-ci.org/glynnforrest/active-doctrine.svg)](https://travis-ci.org/glynnforrest/active-doctrine)
 
-[![SensioLabsInsight](https://insight.sensiolabs.com/projects/1027f658-2302-4b09-8c83-916ab9ad08b6/mini.png)](https://insight.sensiolabs.com/projects/1027f658-2302-4b09-8c83-916ab9ad08b6)
-
 ## Project goals
 
 * An active record implementation focusing on simplicity and ease of use.
