@@ -42,12 +42,12 @@ class EntitySelectorTest extends \PHPUnit_Framework_TestCase
         $expected = 'SELECT * FROM `books`';
         $this->assertSame($expected, $this->selector->getSQL());
 
-        $this->assertSame($this->selector, $this->selector->where('author', '=', 'foo'));
-        $expected = 'SELECT * FROM `books` WHERE `author` = ?';
+        $this->assertSame($this->selector, $this->selector->where('authors_id', '=', 4));
+        $expected = 'SELECT * FROM `books` WHERE `authors_id` = ?';
         $this->assertSame($expected, $this->selector->getSQL());
 
         $this->assertSame($this->selector, $this->selector->limit(10));
-        $expected = 'SELECT * FROM `books` WHERE `author` = ? LIMIT 10';
+        $expected = 'SELECT * FROM `books` WHERE `authors_id` = ? LIMIT 10';
         $this->assertSame($expected, $this->selector->getSQL());
     }
 
@@ -56,7 +56,10 @@ class EntitySelectorTest extends \PHPUnit_Framework_TestCase
         $statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
                           ->disableOriginalConstructor()
                           ->getMock();
-        $result = ['name' => 'something', 'author' => 'foo'];
+        $statement->expects($this->once())
+                  ->method('execute')
+                  ->with([4]);
+        $result = ['name' => 'something', 'authors_id' => 4];
         $statement->expects($this->exactly(2))
                   ->method('fetch')
                   ->with()
@@ -64,17 +67,17 @@ class EntitySelectorTest extends \PHPUnit_Framework_TestCase
 
         $this->conn->expects($this->once())
                    ->method('prepare')
-                   ->with('SELECT * FROM `books` WHERE `author` = ?')
+                   ->with('SELECT * FROM `books` WHERE `authors_id` = ?')
                    ->will($this->returnValue($statement));
 
-        $collection = $this->selector->where('author', '=', 'foo')->execute();
+        $collection = $this->selector->where('authors_id', '=', 4)->execute();
 
         $this->assertInstanceOf('ActiveDoctrine\Entity\EntityCollection', $collection);
         $this->assertSame(1, count($collection));
         $collection->rewind();
         $book = $collection->current();
         $this->assertSame('something', $book->getRaw('name'));
-        $this->assertSame('foo', $book->getRaw('author'));
+        $this->assertSame(4, $book->getRaw('authors_id'));
     }
 
     public function testExecuteWithOne()
@@ -82,21 +85,24 @@ class EntitySelectorTest extends \PHPUnit_Framework_TestCase
         $statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
                           ->disableOriginalConstructor()
                           ->getMock();
-        $result = ['name' => 'something', 'author' => 'foo'];
+        $statement->expects($this->once())
+                  ->method('execute')
+                  ->with([4]);
+        $result = ['name' => 'something', 'authors_id' => 4];
         $statement->expects($this->once())
                   ->method('fetch')
                   ->will($this->returnValue($result));
 
         $this->conn->expects($this->once())
                    ->method('prepare')
-                   ->with('SELECT * FROM `books` WHERE `author` = ? LIMIT 1')
+                   ->with('SELECT * FROM `books` WHERE `authors_id` = ? LIMIT 1')
                    ->will($this->returnValue($statement));
 
         $this->assertSame($this->selector, $this->selector->one());
-        $book = $this->selector->where('author', '=', 'foo')->execute();
+        $book = $this->selector->where('authors_id', '=', 4)->execute();
         $this->assertInstanceOf('ActiveDoctrine\Entity\Entity', $book);
         $this->assertSame('something', $book->getRaw('name'));
-        $this->assertSame('foo', $book->getRaw('author'));
+        $this->assertSame(4, $book->getRaw('authors_id'));
     }
 
 }
