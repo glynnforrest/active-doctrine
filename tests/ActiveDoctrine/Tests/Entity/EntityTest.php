@@ -561,42 +561,42 @@ class EntityTest extends \PHPUnit_Framework_TestCase
 
     public function testGetRelationHasOne()
     {
-        $book = new Book($this->conn, ['authors_id' => 5]);
+        $book = new Book($this->conn, ['id' => 5]);
         $driver = $this->expectDriver();
         $statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
                           ->disableOriginalConstructor()
                           ->getMock();
         $this->conn->expects($this->once())
                ->method('prepare')
-               ->with('SELECT * FROM `authors` WHERE `id` = ? LIMIT 1')
+               ->with('SELECT * FROM `book_details` WHERE `books_id` = ? LIMIT 1')
                ->will($this->returnValue($statement));
         $statement->expects($this->once())
                   ->method('execute')
                   ->with([5]);
-        $result = ['name' => 'foo'];
+        $result = ['synopsis' => 'foo'];
         $statement->expects($this->once())
                   ->method('fetch')
                   ->will($this->returnValue($result));
 
-        $author = $book->getRelation('author');
-        $this->assertInstanceOf('ActiveDoctrine\Tests\Entity\Author', $author);
-        $this->assertSame('foo', $author->name);
+        $details = $book->getRelation('details');
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Entity\BookDetails', $details);
+        $this->assertSame('foo', $details->synopsis);
         /* the query should not be executed more than once */
-        $book->getRelation('author');
+        $book->getRelation('details');
     }
 
     public function testSetRelation()
     {
         $book = new Book($this->conn);
-        $author = new Author($this->conn);
-        $book->setRelation('author', $author);
-        $this->assertSame($author, $book->getRelation('author'));
+        $details = new BookDetails($this->conn);
+        $book->setRelation('details', $details);
+        $this->assertSame($details, $book->getRelation('details'));
     }
 
     public function testGetRelationDefintion()
     {
-        $relation = Book::getRelationDefinition('author');
-        $this->assertSame(['has_one', 'ActiveDoctrine\\Tests\\Entity\\Author', 'id', 'authors_id'], $relation);
+        $relation = Book::getRelationDefinition('details');
+        $this->assertSame(['has_one', 'ActiveDoctrine\\Tests\\Entity\\BookDetails', 'books_id', 'id'], $relation);
     }
 
     public function testGetRelationDefintionThrowsExceptionOnUnknownRelation()
