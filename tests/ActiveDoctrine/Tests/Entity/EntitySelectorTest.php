@@ -18,13 +18,13 @@ class EntitySelectorTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $driver = $this->getMock('Doctrine\DBAL\Driver');
-        $driver->expects($this->once())
+        $driver->expects($this->atLeastOnce())
                ->method('getName')
                ->will($this->returnValue('pdo_mysql'));
         $this->conn = $this->getMockBuilder('Doctrine\DBAL\Connection')
                      ->disableOriginalConstructor()
                      ->getMock();
-        $this->conn->expects($this->once())
+        $this->conn->expects($this->atLeastOnce())
              ->method('getDriver')
              ->will($this->returnValue($driver));
 
@@ -80,7 +80,7 @@ class EntitySelectorTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(4, $book->getRaw('authors_id'));
     }
 
-    public function testExecuteWithOne()
+    public function testExecuteOne()
     {
         $statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
                           ->disableOriginalConstructor()
@@ -103,6 +103,42 @@ class EntitySelectorTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('ActiveDoctrine\Entity\Entity', $book);
         $this->assertSame('something', $book->getRaw('name'));
         $this->assertSame(4, $book->getRaw('authors_id'));
+    }
+
+    public function testExecuteOneWithHasOne()
+    {
+        $book_statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
+                          ->disableOriginalConstructor()
+                          ->getMock();
+        $book_statement->expects($this->once())
+                  ->method('execute')
+                  ->with([]);
+        $result = ['name' => 'something', 'id' => 1];
+        $book_statement->expects($this->once())
+                  ->method('fetch')
+                  ->will($this->returnValue($result));
+
+        $details_statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
+                          ->disableOriginalConstructor()
+                          ->getMock();
+        $details_statement->expects($this->once())
+                  ->method('execute')
+                  ->with([1]);
+        $result = ['synopsis' => 'foo'];
+        $details_statement->expects($this->once())
+                  ->method('fetch')
+                  ->will($this->returnValue($result));
+
+        $this->conn->expects($this->exactly(2))
+                   ->method('prepare')
+                   ->with($this->logicalOr(
+                       'SELECT * FROM `books` LIMIT 1',
+                       'SELECT * FROM `book_details` WHERE `books_id` = ? LIMIT 1'
+                   ))
+                   ->will($this->onConsecutiveCalls($book_statement, $details_statement));
+        $book = $this->selector->one()
+                               ->with('details')
+                               ->execute();
     }
 
 }
