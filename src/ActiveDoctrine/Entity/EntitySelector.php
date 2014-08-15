@@ -102,30 +102,33 @@ class EntitySelector
     {
         $result =  $entity_class::selectOneSQL($this->connection, $this->selector->getSQL(), $this->selector->getParams());
 
-        //fetch any relations that have been specified
-        if (!empty($this->with) && $result !== null) {
-            foreach ($this->with as $name => $callback) {
-                //create a new selector for the relation
-                list($type, $foreign_class, $foreign_column, $column) = $entity_class::getRelationDefinition($name);
-                switch ($type) {
-                case 'has_one':
-                    $selector = $foreign_class::selectOne($this->connection)
-                        ->where($foreign_column, '=', $result->get($column));
-                    break;
-                case 'has_many':
-                    $selector = $foreign_class::select($this->connection)
-                        ->where($foreign_column, '=', $result->get($column));
-                    break;
-                default:
-                    //throw exception for invalid relation
-                }
-                //configure the selector with the supplied callback
-                $callback($selector);
-                //execute
-                $related_object = $selector->execute();
-                //set the relation
-                $result->setRelation($name, $related_object);
+        //exit early if there are no relations requested or no result
+        if (empty($this->with) || $result === null) {
+            return $result;
+        }
+
+        //fetch relations that have been specified
+        foreach ($this->with as $name => $callback) {
+            //create a new selector for the relation
+            list($type, $foreign_class, $foreign_column, $column) = $entity_class::getRelationDefinition($name);
+            switch ($type) {
+            case 'has_one':
+                $selector = $foreign_class::selectOne($this->connection)
+                    ->where($foreign_column, '=', $result->get($column));
+                break;
+            case 'has_many':
+                $selector = $foreign_class::select($this->connection)
+                    ->where($foreign_column, '=', $result->get($column));
+                break;
+            default:
+                //throw exception for invalid relation
             }
+            //configure the selector with the supplied callback
+            $callback($selector);
+            //execute
+            $related_object = $selector->execute();
+            //set the relation
+            $result->setRelation($name, $related_object);
         }
 
         return $result;
