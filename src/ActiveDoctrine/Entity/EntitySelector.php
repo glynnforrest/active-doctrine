@@ -76,7 +76,7 @@ class EntitySelector
     public function with($relation, \Closure $callback = null)
     {
         if ($callback === null) {
-            $callback = function() {};
+            $callback = function () {};
         }
 
         $this->with[$relation] = $callback;

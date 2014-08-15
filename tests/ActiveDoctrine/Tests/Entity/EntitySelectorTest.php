@@ -22,11 +22,11 @@ class EntitySelectorTest extends \PHPUnit_Framework_TestCase
                ->method('getName')
                ->will($this->returnValue('pdo_mysql'));
         $this->conn = $this->getMockBuilder('Doctrine\DBAL\Connection')
-                     ->disableOriginalConstructor()
-                     ->getMock();
+                           ->disableOriginalConstructor()
+                           ->getMock();
         $this->conn->expects($this->atLeastOnce())
-             ->method('getDriver')
-             ->will($this->returnValue($driver));
+                   ->method('getDriver')
+                   ->will($this->returnValue($driver));
 
         $entity_class = 'ActiveDoctrine\Tests\Entity\Book';
         $this->selector = new EntitySelector($this->conn, $entity_class, 'books');
@@ -100,7 +100,7 @@ class EntitySelectorTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame($this->selector, $this->selector->one());
         $book = $this->selector->where('authors_id', '=', 4)->execute();
-        $this->assertInstanceOf('ActiveDoctrine\Entity\Entity', $book);
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Entity\Book', $book);
         $this->assertSame('something', $book->getRaw('name'));
         $this->assertSame(4, $book->getRaw('authors_id'));
     }
@@ -108,26 +108,26 @@ class EntitySelectorTest extends \PHPUnit_Framework_TestCase
     public function testExecuteOneWithHasOne()
     {
         $book_statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
-                          ->disableOriginalConstructor()
-                          ->getMock();
+                               ->disableOriginalConstructor()
+                               ->getMock();
         $book_statement->expects($this->once())
-                  ->method('execute')
-                  ->with([]);
+                       ->method('execute')
+                       ->with([]);
         $result = ['name' => 'something', 'id' => 1];
         $book_statement->expects($this->once())
-                  ->method('fetch')
-                  ->will($this->returnValue($result));
+                       ->method('fetch')
+                       ->will($this->returnValue($result));
 
         $details_statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
-                          ->disableOriginalConstructor()
-                          ->getMock();
+                                  ->disableOriginalConstructor()
+                                  ->getMock();
         $details_statement->expects($this->once())
-                  ->method('execute')
-                  ->with([1]);
+                          ->method('execute')
+                          ->with([1]);
         $result = ['synopsis' => 'foo'];
         $details_statement->expects($this->once())
-                  ->method('fetch')
-                  ->will($this->returnValue($result));
+                          ->method('fetch')
+                          ->will($this->returnValue($result));
 
         $this->conn->expects($this->exactly(2))
                    ->method('prepare')
@@ -136,9 +136,65 @@ class EntitySelectorTest extends \PHPUnit_Framework_TestCase
                        'SELECT * FROM `book_details` WHERE `books_id` = ? LIMIT 1'
                    ))
                    ->will($this->onConsecutiveCalls($book_statement, $details_statement));
+
         $book = $this->selector->one()
                                ->with('details')
                                ->execute();
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Entity\Book', $book);
+        $this->assertSame('something', $book->name);
+
+        $details = $book->getRelation('details');
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Entity\BookDetails', $details);
+        $this->assertSame('foo', $details->synopsis);
+    }
+
+    public function testExecuteOneWithHasMany()
+    {
+        $author_statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
+                                 ->disableOriginalConstructor()
+                                 ->getMock();
+        $author_statement->expects($this->once())
+                         ->method('execute')
+                         ->with([]);
+        $result = ['name' => 'author', 'id' => 1];
+        $author_statement->expects($this->once())
+                         ->method('fetch')
+                         ->will($this->returnValue($result));
+
+        $book_statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
+                               ->disableOriginalConstructor()
+                               ->getMock();
+        $book_statement->expects($this->once())
+                       ->method('execute')
+                       ->with([1]);
+        $book_statement->expects($this->exactly(3))
+                       ->method('fetch')
+                       ->will($this->onConsecutiveCalls(
+                           ['name' => 'foo'],
+                           ['name' => 'bar'],
+                           false
+                       ));
+
+        $this->conn->expects($this->exactly(2))
+                   ->method('prepare')
+                   ->with($this->logicalOr(
+                       'SELECT * FROM `authors` LIMIT 1',
+                       'SELECT * FROM `books` WHERE `authors_id` = ?'
+                   ))
+                   ->will($this->onConsecutiveCalls($author_statement, $book_statement));
+
+        $entity_class = 'ActiveDoctrine\Tests\Entity\Author';
+        $selector = new EntitySelector($this->conn, $entity_class, 'authors');
+        $author = $selector->one()
+                           ->with('books')
+                           ->execute();
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Entity\Author', $author);
+        $this->assertSame('author', $author->name);
+
+        $books = $author->getRelation('books');
+        $this->assertInstanceOf('ActiveDoctrine\Entity\EntityCollection', $books);
+        $this->assertSame(2, count($books));
+        $this->assertSame(['foo', 'bar'], $books->getColumn('name'));
     }
 
 }
