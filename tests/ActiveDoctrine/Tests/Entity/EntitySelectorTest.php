@@ -197,4 +197,59 @@ class EntitySelectorTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(['foo', 'bar'], $books->getColumn('name'));
     }
 
+    public function testExecuteManyWithHasOne()
+    {
+        $book_statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
+                               ->disableOriginalConstructor()
+                               ->getMock();
+        $book_statement->expects($this->once())
+                       ->method('execute')
+                       ->with([]);
+        $book_statement->expects($this->exactly(3))
+                       ->method('fetch')
+                       ->will($this->onConsecutiveCalls(
+                           ['name' => 'foo', 'id' => 4],
+                           ['name' => 'bar', 'id' => 5],
+                           false
+                       ));
+
+        $details_statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
+                                  ->disableOriginalConstructor()
+                                  ->getMock();
+        $details_statement->expects($this->once())
+                          ->method('execute')
+                          ->with([4, 5]);
+        $result = ['synopsis' => 'foo'];
+        $details_statement->expects($this->exactly(3))
+                          ->method('fetch')
+                          ->will($this->onConsecutiveCalls(
+                              ['synopsis' => 'bar_details', 'books_id' => 5],
+                              ['synopsis' => 'foo_details', 'books_id' => 4],
+                              false
+                          ));
+
+        $this->conn->expects($this->exactly(2))
+                   ->method('prepare')
+                   ->with($this->logicalOr(
+                       'SELECT * FROM `books` LIMIT 2',
+                       'SELECT * FROM `book_details` WHERE `books_id` IN (?, ?)'
+                   ))
+                   ->will($this->onConsecutiveCalls($book_statement, $details_statement));
+
+        $books = $this->selector->with('details')
+                                ->limit(2)
+                                ->execute();
+        $this->assertInstanceOf('ActiveDoctrine\Entity\EntityCollection', $books);
+        $this->assertSame(2, count($books));
+        $this->assertSame(['foo', 'bar'], $books->getColumn('name'));
+
+        for ($i = 0; $i < 2; $i++) {
+            $book = $books[$i];
+            $this->assertInstanceOf('ActiveDoctrine\Tests\Entity\Book', $book);
+            $details = $book->getRelation('details');
+            $this->assertInstanceOf('ActiveDoctrine\Tests\Entity\BookDetails', $details);
+            $this->assertSame($book->getRaw('name') . '_details', $details->synopsis);
+        }
+    }
+
 }
