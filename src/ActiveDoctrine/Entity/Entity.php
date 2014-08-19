@@ -117,6 +117,24 @@ abstract class Entity
     }
 
     /**
+     * Check if this Entity has a value for $key. $key may be a simple
+     * value, a related object, or a custom getter method.
+     *
+     * @param string $key The name of the key to check
+     */
+    public function has($key)
+    {
+        $result =  $this->get($key);
+
+        //an empty EntityCollection means no related entities
+        if ($result instanceof EntityCollection && count($result) === 0) {
+            return false;
+        }
+
+        return $result ? true : false;
+    }
+
+    /**
      * Fetch a related entity from the database.
      *
      * @param array $relation The relation to fetch.

@@ -2,6 +2,8 @@
 
 namespace ActiveDoctrine\Tests\Entity;
 
+use ActiveDoctrine\Entity\EntityCollection;
+
 /**
  * EntityTest
  * @author Glynn Forrest me@glynnforrest.com
@@ -666,6 +668,35 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $details = new BookDetails($this->conn);
         $book->setRaw('details', $details);
         $this->assertSame($details, $book->getRelation('details'));
+    }
+
+    public function testHas()
+    {
+        $book = new Book($this->conn);
+
+        $this->assertFalse($book->has('name'));
+        $book->setRaw('name', 'foo');
+        $this->assertTrue($book->has('name'));
+
+        //not a column
+        $this->assertFalse($book->has('something'));
+        $book->setRaw('something', 'foo');
+        $this->assertTrue($book->has('something'));
+
+        //related object
+        $details = new BookDetails($this->conn);
+        $book->setRelation('details', $details);
+        $this->assertTrue($book->has('details'));
+
+        //related object collection, but empty
+        $books = new EntityCollection($this->conn);
+        $author = new Author($this->conn);
+        $author->setRelation('books', $books);
+        $this->assertFalse($author->has('books'));
+
+        //object collection containing entities
+        $books[] = $book;
+        $this->assertTrue($author->has('books'));
     }
 
 }
