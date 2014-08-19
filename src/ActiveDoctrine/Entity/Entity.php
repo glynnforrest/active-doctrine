@@ -217,13 +217,18 @@ abstract class Entity
     }
 
     /**
-     * Set field $key to $value, ignoring any setter methods.
+     * Set the value of $key. If $key is the name of a relation, the
+     * relation will be set instead.
      *
      * @param string $key   The name of the key to set.
      * @param mixed  $value The value to set.
      */
     public function setRaw($key, $value)
     {
+        if (isset(static::$relations[$key])) {
+            return $this->setRelation($key, $value);
+        }
+
         //apply the modified flag if the key is one of the fields and
         //the value has changed
         if (in_array($key, static::$fields) && $value !== $this->getRaw($key)) {
