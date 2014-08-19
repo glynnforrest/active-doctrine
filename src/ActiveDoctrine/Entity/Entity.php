@@ -81,13 +81,18 @@ abstract class Entity
     }
 
     /**
-     * Get the value of $key. If $key doesn't exist, null will be
+     * Get the value of $key. If $key is the name of a relation, the
+     * relation will be fetched. If $key doesn't exist, null will be
      * returned.
      *
      * @param string $key The name of the key to get.
      */
     public function getRaw($key)
     {
+        if (isset(static::$relations[$key])) {
+            return $this->getRelation($key);
+        }
+
         return isset($this->values[$key]) ? $this->values[$key] : null;
     }
 

@@ -648,4 +648,16 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         /* the query should not be executed more than once */
         $author->getRelation('books');
     }
+
+    public function testGetRawCallsGetRelation()
+    {
+        $book = new Book($this->conn);
+        $details = new BookDetails($this->conn);
+        $book->setRelation('details', $details);
+        $this->assertSame($details, $book->getRaw('details'));
+        $this->assertSame($details, $book->get('details'));
+        $this->assertSame($details, $book->getRelation('details'));
+        $this->assertSame($details, $book->details);
+    }
+
 }
