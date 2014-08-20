@@ -233,9 +233,8 @@ class EntitySelector
                 $foreign_child_collection = $foreign_class::newCollection($this->connection, $indexed[$index]);
                 $entity->setRelation($relation_name, $foreign_child_collection);
             } else {
-                //the relation doesn't exist and we need to notify the
-                //entity of that so it won't attempt to fetch it.
-                $entity->setRelation($relation_name, null);
+                //the relation doesn't exist, so give the entity a blank collection
+                $entity->setRelation($relation_name, $foreign_class::newCollection($this->connection));
             }
         }
     }

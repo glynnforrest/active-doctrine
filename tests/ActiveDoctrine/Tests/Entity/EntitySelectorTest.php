@@ -275,4 +275,77 @@ class EntitySelectorTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    public function testExecuteManyWithHasMany()
+    {
+        $author_statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
+                                 ->disableOriginalConstructor()
+                                 ->getMock();
+        $author_statement->expects($this->once())
+                         ->method('execute')
+                         ->with([]);
+        $author_statement->expects($this->exactly(4))
+                         ->method('fetch')
+                         ->will($this->onConsecutiveCalls(
+                             ['name' => 'author_foo', 'id' => 1],
+                             ['name' => 'author_bar', 'id' => 2],
+                             ['name' => 'author_baz', 'id' => 3],
+                             false
+                         ));
+
+        $book_statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
+                               ->disableOriginalConstructor()
+                               ->getMock();
+        $book_statement->expects($this->once())
+                       ->method('execute')
+                       ->with([1, 2, 3]);
+        $book_statement->expects($this->exactly(7))
+                       ->method('fetch')
+                       ->will($this->onConsecutiveCalls(
+                           ['name' => 'book_1', 'authors_id' => 1],
+                           ['name' => 'book_2', 'authors_id' => 2],
+                           ['name' => 'book_3', 'authors_id' => 2],
+                           ['name' => 'book_4', 'authors_id' => 2],
+                           ['name' => 'book_5', 'authors_id' => 1],
+                           ['name' => 'book_6', 'authors_id' => 2],
+                           false
+                       ));
+
+        $this->conn->expects($this->exactly(2))
+                   ->method('prepare')
+                   ->with($this->logicalOr(
+                       'SELECT * FROM `authors` LIMIT 3',
+                       'SELECT * FROM `books` WHERE `authors_id` IN (?, ?, ?)'
+                   ))
+                   ->will($this->onConsecutiveCalls($author_statement, $book_statement));
+
+        $entity_class = 'ActiveDoctrine\Tests\Entity\Author';
+        $selector = new EntitySelector($this->conn, $entity_class, 'authors');
+        $authors = $selector->limit(3)
+                            ->with('books')
+                            ->execute();
+        $this->assertInstanceOf('ActiveDoctrine\Entity\EntityCollection', $authors);
+        $this->assertSame(3, count($authors));
+        $this->assertSame(['author_foo', 'author_bar', 'author_baz'], $authors->getColumn('name'));
+
+        //author foo
+        $foo = $authors[0];
+        $books = $foo->getRelation('books');
+        $this->assertInstanceOf('ActiveDoctrine\Entity\EntityCollection', $books);
+        $this->assertSame(2, count($books));
+        $this->assertSame(['book_1', 'book_5'], $books->getColumn('name'));
+
+        //author bar
+        $bar = $authors[1];
+        $books = $bar->getRelation('books');
+        $this->assertInstanceOf('ActiveDoctrine\Entity\EntityCollection', $books);
+        $this->assertSame(4, count($books));
+        $this->assertSame(['book_2', 'book_3', 'book_4', 'book_6'], $books->getColumn('name'));
+
+        //author baz has no books
+        $baz = $authors[2];
+        $books = $baz->getRelation('books');
+        $this->assertInstanceOf('ActiveDoctrine\Entity\EntityCollection', $books);
+        $this->assertSame(0, count($books));
+    }
+
 }
