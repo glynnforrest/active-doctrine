@@ -80,6 +80,29 @@ class EntitySelectorTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(4, $book->getRaw('authors_id'));
     }
 
+    public function testExecuteNoResult()
+    {
+        $statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
+                          ->disableOriginalConstructor()
+                          ->getMock();
+        $statement->expects($this->once())
+                  ->method('execute')
+                  ->with([4]);
+        $statement->expects($this->once())
+                  ->method('fetch')
+                  ->will($this->returnValue(false));
+
+        $this->conn->expects($this->once())
+                   ->method('prepare')
+                   ->with('SELECT * FROM `books` WHERE `authors_id` = ?')
+                   ->will($this->returnValue($statement));
+
+        $collection = $this->selector->where('authors_id', '=', 4)->execute();
+
+        $this->assertInstanceOf('ActiveDoctrine\Entity\EntityCollection', $collection);
+        $this->assertSame(0, count($collection));
+    }
+
     public function testExecuteOne()
     {
         $statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
