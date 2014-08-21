@@ -21,41 +21,9 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
                            ->getMock();
     }
 
-    public function testSetAndGetTable()
-    {
-        $collection = new EntityCollection($this->conn);
-        $this->assertNull($collection->getTable());
-        $this->assertSame($collection, $collection->setTable('foo'));
-        $this->assertSame('foo', $collection->getTable());
-    }
-
-    public function testSetAndGetFields()
-    {
-        $collection = new EntityCollection($this->conn);
-        $this->assertSame([], $collection->getFields());
-        $this->assertSame($collection, $collection->setFields(['id', 'foo', 'bar']));
-        $this->assertSame(['id', 'foo', 'bar'], $collection->getFields());
-    }
-
-    public function testSetAndGetPrimaryKey()
-    {
-        $collection = new EntityCollection($this->conn);
-        $this->assertNull($collection->getPrimaryKey());
-        $this->assertSame($collection, $collection->setPrimaryKey('id'));
-        $this->assertSame('id', $collection->getPrimaryKey());
-    }
-
-    public function testSetAndGetEntityClass()
-    {
-        $collection = new EntityCollection($this->conn);
-        $this->assertNull($collection->getEntityClass());
-        $this->assertSame($collection, $collection->setEntityClass('ActiveDoctrine\Tests\Entity\Book'));
-        $this->assertSame('ActiveDoctrine\Tests\Entity\Book', $collection->getEntityClass());
-    }
-
     public function testSetAndGetEntities()
     {
-        $collection = new EntityCollection($this->conn);
+        $collection = new EntityCollection();
         $this->assertSame([], $collection->getEntities());
         $entities = [new Book($this->conn), new Book($this->conn)];
         $this->assertSame($collection, $collection->setEntities($entities));
@@ -65,13 +33,13 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
     public function testAddEntitiesOnConstruct()
     {
         $entities = [new Book($this->conn), new Book($this->conn)];
-        $collection = new EntityCollection($this->conn, $entities);
+        $collection = new EntityCollection($entities);
         $this->assertSame($entities, $collection->getEntities());
     }
 
     public function testImplementsIterator()
     {
-        $this->assertInstanceOf('\Iterator', new EntityCollection($this->conn));
+        $this->assertInstanceOf('\Iterator', new EntityCollection());
     }
 
     public function testIterator()
@@ -79,7 +47,7 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
         $book1 = new Book($this->conn);
         $book2 = new Book($this->conn);
         $book3 = new Book($this->conn);
-        $collection = new EntityCollection($this->conn, [$book1, $book2, $book3]);
+        $collection = new EntityCollection([$book1, $book2, $book3]);
 
         $collection->rewind();
         $this->assertTrue($collection->valid());
@@ -111,7 +79,7 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
         $book2 = new Book($this->conn);
         $book3 = new Book($this->conn);
         $expected = [$book1, $book2, $book3];
-        $collection = new EntityCollection($this->conn, $expected);
+        $collection = new EntityCollection($expected);
 
         $results = [];
         foreach ($collection as $book) {
@@ -123,12 +91,12 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
 
     public function testImplementsCountable()
     {
-        $this->assertInstanceOf('\Countable', new EntityCollection($this->conn));
+        $this->assertInstanceOf('\Countable', new EntityCollection());
     }
 
     public function testCount()
     {
-        $collection = new EntityCollection($this->conn);
+        $collection = new EntityCollection();
         $this->assertSame(0, count($collection));
         $collection->setEntities([new Book($this->conn)]);
         $this->assertSame(1, count($collection));
@@ -140,12 +108,12 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
 
     public function testImplementsArrayAccess()
     {
-        $this->assertInstanceOf('\ArrayAccess', new EntityCollection($this->conn));
+        $this->assertInstanceOf('\ArrayAccess', new EntityCollection());
     }
 
     public function testArrayAccess()
     {
-        $collection = new EntityCollection($this->conn);
+        $collection = new EntityCollection();
 
         $this->assertNull($collection[0]);
         $this->assertNull($collection[3]);
@@ -183,14 +151,14 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
 
     public function testOffsetSetFailsForNonNumericKeys()
     {
-        $collection = new EntityCollection($this->conn);
+        $collection = new EntityCollection();
         $this->setExpectedException('\InvalidArgumentException');
         $collection['foo'] = new Book($this->conn);
     }
 
     public function testGetColumn()
     {
-        $collection = new EntityCollection($this->conn);
+        $collection = new EntityCollection();
         $collection[] = new Book($this->conn, ['name' => 'foo']);
         $collection[] = new Book($this->conn);
         $collection[] = new Book($this->conn, ['name' => 'bar']);
@@ -199,7 +167,7 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
 
     public function testGetEntitiesChunked()
     {
-        $collection = new EntityCollection($this->conn);
+        $collection = new EntityCollection();
         for ($i = 1; $i < 9; $i++) {
             ${'book' . $i} = new Book($this->conn);
             $collection[] = ${'book' . $i};
@@ -214,7 +182,7 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
 
     public function testSetColumn()
     {
-        $collection = new EntityCollection($this->conn);
+        $collection = new EntityCollection();
         $collection[] = new Book($this->conn, ['name' => 'foo']);
         $collection[] = new Book($this->conn);
         $collection[] = new Book($this->conn, ['name' => 'bar']);
@@ -231,7 +199,7 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
             ${'book' . $i}->expects($this->once())
                                 ->method('save');
         }
-        $collection = new EntityCollection($this->conn);
+        $collection = new EntityCollection();
         $collection->setEntities([$book1, $book2, $book3]);
 
         $this->assertSame($collection, $collection->save());

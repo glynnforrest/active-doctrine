@@ -453,34 +453,27 @@ abstract class Entity
      * Create a new EntityCollection class. Override this method in
      * child classes to use a custom collection class.
      *
-     * @param Connection $connection A connection instance
-     * @param array      $entities   An array of entities to add to the collection
+     * @param array $entities An array of entities to add to the collection
      */
-    public static function newCollection(Connection $connection, array $entities = [])
+    public static function newCollection(array $entities = [])
     {
-        return new EntityCollection($connection, $entities);
+        return new EntityCollection($entities);
     }
 
     /**
-     * Create a new Collection class, optionally populated with a
-     * number of empty entities.
+     * Create a new collection with an amount of empty entities.
      *
+     * @param int        $amount     The amount of new Entities to create
      * @param Connection $connection A connection instance
-     * @param int        $count      The number of empty entities to add to the collection
      */
-    public static function collection(Connection $connection, $count = 0)
+    public static function create(Connection $connection, $amount = 0)
     {
-        $entities = array();
-        for ($i = 0; $i < (int) $count; $i++) {
+        $entities = [];
+        for ($i = 0; $i < (int) $amount; $i++) {
             $entities[] = new static($connection);
         }
-        $set = static::newCollection($connection, $entities);
-        $set->setTable(static::$table);
-        $set->setFields(static::$fields);
-        $set->setPrimaryKey(static::$primary_key);
-        $set->setEntityClass(get_called_class());
 
-        return $set;
+        return static::newCollection($entities);
     }
 
     /**
@@ -502,7 +495,7 @@ abstract class Entity
             $obj->setStored();
             $results[] = $obj;
         }
-        $collection = static::collection($connection);
+        $collection = static::newCollection();
         $collection->setEntities($results);
 
         return $collection;

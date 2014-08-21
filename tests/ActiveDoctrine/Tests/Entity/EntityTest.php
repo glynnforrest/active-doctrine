@@ -446,18 +446,14 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         Book::deleteAll($this->conn);
     }
 
-    public function testCollection()
+    public function testNewCollection()
     {
-        $collection = Book::collection($this->conn);
-        $this->assertInstanceOf('ActiveDoctrine\Entity\EntityCollection', $collection);
-        $this->assertSame('books', $collection->getTable());
-        $this->assertSame('id', $collection->getPrimaryKey());
-        $this->assertSame('ActiveDoctrine\Tests\Entity\Book', $collection->getEntityClass());
+        $this->assertInstanceOf('ActiveDoctrine\Entity\EntityCollection', Book::newCollection());
     }
 
-    public function testCollectionWithEntities()
+    public function testCreate()
     {
-        $collection = Book::collection($this->conn, 3);
+        $collection = Book::create($this->conn, 3);
         $this->assertInstanceOf('ActiveDoctrine\Entity\EntityCollection', $collection);
         $entities = $collection->getEntities();
         $this->assertSame(3, count($entities));
@@ -702,7 +698,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($book->has('details'));
 
         //related object collection, but empty
-        $books = new EntityCollection($this->conn);
+        $books = new EntityCollection();
         $author = new Author($this->conn);
         $author->setRelation('books', $books);
         $this->assertFalse($author->has('books'));
@@ -733,7 +729,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(3, $book1->authors_id);
         $this->assertSame(5, $book2->authors_id);
         $this->assertSame(1, $book3->authors_id);
-        $author->associateRelation('books', new EntityCollection($this->conn, [$book1, $book2, $book3]));
+        $author->associateRelation('books', new EntityCollection([$book1, $book2, $book3]));
         $this->assertSame(1, $author->id);
         $this->assertSame(1, $book1->authors_id);
         $this->assertSame(1, $book2->authors_id);

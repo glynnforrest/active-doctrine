@@ -230,11 +230,11 @@ class EntitySelector
         foreach ($collection as $entity) {
             $index = $entity->getRaw($column);
             if (isset($indexed[$index])) {
-                $foreign_child_collection = $foreign_class::newCollection($this->connection, $indexed[$index]);
+                $foreign_child_collection = $foreign_class::newCollection($indexed[$index]);
                 $entity->setRelation($relation_name, $foreign_child_collection);
             } else {
                 //the relation doesn't exist, so give the entity a blank collection
-                $entity->setRelation($relation_name, $foreign_class::newCollection($this->connection));
+                $entity->setRelation($relation_name, $foreign_class::newCollection());
             }
         }
     }
