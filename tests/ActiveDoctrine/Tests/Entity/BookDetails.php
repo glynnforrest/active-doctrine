@@ -15,6 +15,7 @@ class BookDetails extends Entity
     protected static $table = 'book_details';
     protected static $fields = [
         'id',
+        'books_id',
         'synopsis',
         'pages',
         'chapters'
