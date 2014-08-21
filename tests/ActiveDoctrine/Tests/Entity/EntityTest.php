@@ -710,4 +710,26 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(3, $details->books_id);
     }
 
+    public function testAssociateRelationHasMany()
+    {
+        $author = new Author($this->conn, ['id' => 1]);
+        $book1 = new Book($this->conn, ['authors_id' => 3]);
+        $book2 = new Book($this->conn, ['authors_id' => 5]);
+        $book3 = new Book($this->conn, ['authors_id' => 1]);
+        $this->assertSame(1, $author->id);
+        $this->assertSame(3, $book1->authors_id);
+        $this->assertSame(5, $book2->authors_id);
+        $this->assertSame(1, $book3->authors_id);
+        $author->associateRelation('books', new EntityCollection($this->conn, [$book1, $book2, $book3]));
+        $this->assertSame(1, $author->id);
+        $this->assertSame(1, $book1->authors_id);
+        $this->assertSame(1, $book2->authors_id);
+        $this->assertSame(1, $book3->authors_id);
+
+        $this->assertSame([], $author->getModifiedFields());
+        $this->assertSame(['authors_id'], $book1->getModifiedFields());
+        $this->assertSame(['authors_id'], $book2->getModifiedFields());
+        $this->assertSame([], $book3->getModifiedFields());
+    }
+
 }

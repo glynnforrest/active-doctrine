@@ -282,13 +282,20 @@ abstract class Entity
      */
     public function associateRelation($name, $related_object)
     {
+        $this->setRelation($name, $related_object);
+
         if (!$related_object) {
             return;
         }
 
         list($type, $foreign_class, $foreign_column, $column) = static::getRelationDefinition($name);
-        $related_object->setRaw($foreign_column, $this->getRaw($column));
-        $this->setRelation($name, $related_object);
+        if ($type === 'has_one') {
+            $related_object->setRaw($foreign_column, $this->getRaw($column));
+        }
+        if ($type === 'has_many') {
+            $related_object->setColumn($foreign_column, $this->getRaw($column));
+        }
+
     }
 
     /**
