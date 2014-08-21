@@ -80,6 +80,20 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(['name', 'description'], $obj->getModifiedFields());
     }
 
+    public function testIsModified()
+    {
+        $obj = new Book($this->conn, ['name' => 'foo', 'description' => 'bar']);
+        $this->assertFalse($obj->isModified());
+
+        //setting a column that isn't part of the entity
+        $obj->set('foo', 'bar');
+        $this->assertFalse($obj->isModified());
+
+        //name is part of the entity
+        $obj->set('name', 'bar');
+        $this->assertTrue($obj->isModified());
+    }
+
     public function testGetAndSetValues()
     {
         $obj = new Book($this->conn);
@@ -472,7 +486,6 @@ class EntityTest extends \PHPUnit_Framework_TestCase
                   ->with()
                   ->will($this->onConsecutiveCalls($result1, $result2, $result3, false));
 
-
         $collection = Book::selectSQL($this->conn, $sql);
 
         $this->assertSame(3, count($collection));
@@ -726,10 +739,10 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(1, $book2->authors_id);
         $this->assertSame(1, $book3->authors_id);
 
-        $this->assertSame([], $author->getModifiedFields());
-        $this->assertSame(['authors_id'], $book1->getModifiedFields());
-        $this->assertSame(['authors_id'], $book2->getModifiedFields());
-        $this->assertSame([], $book3->getModifiedFields());
+        $this->assertFalse($author->isModified());
+        $this->assertTrue($book1->isModified());
+        $this->assertTrue($book2->isModified());
+        $this->assertFalse($book3->isModified());
     }
 
 }

@@ -336,6 +336,16 @@ abstract class Entity
     }
 
     /**
+     * Get whether this entity has been modified.
+     *
+     * @return bool True if modified, false if not
+     */
+    public function isModified()
+    {
+        return !empty($this->modified);
+    }
+
+    /**
      * Persist this entity to the database using an insert query.
      */
     public function insert()
@@ -401,7 +411,7 @@ abstract class Entity
 
     /**
      * Get whether this entity is stored in the database or not.
-
+     *
      * @return bool True if stored, false if not
      */
     public function isStored()
