@@ -212,4 +212,14 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($expected, $collection->getEntitiesChunked(3));
     }
 
+    public function testSetColumn()
+    {
+        $collection = new EntityCollection($this->conn);
+        $collection[] = new Book($this->conn, ['name' => 'foo']);
+        $collection[] = new Book($this->conn);
+        $collection[] = new Book($this->conn, ['name' => 'bar']);
+        $collection->setColumn('name', 'changed');
+        $this->assertSame(['CHANGED', 'CHANGED', 'CHANGED'], $collection->getColumn('name'));
+    }
+
 }

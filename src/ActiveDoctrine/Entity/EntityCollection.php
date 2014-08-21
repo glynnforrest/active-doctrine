@@ -161,6 +161,20 @@ class EntityCollection implements Iterator, Countable, ArrayAccess
     }
 
     /**
+     * Set the value of a column for all entities in this collection.
+     *
+     * @param  string           $name  The name of the column
+     * @param  mixed            $value The value
+     * @return EntityCollection This collection
+     */
+    public function setColumn($name, $value)
+    {
+        foreach ($this->entities as $entity) {
+            $entity->set($name, $value);
+        }
+    }
+
+    /**
      * Get the values of a single key from all entities in this collection.
      *
      * @param  string $name The name of the column
