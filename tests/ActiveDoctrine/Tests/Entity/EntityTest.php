@@ -699,4 +699,15 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($author->has('books'));
     }
 
+    public function testAssociateRelationHasOne()
+    {
+        $book = new Book($this->conn, ['id' => 3]);
+        $details = new BookDetails($this->conn, ['books_id' => 5]);
+        $this->assertSame(3, $book->id);
+        $this->assertSame(5, $details->books_id);
+        $book->associateRelation('details', $details);
+        $this->assertSame(3, $book->id);
+        $this->assertSame(3, $details->books_id);
+    }
+
 }

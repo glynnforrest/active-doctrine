@@ -274,6 +274,24 @@ abstract class Entity
     }
 
     /**
+     * Set the named related object and ensure the joining columns are
+     * matched.
+     *
+     * @param string $name           The name of the relation
+     * @param mixed  $related_object The related object
+     */
+    public function associateRelation($name, $related_object)
+    {
+        if (!$related_object) {
+            return;
+        }
+
+        list($type, $foreign_class, $foreign_column, $column) = static::getRelationDefinition($name);
+        $related_object->setRaw($foreign_column, $this->getRaw($column));
+        $this->setRelation($name, $related_object);
+    }
+
+    /**
      * Set an array of values. Setter methods will be called if they
      * exist.
      *
