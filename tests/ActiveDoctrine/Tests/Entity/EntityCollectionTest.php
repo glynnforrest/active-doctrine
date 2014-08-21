@@ -222,4 +222,19 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(['CHANGED', 'CHANGED', 'CHANGED'], $collection->getColumn('name'));
     }
 
+    public function testSave()
+    {
+        for ($i = 1; $i < 4; $i++) {
+            ${'book' . $i} = $this->getMockBuilder('ActiveDoctrine\Tests\Entity\Book')
+                                  ->disableOriginalConstructor()
+                                  ->getMock();
+            ${'book' . $i}->expects($this->once())
+                                ->method('save');
+        }
+        $collection = new EntityCollection($this->conn);
+        $collection->setEntities([$book1, $book2, $book3]);
+
+        $this->assertSame($collection, $collection->save());
+    }
+
 }

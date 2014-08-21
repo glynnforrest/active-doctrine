@@ -190,6 +190,20 @@ class EntityCollection implements Iterator, Countable, ArrayAccess
         return $results;
     }
 
+    /**
+     * Save all the entities in this collection.
+     *
+     * @return EntityCollection This collection
+     */
+    public function save()
+    {
+        foreach ($this->entities as $entity) {
+            $entity->save();
+        }
+
+        return $this;
+    }
+
     public function rewind()
     {
         $this->position = 0;
