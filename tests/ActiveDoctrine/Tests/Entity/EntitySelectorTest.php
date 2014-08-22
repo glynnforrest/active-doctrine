@@ -171,6 +171,49 @@ class EntitySelectorTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('foo', $details->synopsis);
     }
 
+    public function testExecuteOneWithBelongsTo()
+    {
+        $details_statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
+                                  ->disableOriginalConstructor()
+                                  ->getMock();
+        $details_statement->expects($this->once())
+                          ->method('execute')
+                          ->with([]);
+        $details_statement->expects($this->once())
+                          ->method('fetch')
+                          ->will($this->returnValue(['synopsis' => 'foo synopsis', 'books_id' => 4]));
+
+        $book_statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
+                               ->disableOriginalConstructor()
+                               ->getMock();
+        $book_statement->expects($this->once())
+                       ->method('execute')
+                       ->with([4]);
+        $book_statement->expects($this->once())
+                       ->method('fetch')
+                       ->will($this->returnValue(['id' => 4, 'name' => 'foo']));
+
+        $this->conn->expects($this->exactly(2))
+                   ->method('prepare')
+                   ->with($this->logicalOr(
+                       'SELECT * FROM `book_details` LIMIT 1',
+                       'SELECT * FROM `books` WHERE `id` = ? LIMIT 1'
+                   ))
+                   ->will($this->onConsecutiveCalls($details_statement, $book_statement));
+
+        $entity_class = 'ActiveDoctrine\Tests\Entity\BookDetails';
+        $selector = new EntitySelector($this->conn, $entity_class, 'book_details');
+        $details = $selector->one()
+                            ->with('book')
+                            ->execute();
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Entity\BookDetails', $details);
+        $this->assertSame('foo synopsis', $details->synopsis);
+
+        $book = $details->getRelation('book');
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Entity\Book', $book);
+        $this->assertSame('foo', $book->name);
+    }
+
     public function testExecuteOneWithHasMany()
     {
         $author_statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
@@ -242,7 +285,6 @@ class EntitySelectorTest extends \PHPUnit_Framework_TestCase
         $details_statement->expects($this->once())
                           ->method('execute')
                           ->with([4, 5]);
-        $result = ['synopsis' => 'foo'];
         $details_statement->expects($this->exactly(3))
                           ->method('fetch')
                           ->will($this->onConsecutiveCalls(
@@ -348,4 +390,57 @@ class EntitySelectorTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(0, count($books));
     }
 
+    public function testExecuteManyWithBelongsTo()
+    {
+        $book_statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
+                               ->disableOriginalConstructor()
+                               ->getMock();
+        $book_statement->expects($this->once())
+                       ->method('execute')
+                       ->with([]);
+        $book_statement->expects($this->exactly(3))
+                       ->method('fetch')
+                       ->will($this->onConsecutiveCalls(
+                           ['name' => 'foo', 'authors_id' => 4],
+                           ['name' => 'bar', 'authors_id' => 5],
+                           false
+                       ));
+
+        $author_statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
+                                 ->disableOriginalConstructor()
+                                 ->getMock();
+        $author_statement->expects($this->once())
+                         ->method('execute')
+                         ->with([4, 5]);
+        $author_statement->expects($this->exactly(3))
+                         ->method('fetch')
+                         ->will($this->onConsecutiveCalls(
+                             ['name' => 'bar_author', 'id' => 5],
+                             ['name' => 'foo_author', 'id' => 4],
+                             false
+                         ));
+
+        $this->conn->expects($this->exactly(2))
+                   ->method('prepare')
+                   ->with($this->logicalOr(
+                       'SELECT * FROM `books` LIMIT 2',
+                       'SELECT * FROM `authors` WHERE `id` IN (?, ?)'
+                   ))
+                   ->will($this->onConsecutiveCalls($book_statement, $author_statement));
+
+        $books = $this->selector->with('author')
+                                ->limit(2)
+                                ->execute();
+        $this->assertInstanceOf('ActiveDoctrine\Entity\EntityCollection', $books);
+        $this->assertSame(2, count($books));
+        $this->assertSame(['foo', 'bar'], $books->getColumn('name'));
+
+        for ($i = 0; $i < 2; $i++) {
+            $book = $books[$i];
+            $this->assertInstanceOf('ActiveDoctrine\Tests\Entity\Book', $book);
+            $author = $book->getRelation('author');
+            $this->assertInstanceOf('ActiveDoctrine\Tests\Entity\Author', $author);
+            $this->assertSame($book->getRaw('name') . '_author', $author->name);
+        }
+    }
 }
