@@ -294,6 +294,9 @@ abstract class Entity
         if ($type === 'has_one') {
             $related_object->setRaw($foreign_column, $this->getRaw($column));
         }
+        if ($type === 'belongs_to') {
+            $this->setRaw($column, $related_object->getRaw($foreign_column));
+        }
         if ($type === 'has_many') {
             $related_object->setColumn($foreign_column, $this->getRaw($column));
         }

@@ -622,7 +622,6 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $details->getRelation('book');
     }
 
-
     public function testSetRelation()
     {
         $book = new Book($this->conn);
@@ -766,6 +765,17 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($book1->isModified());
         $this->assertTrue($book2->isModified());
         $this->assertFalse($book3->isModified());
+    }
+
+    public function testAssociateRelationBelongsTo()
+    {
+        $book = new Book($this->conn, ['id' => 3]);
+        $details = new BookDetails($this->conn, ['books_id' => 5]);
+        $this->assertSame(3, $book->id);
+        $this->assertSame(5, $details->books_id);
+        $details->associateRelation('book', $book);
+        $this->assertSame(3, $book->id);
+        $this->assertSame(3, $details->books_id);
     }
 
 }
