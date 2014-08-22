@@ -596,6 +596,33 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $book->getRelation('details');
     }
 
+    public function testGetRelationBelongsTo()
+    {
+        $details = new BookDetails($this->conn, ['books_id' => 5]);
+        $driver = $this->expectDriver();
+        $statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
+                          ->disableOriginalConstructor()
+                          ->getMock();
+        $this->conn->expects($this->once())
+               ->method('prepare')
+               ->with('SELECT * FROM `books` WHERE `id` = ? LIMIT 1')
+               ->will($this->returnValue($statement));
+        $statement->expects($this->once())
+                  ->method('execute')
+                  ->with([5]);
+        $result = ['name' => 'foo'];
+        $statement->expects($this->once())
+                  ->method('fetch')
+                  ->will($this->returnValue($result));
+
+        $book = $details->getRelation('book');
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Entity\Book', $book);
+        $this->assertSame('foo', $book->name);
+        /* the query should not be executed more than once */
+        $details->getRelation('book');
+    }
+
+
     public function testSetRelation()
     {
         $book = new Book($this->conn);

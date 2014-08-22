@@ -149,6 +149,8 @@ abstract class Entity
         switch ($type) {
         case 'has_one':
             return $this->fetchOneToOne($foreign_class, $foreign_column, $column);
+        case 'belongs_to':
+            return $this->fetchOneToOne($foreign_class, $foreign_column, $column);
         case 'has_many':
             return $this->fetchOneToMany($foreign_class, $foreign_column, $column);
         default:
