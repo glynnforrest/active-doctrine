@@ -21,6 +21,9 @@ class BookDetails extends Entity
         'chapters'
     ];
     protected static $relations = [
+        'book' => [
+            'belongs_to', 'ActiveDoctrine\Tests\Entity\Book', 'id', 'books_id'
+        ]
     ];
 
 }

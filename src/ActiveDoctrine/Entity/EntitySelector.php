@@ -116,6 +116,10 @@ class EntitySelector
                 $selector = $foreign_class::selectOne($this->connection)
                     ->where($foreign_column, '=', $result->get($column));
                 break;
+            case 'belongs_to':
+                $selector = $foreign_class::selectOne($this->connection)
+                    ->where($foreign_column, '=', $result->get($column));
+                break;
             case 'has_many':
                 $selector = $foreign_class::select($this->connection)
                     ->where($foreign_column, '=', $result->get($column));
@@ -170,6 +174,9 @@ class EntitySelector
             //entities
             switch ($type) {
             case 'has_one':
+                $this->hydrateHasOne($name, $relation, $collection, $foreign_collection);
+                break;
+            case 'belongs_to':
                 $this->hydrateHasOne($name, $relation, $collection, $foreign_collection);
                 break;
             case 'has_many':

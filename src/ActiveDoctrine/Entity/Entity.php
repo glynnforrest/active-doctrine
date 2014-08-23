@@ -149,6 +149,8 @@ abstract class Entity
         switch ($type) {
         case 'has_one':
             return $this->fetchOneToOne($foreign_class, $foreign_column, $column);
+        case 'belongs_to':
+            return $this->fetchOneToOne($foreign_class, $foreign_column, $column);
         case 'has_many':
             return $this->fetchOneToMany($foreign_class, $foreign_column, $column);
         default:
@@ -291,6 +293,9 @@ abstract class Entity
         list($type, $foreign_class, $foreign_column, $column) = static::getRelationDefinition($name);
         if ($type === 'has_one') {
             $related_object->setRaw($foreign_column, $this->getRaw($column));
+        }
+        if ($type === 'belongs_to') {
+            $this->setRaw($column, $related_object->getRaw($foreign_column));
         }
         if ($type === 'has_many') {
             $related_object->setColumn($foreign_column, $this->getRaw($column));
