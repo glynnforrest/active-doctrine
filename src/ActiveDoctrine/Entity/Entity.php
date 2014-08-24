@@ -167,7 +167,7 @@ abstract class Entity
     protected function fetchOneToOne($foreign_class, $foreign_column, $column)
     {
         return $foreign_class::selectOne($this->connection)
-            ->where($foreign_column, '=', $this->get($column))
+            ->where($foreign_column, '=', $this->getRaw($column))
             ->execute();
     }
 
@@ -181,7 +181,7 @@ abstract class Entity
     protected function fetchOneToMany($foreign_class, $foreign_column, $column)
     {
         return $foreign_class::select($this->connection)
-            ->where($foreign_column, '=', $this->get($column))
+            ->where($foreign_column, '=', $this->getRaw($column))
             ->execute();
     }
 

@@ -114,15 +114,15 @@ class EntitySelector
             switch ($type) {
             case 'has_one':
                 $selector = $foreign_class::selectOne($this->connection)
-                    ->where($foreign_column, '=', $result->get($column));
+                    ->where($foreign_column, '=', $result->getRaw($column));
                 break;
             case 'belongs_to':
                 $selector = $foreign_class::selectOne($this->connection)
-                    ->where($foreign_column, '=', $result->get($column));
+                    ->where($foreign_column, '=', $result->getRaw($column));
                 break;
             case 'has_many':
                 $selector = $foreign_class::select($this->connection)
-                    ->where($foreign_column, '=', $result->get($column));
+                    ->where($foreign_column, '=', $result->getRaw($column));
                 break;
             default:
                 //throw exception for invalid relation
