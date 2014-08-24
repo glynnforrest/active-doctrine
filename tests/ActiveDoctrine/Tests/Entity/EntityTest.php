@@ -697,12 +697,13 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($details, $book->details);
     }
 
-    public function testSetRawCallSetRelation()
+    public function testSetRawCallsSetRelation()
     {
-        $book = new Book($this->conn);
-        $details = new BookDetails($this->conn);
+        $book = new Book($this->conn, ['id' => 5]);
+        $details = new BookDetails($this->conn, ['books_id' => 3]);
         $book->setRaw('details', $details);
         $this->assertSame($details, $book->getRelation('details'));
+        $this->assertSame(5, $details->books_id);
     }
 
     public function testHas()

@@ -238,7 +238,7 @@ abstract class Entity
 
     /**
      * Set the value of $key. If $key is the name of a relation, the
-     * relation will be set instead.
+     * relation will associated with this entity.
      *
      * @param string $key   The name of the key to set.
      * @param mixed  $value The value to set.
@@ -246,7 +246,7 @@ abstract class Entity
     public function setRaw($key, $value)
     {
         if (isset(static::$relations[$key])) {
-            return $this->setRelation($key, $value);
+            return $this->associateRelation($key, $value);
         }
 
         //apply the modified flag if the key is one of the fields and
