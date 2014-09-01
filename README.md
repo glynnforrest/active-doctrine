@@ -16,16 +16,20 @@ A minimal active record implementation built on top of the Doctrine DBAL.
 
 Add the following to your composer.json file:
 
-	{
-		"require": {
-			"glynnforrest/active-doctrine": "dev-master"
-		}
-	}
+```json
+{
+    "require": {
+        "glynnforrest/active-doctrine": "0.1.*"
+    }
+}
+```
 
 And run composer to update your dependencies:
 
-	$ curl -s http://getcomposer.org/installer | php
-	$ php composer.phar update
+```bash
+curl -s http://getcomposer.org/installer | php
+php composer.phar update
+```
 
 ## Usage
 
