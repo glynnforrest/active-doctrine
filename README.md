@@ -1,5 +1,5 @@
 # Active Doctrine
-A minimal active record implementation on top of the Doctrine DBAL.
+A minimal active record implementation built on top of the Doctrine DBAL.
 
 [![Build Status](https://travis-ci.org/glynnforrest/active-doctrine.svg)](https://travis-ci.org/glynnforrest/active-doctrine)
 
@@ -26,6 +26,10 @@ And run composer to update your dependencies:
 
 	$ curl -s http://getcomposer.org/installer | php
 	$ php composer.phar update
+
+## Usage
+
+Documenation and usage examples are in the `docs/` folder.
 
 ## License
 
