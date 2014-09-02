@@ -87,6 +87,26 @@ class EntityCollection implements Iterator, Countable, ArrayAccess
     }
 
     /**
+     * Get a single Entity from this collection where column =
+     * value. If more than one Entity is matched, the first will be
+     * returned. If no Entity is matched, null will be returned.
+     *
+     * @param  string $column
+     * @param  string $value
+     * @return mixed  Entity or NULL
+     */
+    public function getOne($column, $value)
+    {
+        foreach ($this->entities as $entity) {
+            if ($entity->getRaw($column) === $value) {
+                return $entity;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Save all the entities in this collection.
      *
      * @return EntityCollection This collection

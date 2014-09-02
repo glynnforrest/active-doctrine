@@ -205,4 +205,17 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($collection, $collection->save());
     }
 
+    public function testGetOne()
+    {
+        for ($i = 1; $i < 4; $i++) {
+            ${'book' . $i} = new Book($this->conn, ['name' => 'book' . $i]);
+        }
+        $collection = new EntityCollection;
+        $collection->setEntities([$book1, $book2, $book3]);
+
+        $this->assertSame($book3, $collection->getOne('name', 'book3'));
+
+        $this->assertNull($collection->getOne('name', 'foo'));
+    }
+
 }
