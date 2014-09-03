@@ -139,10 +139,19 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
     public function testGetColumn()
     {
         $collection = new EntityCollection();
-        $collection[] = new Book($this->conn, ['name' => 'foo']);
+        $collection[] = new Book($this->conn, ['description' => 'foo']);
         $collection[] = new Book($this->conn);
-        $collection[] = new Book($this->conn, ['name' => 'bar']);
-        $this->assertSame(['foo', null, 'bar'], $collection->getColumn('name'));
+        $collection[] = new Book($this->conn, ['description' => 'bar']);
+        $this->assertSame(['FOO', '', 'BAR'], $collection->getColumn('description'));
+    }
+
+    public function testGetColumnRaw()
+    {
+        $collection = new EntityCollection();
+        $collection[] = new Book($this->conn, ['description' => 'foo']);
+        $collection[] = new Book($this->conn);
+        $collection[] = new Book($this->conn, ['description' => 'bar']);
+        $this->assertSame(['foo', null, 'bar'], $collection->getColumnRaw('description'));
     }
 
     public function testGetEntitiesChunked()
@@ -240,7 +249,7 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
             $collection[] = $book;
         }
 
-        $callback = function($entity) {
+        $callback = function ($entity) {
             return $entity->description === 'BOOK3' || $entity->name === 'book1';
         };
 

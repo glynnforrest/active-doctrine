@@ -72,7 +72,8 @@ class EntityCollection implements IteratorAggregate, Countable, ArrayAccess
     }
 
     /**
-     * Get the values of a single key from all entities in this collection.
+     * Get the values of a single column from all entities in this
+     * collection. Getter methods will be called.
      *
      * @param  string $name The name of the column
      * @return array  A list of values
@@ -82,6 +83,23 @@ class EntityCollection implements IteratorAggregate, Countable, ArrayAccess
         $results = [];
         foreach ($this->entities as $entity) {
             $results[] = $entity->get($name);
+        }
+
+        return $results;
+    }
+
+    /**
+     * Get the values of a single column from all entities in this
+     * collection. Getter methods will not be called.
+     *
+     * @param  string $name The name of the column
+     * @return array  A list of values
+     */
+    public function getColumnRaw($name)
+    {
+        $results = [];
+        foreach ($this->entities as $entity) {
+            $results[] = $entity->getRaw($name);
         }
 
         return $results;
