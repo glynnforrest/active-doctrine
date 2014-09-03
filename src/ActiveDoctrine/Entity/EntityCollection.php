@@ -2,16 +2,17 @@
 
 namespace ActiveDoctrine\Entity;
 
-use \Iterator;
+use \IteratorAggregate;
 use \Countable;
 use \ArrayAccess;
+use \ArrayIterator;
 
 /**
  * EntityCollection
  *
  * @author Glynn Forrest <me@glynnforrest.com>
  **/
-class EntityCollection implements Iterator, Countable, ArrayAccess
+class EntityCollection implements IteratorAggregate, Countable, ArrayAccess
 {
 
     protected $entities;
@@ -71,7 +72,8 @@ class EntityCollection implements Iterator, Countable, ArrayAccess
     }
 
     /**
-     * Get the values of a single key from all entities in this collection.
+     * Get the values of a single column from all entities in this
+     * collection. Getter methods will be called.
      *
      * @param  string $name The name of the column
      * @return array  A list of values
@@ -81,6 +83,23 @@ class EntityCollection implements Iterator, Countable, ArrayAccess
         $results = [];
         foreach ($this->entities as $entity) {
             $results[] = $entity->get($name);
+        }
+
+        return $results;
+    }
+
+    /**
+     * Get the values of a single column from all entities in this
+     * collection. Getter methods will not be called.
+     *
+     * @param  string $name The name of the column
+     * @return array  A list of values
+     */
+    public function getColumnRaw($name)
+    {
+        $results = [];
+        foreach ($this->entities as $entity) {
+            $results[] = $entity->getRaw($name);
         }
 
         return $results;
@@ -98,7 +117,7 @@ class EntityCollection implements Iterator, Countable, ArrayAccess
     public function getOne($column, $value)
     {
         foreach ($this->entities as $entity) {
-            if ($entity->getRaw($column) === $value) {
+            if ($entity->get($column) === $value) {
                 return $entity;
             }
         }
@@ -119,7 +138,7 @@ class EntityCollection implements Iterator, Countable, ArrayAccess
     public function remove($column, $value)
     {
         foreach ($this->entities as $index => $entity) {
-            if ($entity->getRaw($column) === $value) {
+            if ($entity->get($column) === $value) {
                 //remove the entity and reset the keys
                 unset($this->entities[$index]);
                 $this->entities = array_values($this->entities);
@@ -129,6 +148,17 @@ class EntityCollection implements Iterator, Countable, ArrayAccess
         }
 
         return null;
+    }
+
+    /**
+     * Filter entities from this collection using a callback function. Return true in the callback to keep the entity.
+     *
+     * @param  \Closure         $callback The callback function
+     * @return EntityCollection A new EntityCollection with the filtered entities.
+     */
+    public function filter(\Closure $callback)
+    {
+        return new static(array_values(array_filter($this->entities, $callback)));
     }
 
     /**
@@ -145,29 +175,9 @@ class EntityCollection implements Iterator, Countable, ArrayAccess
         return $this;
     }
 
-    public function rewind()
+    public function getIterator()
     {
-        $this->position = 0;
-    }
-
-    public function current()
-    {
-        return $this->entities[$this->position];
-    }
-
-    public function key()
-    {
-        return $this->position;
-    }
-
-    public function next()
-    {
-        $this->position++;
-    }
-
-    public function valid()
-    {
-        return isset($this->entities[$this->position]);
+        return new ArrayIterator($this->entities);
     }
 
     public function count()

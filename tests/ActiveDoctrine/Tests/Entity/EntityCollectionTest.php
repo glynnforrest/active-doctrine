@@ -39,7 +39,7 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
 
     public function testImplementsIterator()
     {
-        $this->assertInstanceOf('\Iterator', new EntityCollection());
+        $this->assertInstanceOf('\IteratorAggregate', new EntityCollection());
     }
 
     public function testIterator()
@@ -49,28 +49,8 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
         $book3 = new Book($this->conn);
         $collection = new EntityCollection([$book1, $book2, $book3]);
 
-        $collection->rewind();
-        $this->assertTrue($collection->valid());
-        $this->assertSame(0, $collection->key());
-        $this->assertSame($book1, $collection->current());
-        $collection->next();
-
-        $this->assertTrue($collection->valid());
-        $this->assertSame(1, $collection->key());
-        $this->assertSame($book2, $collection->current());
-        $collection->next();
-
-        $this->assertTrue($collection->valid());
-        $this->assertSame(2, $collection->key());
-        $this->assertSame($book3, $collection->current());
-        $collection->next();
-
-        $this->assertFalse($collection->valid());
-
-        $collection->rewind();
-        $this->assertTrue($collection->valid());
-        $this->assertSame(0, $collection->key());
-        $this->assertSame($book1, $collection->current());
+        $this->assertInstanceOf('\ArrayIterator', $iterator = $collection->getIterator());
+        $this->assertSame([$book1, $book2, $book3], $iterator->getArrayCopy());
     }
 
     public function testForeach()
@@ -159,10 +139,19 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
     public function testGetColumn()
     {
         $collection = new EntityCollection();
-        $collection[] = new Book($this->conn, ['name' => 'foo']);
+        $collection[] = new Book($this->conn, ['description' => 'foo']);
         $collection[] = new Book($this->conn);
-        $collection[] = new Book($this->conn, ['name' => 'bar']);
-        $this->assertSame(['foo', null, 'bar'], $collection->getColumn('name'));
+        $collection[] = new Book($this->conn, ['description' => 'bar']);
+        $this->assertSame(['FOO', '', 'BAR'], $collection->getColumn('description'));
+    }
+
+    public function testGetColumnRaw()
+    {
+        $collection = new EntityCollection();
+        $collection[] = new Book($this->conn, ['description' => 'foo']);
+        $collection[] = new Book($this->conn);
+        $collection[] = new Book($this->conn, ['description' => 'bar']);
+        $this->assertSame(['foo', null, 'bar'], $collection->getColumnRaw('description'));
     }
 
     public function testGetEntitiesChunked()
@@ -237,6 +226,36 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($book1, $collection->remove('name', 'book1'));
         $this->assertSame([], $collection->getEntities());
         $this->assertNull($collection->remove('name', 'book1'));
+    }
+
+    public function testGetOneAndRemoveUseGet()
+    {
+        $collection = new EntityCollection;
+        for ($i = 1; $i < 4; $i++) {
+            ${'book' . $i} = new Book($this->conn, ['description' => 'book' . $i]);
+        }
+        $collection->setEntities([$book1, $book2, $book3]);
+
+        //book has a getterDescription() method that returns the upper case description
+        $this->assertSame($book2, $collection->getOne('description', 'BOOK2'));
+        $this->assertSame($book2, $collection->remove('description', 'BOOK2'));
+    }
+
+    public function testFilter()
+    {
+        $collection = new EntityCollection;
+        for ($i = 1; $i < 9; $i++) {
+            ${'book' . $i} = $book = new Book($this->conn, ['name' => 'book' . $i, 'description' => 'book' . $i]);
+            $collection[] = $book;
+        }
+
+        $callback = function ($entity) {
+            return $entity->description === 'BOOK3' || $entity->name === 'book1';
+        };
+
+        $filtered = $collection->filter($callback);
+        $this->assertInstanceOf('ActiveDoctrine\Entity\EntityCollection', $filtered);
+        $this->assertSame([$book1, $book3], $filtered->getEntities());
     }
 
 }
