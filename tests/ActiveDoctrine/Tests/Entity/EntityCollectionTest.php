@@ -232,4 +232,21 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($book2, $collection->remove('description', 'BOOK2'));
     }
 
+    public function testFilter()
+    {
+        $collection = new EntityCollection;
+        for ($i = 1; $i < 9; $i++) {
+            ${'book' . $i} = $book = new Book($this->conn, ['name' => 'book' . $i, 'description' => 'book' . $i]);
+            $collection[] = $book;
+        }
+
+        $callback = function($entity) {
+            return $entity->description === 'BOOK3' || $entity->name === 'book1';
+        };
+
+        $filtered = $collection->filter($callback);
+        $this->assertInstanceOf('ActiveDoctrine\Entity\EntityCollection', $filtered);
+        $this->assertSame([$book1, $book3], $filtered->getEntities());
+    }
+
 }

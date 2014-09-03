@@ -133,6 +133,17 @@ class EntityCollection implements IteratorAggregate, Countable, ArrayAccess
     }
 
     /**
+     * Filter entities from this collection using a callback function. Return true in the callback to keep the entity.
+     *
+     * @param  \Closure         $callback The callback function
+     * @return EntityCollection A new EntityCollection with the filtered entities.
+     */
+    public function filter(\Closure $callback)
+    {
+        return new static(array_values(array_filter($this->entities, $callback)));
+    }
+
+    /**
      * Save all the entities in this collection.
      *
      * @return EntityCollection This collection
