@@ -74,8 +74,7 @@ class EntitySelectorTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('ActiveDoctrine\Entity\EntityCollection', $collection);
         $this->assertSame(1, count($collection));
-        $collection->rewind();
-        $book = $collection->current();
+        $book = $collection[0];
         $this->assertSame('something', $book->getRaw('name'));
         $this->assertSame(4, $book->getRaw('authors_id'));
     }

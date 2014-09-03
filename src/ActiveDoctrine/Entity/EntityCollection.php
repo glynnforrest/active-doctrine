@@ -2,16 +2,17 @@
 
 namespace ActiveDoctrine\Entity;
 
-use \Iterator;
+use \IteratorAggregate;
 use \Countable;
 use \ArrayAccess;
+use \ArrayIterator;
 
 /**
  * EntityCollection
  *
  * @author Glynn Forrest <me@glynnforrest.com>
  **/
-class EntityCollection implements Iterator, Countable, ArrayAccess
+class EntityCollection implements IteratorAggregate, Countable, ArrayAccess
 {
 
     protected $entities;
@@ -145,29 +146,9 @@ class EntityCollection implements Iterator, Countable, ArrayAccess
         return $this;
     }
 
-    public function rewind()
+    public function getIterator()
     {
-        $this->position = 0;
-    }
-
-    public function current()
-    {
-        return $this->entities[$this->position];
-    }
-
-    public function key()
-    {
-        return $this->position;
-    }
-
-    public function next()
-    {
-        $this->position++;
-    }
-
-    public function valid()
-    {
-        return isset($this->entities[$this->position]);
+        return new ArrayIterator($this->entities);
     }
 
     public function count()

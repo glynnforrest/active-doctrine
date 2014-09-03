@@ -485,14 +485,12 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $collection = Book::selectSQL($this->conn, $sql);
 
         $this->assertSame(3, count($collection));
-        $collection->rewind();
 
         for ($i = 1; $i < 4; $i++) {
-            $book = $collection->current();
+            $book = $collection[$i - 1];
             $this->assertSame("name$i", $book->getRaw('name'));
             $this->assertSame("description$i", $book->getRaw('description'));
             $this->assertTrue($book->isStored());
-            $collection->next();
         }
     }
 

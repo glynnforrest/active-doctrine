@@ -39,7 +39,7 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
 
     public function testImplementsIterator()
     {
-        $this->assertInstanceOf('\Iterator', new EntityCollection());
+        $this->assertInstanceOf('\IteratorAggregate', new EntityCollection());
     }
 
     public function testIterator()
@@ -49,28 +49,8 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
         $book3 = new Book($this->conn);
         $collection = new EntityCollection([$book1, $book2, $book3]);
 
-        $collection->rewind();
-        $this->assertTrue($collection->valid());
-        $this->assertSame(0, $collection->key());
-        $this->assertSame($book1, $collection->current());
-        $collection->next();
-
-        $this->assertTrue($collection->valid());
-        $this->assertSame(1, $collection->key());
-        $this->assertSame($book2, $collection->current());
-        $collection->next();
-
-        $this->assertTrue($collection->valid());
-        $this->assertSame(2, $collection->key());
-        $this->assertSame($book3, $collection->current());
-        $collection->next();
-
-        $this->assertFalse($collection->valid());
-
-        $collection->rewind();
-        $this->assertTrue($collection->valid());
-        $this->assertSame(0, $collection->key());
-        $this->assertSame($book1, $collection->current());
+        $this->assertInstanceOf('\ArrayIterator', $iterator = $collection->getIterator());
+        $this->assertSame([$book1, $book2, $book3], $iterator->getArrayCopy());
     }
 
     public function testForeach()
@@ -245,7 +225,6 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
         for ($i = 1; $i < 4; $i++) {
             ${'book' . $i} = new Book($this->conn, ['description' => 'book' . $i]);
         }
-        $collection = new EntityCollection;
         $collection->setEntities([$book1, $book2, $book3]);
 
         //book has a getterDescription() method that returns the upper case description
