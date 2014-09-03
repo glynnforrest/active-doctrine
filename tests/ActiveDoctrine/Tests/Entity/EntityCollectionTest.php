@@ -239,4 +239,18 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($collection->remove('name', 'book1'));
     }
 
+    public function testGetOneAndRemoveUseGet()
+    {
+        $collection = new EntityCollection;
+        for ($i = 1; $i < 4; $i++) {
+            ${'book' . $i} = new Book($this->conn, ['description' => 'book' . $i]);
+        }
+        $collection = new EntityCollection;
+        $collection->setEntities([$book1, $book2, $book3]);
+
+        //book has a getterDescription() method that returns the upper case description
+        $this->assertSame($book2, $collection->getOne('description', 'BOOK2'));
+        $this->assertSame($book2, $collection->remove('description', 'BOOK2'));
+    }
+
 }

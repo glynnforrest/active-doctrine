@@ -98,7 +98,7 @@ class EntityCollection implements Iterator, Countable, ArrayAccess
     public function getOne($column, $value)
     {
         foreach ($this->entities as $entity) {
-            if ($entity->getRaw($column) === $value) {
+            if ($entity->get($column) === $value) {
                 return $entity;
             }
         }
@@ -119,7 +119,7 @@ class EntityCollection implements Iterator, Countable, ArrayAccess
     public function remove($column, $value)
     {
         foreach ($this->entities as $index => $entity) {
-            if ($entity->getRaw($column) === $value) {
+            if ($entity->get($column) === $value) {
                 //remove the entity and reset the keys
                 unset($this->entities[$index]);
                 $this->entities = array_values($this->entities);
