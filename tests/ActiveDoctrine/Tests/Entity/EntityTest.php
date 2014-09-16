@@ -102,6 +102,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         //set methods should have been called in setValues
         $this->assertSame('FOO', $obj->getRaw('name'));
         $this->assertSame('bar', $obj->getRaw('description'));
+        $this->assertSame(['name', 'description'], $obj->getModifiedFields());
 
         //get methods should be called in getValues
         $expected = ['name' => 'FOO', 'description' => 'BAR'];
@@ -113,9 +114,11 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $obj = new Book($this->conn);
 
         $obj->setValuesRaw(['name' => 'foo', 'description' => 'bar']);
+
         //set methods should not have been called in setValuesRaw
         $this->assertSame('foo', $obj->getRaw('name'));
         $this->assertSame('bar', $obj->getRaw('description'));
+        $this->assertSame(['name', 'description'], $obj->getModifiedFields());
 
         //get methods should not be called in getValuesRaw
         $expected = ['name' => 'foo', 'description' => 'bar'];

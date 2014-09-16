@@ -325,7 +325,9 @@ abstract class Entity
      */
     public function setValuesRaw($values = array())
     {
-        $this->values = array_merge($this->values, $values);
+        foreach ($values as $key => $value) {
+            $this->setRaw($key, $value);
+        }
 
         return $this;
     }
