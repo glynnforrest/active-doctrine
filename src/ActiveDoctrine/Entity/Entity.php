@@ -36,6 +36,16 @@ abstract class Entity
     }
 
     /**
+     * Get the names of all fields.
+     *
+     * @return array The fields
+     */
+    public static function getFields()
+    {
+        return static::$fields;
+    }
+
+    /**
      * Get the relation definition for a named relation. The
      * definition is a list with the form
      * [$type, $foreign_class, $foreign_column, $column].

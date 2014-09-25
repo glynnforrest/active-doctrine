@@ -20,6 +20,11 @@ class EntityTest extends \PHPUnit_Framework_TestCase
                            ->getMock();
     }
 
+    public function testGetFields()
+    {
+        $this->assertSame(['id', 'name', 'description', 'authors_id'], Book::getFields());
+    }
+
     public function testGetAndSetRaw()
     {
         $obj = new Book($this->conn);
