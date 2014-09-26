@@ -1,6 +1,14 @@
 Changelog
 =========
 
+### 0.1.2 2014-09-26
+
+Small improvements to Entity:
+
+* Ensuring that setValuesRaw() changes the modified fields.
+* Adding getFields() static method.
+* Adding getRelationDefinitions() static method.
+
 ### 0.1.1 2014-09-03
 
 This release adds new methods to EntityCollection:
