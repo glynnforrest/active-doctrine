@@ -23,7 +23,7 @@ class Book extends Entity
         'author' => ['belongs_to', 'ActiveDoctrine\Tests\Entity\Author', 'id', 'authors_id'],
         'details' => ['has_one', 'ActiveDoctrine\Tests\Entity\BookDetails', 'books_id', 'id'],
         //invalid relation for the sake of testing errors
-        'invalid' => 'fooo'
+        'invalid' => 'foo'
     ];
 
     public function setterName($name)

@@ -636,6 +636,20 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($details, $book->getRelation('details'));
     }
 
+    public function testGetRelationDefintions()
+    {
+        $expected = [
+            'author' => [
+                'belongs_to', 'ActiveDoctrine\Tests\Entity\Author', 'id', 'authors_id'
+            ],
+            'details' => [
+                'has_one', 'ActiveDoctrine\Tests\Entity\BookDetails', 'books_id', 'id'
+            ],
+            'invalid' => 'foo'
+        ];
+        $this->assertSame($expected, Book::getRelationDefinitions());
+    }
+
     public function testGetRelationDefintion()
     {
         $relation = Book::getRelationDefinition('details');

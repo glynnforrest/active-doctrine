@@ -46,6 +46,16 @@ abstract class Entity
     }
 
     /**
+     * Get all relation definitions.
+     *
+     * @return array A list of all relation definitions
+     */
+    public static function getRelationDefinitions()
+    {
+        return static::$relations;
+    }
+
+    /**
      * Get the relation definition for a named relation. The
      * definition is a list with the form
      * [$type, $foreign_class, $foreign_column, $column].
