@@ -755,6 +755,27 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($author->has('books'));
     }
 
+    public function testHasRelation()
+    {
+        $book = new Book($this->conn);
+
+        //avoid mocking a database call by setting a relation to null,
+        //which is what an empty database result would do
+        $book->setRelation('author', null);
+
+        $this->assertFalse($book->hasRelation('author'));
+
+        $book->setRelation('author', new Author($this->conn));
+        $this->assertTrue($book->hasRelation('author'));
+    }
+
+    public function testHasRelationThrowsExceptionForInvalidName()
+    {
+        $book = new Book($this->conn);
+        $this->setExpectedException('\Exception');
+        $book->hasRelation('foo');
+    }
+
     public function testAssociateRelationHasOne()
     {
         $book = new Book($this->conn, ['id' => 3]);

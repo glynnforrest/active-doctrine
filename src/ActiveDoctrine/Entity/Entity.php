@@ -155,6 +155,17 @@ abstract class Entity
     }
 
     /**
+     * Check if this Entity has the named related object. If the
+     * database has not been queried it will be checked automatically.
+     *
+     * @param string $name The name of the relation
+     */
+    public function hasRelation($name)
+    {
+        return $this->getRelation($name) ? true : false;
+    }
+
+    /**
      * Fetch a related entity from the database.
      *
      * @param array $relation The relation to fetch.
