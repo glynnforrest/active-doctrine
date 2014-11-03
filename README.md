@@ -33,7 +33,7 @@ php composer.phar update
 
 ## Usage
 
-Documenation and usage examples are in the `docs/` folder.
+Documentation and usage examples are in the `docs/` folder.
 
 ## License
 

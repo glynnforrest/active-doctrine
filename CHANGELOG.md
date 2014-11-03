@@ -1,6 +1,10 @@
 Changelog
 =========
 
+### 0.1.3 2014-11-03
+
+* Adding Entity#hasRelation().
+
 ### 0.1.2 2014-09-26
 
 Small improvements to Entity:
