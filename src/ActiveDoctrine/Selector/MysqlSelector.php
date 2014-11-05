@@ -12,7 +12,8 @@ class MysqlSelector extends AbstractSelector
 
     public function getSQL()
     {
-        $query = sprintf('SELECT * FROM `%s`', $this->table);
+        $query = $this->counting ? 'SELECT COUNT(*)' : 'SELECT *';
+        $query .= sprintf(' FROM `%s`', $this->table);
         if ($this->where) {
             $this->addWhere($query);
         }

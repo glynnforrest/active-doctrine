@@ -36,6 +36,7 @@ abstract class AbstractSelector
     protected $order_by = [];
     protected $limit;
     protected $offset;
+    protected $counting;
 
     public function __construct($table)
     {
@@ -207,6 +208,17 @@ abstract class AbstractSelector
     public function offset($offset)
     {
         $this->offset = (int) $offset;
+
+        return $this;
+    }
+
+    /**
+     * Turn this query into a 'count' query, returning the number of
+     * rows in the database instead of the results.
+     */
+    public function count()
+    {
+        $this->counting = true;
 
         return $this;
     }

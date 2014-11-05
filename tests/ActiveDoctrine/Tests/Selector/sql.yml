@@ -60,3 +60,11 @@ testWhereAndWhereIn:
     mysql: "SELECT * FROM `table` WHERE `name` = ? AND `id` IN (?, ?, ?)"
 
 params_testWhereAndWhereIn: ['bar', 1, 2, 3]
+
+testCount:
+    mysql: "SELECT COUNT(*) FROM `table`"
+
+testCountWhere:
+    mysql: "SELECT COUNT(*) FROM `table` WHERE `name` IN (?, ?, ?) OR `id` > ?"
+
+params_testCountWhere: ['foo', 'bar', 'baz', 100]
