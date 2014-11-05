@@ -62,9 +62,14 @@ testWhereAndWhereIn:
 params_testWhereAndWhereIn: ['bar', 1, 2, 3]
 
 testCount:
-    mysql: "SELECT COUNT(*) FROM `table`"
+    mysql: "SELECT COUNT(1) FROM `table`"
 
 testCountWhere:
-    mysql: "SELECT COUNT(*) FROM `table` WHERE `name` IN (?, ?, ?) OR `id` > ?"
+    mysql: "SELECT COUNT(1) FROM `table` WHERE `name` IN (?, ?, ?) OR `id` > ?"
 
 params_testCountWhere: ['foo', 'bar', 'baz', 100]
+
+testCountWhereLimit:
+    mysql: "SELECT COUNT(1) FROM (SELECT * FROM `table` WHERE `name` IN (?, ?, ?) OR `id` > ? LIMIT 100) t"
+
+params_testCountWhereLimit: ['foo', 'bar', 'baz', 100]

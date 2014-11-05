@@ -181,4 +181,15 @@ abstract class SelectorTestCase extends \PHPUnit_Framework_TestCase
         $this->assertSame($this->getYamlParams(__FUNCTION__), $s->getParams());
     }
 
+    public function testCountWhereLimit()
+    {
+        $s = $this->getSelector()
+            ->whereIn('name', ['foo', 'bar', 'baz'])
+            ->orWhere('id', '>', 100)
+            ->count()
+            ->limit(100);
+        $this->assertSame($this->getYaml(__FUNCTION__), $s->getSQL());
+        $this->assertSame($this->getYamlParams(__FUNCTION__), $s->getParams());
+    }
+
 }

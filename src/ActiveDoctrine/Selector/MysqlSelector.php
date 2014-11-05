@@ -12,8 +12,7 @@ class MysqlSelector extends AbstractSelector
 
     public function getSQL()
     {
-        $query = $this->counting ? 'SELECT COUNT(*)' : 'SELECT *';
-        $query .= sprintf(' FROM `%s`', $this->table);
+        $query = sprintf(' FROM `%s`', $this->table);
         if ($this->where) {
             $this->addWhere($query);
         }
@@ -27,7 +26,17 @@ class MysqlSelector extends AbstractSelector
             }
         }
 
-        return $query;
+        //prepend the select after constructing the rest of the query
+        //in case we need to wrap it in a count
+        if ($this->counting) {
+            if ($this->limit) {
+                //a subselect is needed if there is a limit, otherwise the
+                //limit will be applied to the count result - 1 row.
+                return 'SELECT COUNT(1) FROM (SELECT *' . $query . ') t';
+            }
+            return 'SELECT COUNT(1)' . $query;
+        }
+        return 'SELECT *' . $query;
     }
 
     protected function addWhere(&$query)
