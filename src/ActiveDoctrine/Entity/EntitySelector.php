@@ -18,6 +18,7 @@ class EntitySelector
     protected $connection;
     protected $selector;
     protected $single;
+    protected $counting;
     protected $with = [];
 
     public function __construct(Connection $connection, $entity_class, $table)
@@ -65,6 +66,18 @@ class EntitySelector
     }
 
     /**
+     * Turn this query into a 'count' query, returning the number of
+     * rows instead of entities.
+     */
+    public function count()
+    {
+        $this->counting = true;
+        $this->selector->count();
+
+        return $this;
+    }
+
+    /**
      * Eagerly load related entities with this query. A new
      * EntitySelector instance will be created which can be configured
      * with a supplied callback (including loading relations of those
@@ -85,17 +98,29 @@ class EntitySelector
     }
 
     /**
-     * Execute the query and return the selected entities.
+     * Execute the query and return the result.
      *
-     * @return EntityCollection The collection of selected entities
+     * @return mixed An EntityCollection, Entity or integer.
      */
     public function execute()
     {
+        if ($this->counting) {
+            return $this->executeCount();
+        }
+
         if ($this->single) {
             return $this->executeSingle($this->entity_class);
         }
 
         return $this->executeCollection($this->entity_class);
+    }
+
+    protected function executeCount()
+    {
+        $stmt = $this->connection->prepare($this->selector->getSQL());
+        $stmt->execute($this->selector->getParams());
+
+        return (int) $stmt->fetchColumn();
     }
 
     protected function executeSingle($entity_class)

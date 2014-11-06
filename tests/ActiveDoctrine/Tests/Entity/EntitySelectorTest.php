@@ -442,4 +442,31 @@ class EntitySelectorTest extends \PHPUnit_Framework_TestCase
             $this->assertSame($book->getRaw('name') . '_author', $author->name);
         }
     }
+
+    public function testExecuteCount()
+    {
+        $statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $statement->expects($this->once())
+            ->method('execute')
+            ->with([4]);
+        $statement->expects($this->once())
+            ->method('fetchColumn')
+            ->will($this->returnValue("140"));
+
+        $sql = 'SELECT COUNT(1) FROM (SELECT * FROM `books` WHERE `authors_id` = ? LIMIT 200) t';
+        $this->conn->expects($this->once())
+                   ->method('prepare')
+                   ->with($sql)
+                   ->will($this->returnValue($statement));
+
+        $count = $this->selector->where('authors_id', '=', 4)
+            ->limit(200)
+            ->count()
+            ->execute();
+
+        $this->assertSame(140, $count);
+    }
+
 }
