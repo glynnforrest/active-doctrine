@@ -179,6 +179,16 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(['CHANGED', 'CHANGED', 'CHANGED'], $collection->getColumn('name'));
     }
 
+    public function testSetColumnRaw()
+    {
+        $collection = new EntityCollection();
+        $collection[] = new Book($this->conn, ['name' => 'foo']);
+        $collection[] = new Book($this->conn);
+        $collection[] = new Book($this->conn, ['name' => 'bar']);
+        $collection->setColumnRaw('name', 'changed');
+        $this->assertSame(['changed', 'changed', 'changed'], $collection->getColumn('name'));
+    }
+
     public function testSave()
     {
         for ($i = 1; $i < 4; $i++) {

@@ -58,7 +58,8 @@ class EntityCollection implements IteratorAggregate, Countable, ArrayAccess
     }
 
     /**
-     * Set the value of a column for all entities in this collection.
+     * Set the value of a column for all entities in this
+     * collection. Setter methods will be called.
      *
      * @param  string           $name  The name of the column
      * @param  mixed            $value The value
@@ -68,6 +69,21 @@ class EntityCollection implements IteratorAggregate, Countable, ArrayAccess
     {
         foreach ($this->entities as $entity) {
             $entity->set($name, $value);
+        }
+    }
+
+    /**
+     * Set the value of a column for all entities in this
+     * collection. Setter methods will not be called.
+     *
+     * @param  string           $name  The name of the column
+     * @param  mixed            $value The value
+     * @return EntityCollection This collection
+     */
+    public function setColumnRaw($name, $value)
+    {
+        foreach ($this->entities as $entity) {
+            $entity->setRaw($name, $value);
         }
     }
 
