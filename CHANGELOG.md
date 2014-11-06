@@ -1,6 +1,12 @@
 Changelog
 =========
 
+### 0.1.4 2014-11-06
+
+* Implementing `count()` methods in Selector classes and
+  EntitySelector.
+* Adding `setColumnRaw` to EntityCollection.
+
 ### 0.1.3 2014-11-03
 
 * Adding Entity#hasRelation().
@@ -9,9 +15,9 @@ Changelog
 
 Small improvements to Entity:
 
-* Ensuring that setValuesRaw() changes the modified fields.
-* Adding getFields() static method.
-* Adding getRelationDefinitions() static method.
+* Ensuring that `setValuesRaw()` changes the modified fields.
+* Adding `getFields()` static method.
+* Adding `getRelationDefinitions()` static method.
 
 ### 0.1.1 2014-09-03
 
