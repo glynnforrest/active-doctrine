@@ -501,8 +501,8 @@ abstract class Entity
     /**
      * Create a new collection with an amount of empty entities.
      *
-     * @param int        $amount     The amount of new Entities to create
      * @param Connection $connection A connection instance
+     * @param int        $amount     The amount of new Entities to create
      */
     public static function create(Connection $connection, $amount = 0)
     {
