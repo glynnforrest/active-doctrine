@@ -97,4 +97,13 @@ abstract class FunctionalTestCase extends \PHPUnit_Framework_TestCase
         return $schema;
     }
 
+    protected function loadData($entity_group)
+    {
+        $data_class = 'ActiveDoctrine\Tests\Fixtures\Data\\' . ucfirst($entity_group) . 'Data';
+        $data = new $data_class();
+        $data->loadData($this->getConn());
+
+        return $data;
+    }
+
 }
