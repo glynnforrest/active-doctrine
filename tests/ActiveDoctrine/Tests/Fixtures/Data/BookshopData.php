@@ -19,8 +19,9 @@ class BookshopData implements DataInterface
             ['Book 2', 'The second book', 2],
         ];
 
-        $count =  50 - count($records);
-        for ($i = 0; $i < $count; $i++) {
+        //pad to 50
+        $count = count($records);
+        for ($i = $count + 1; $i < 51; $i++) {
             $records[] = ["Book $i", "Book $i description", 3];
         }
 
