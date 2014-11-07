@@ -12,7 +12,7 @@ class MysqlSelector extends AbstractSelector
 
     public function getSQL()
     {
-        $query = sprintf(' FROM `%s`', $this->table);
+        $query = sprintf(' FROM %s', $this->quoteIdentifier($this->table));
         if ($this->where) {
             $this->addWhere($query);
         }
@@ -34,8 +34,10 @@ class MysqlSelector extends AbstractSelector
                 //limit will be applied to the count result - 1 row.
                 return 'SELECT COUNT(1) FROM (SELECT *' . $query . ') t';
             }
+
             return 'SELECT COUNT(1)' . $query;
         }
+
         return 'SELECT *' . $query;
     }
 
@@ -58,7 +60,7 @@ class MysqlSelector extends AbstractSelector
         if ($where[3] === self::AND_WHERE_IN || $where[3] === self::OR_WHERE_IN) {
             $this->addWhereInSegment($query, $where);
         } else {
-            $query .= sprintf('`%s` %s ?', $where[0], $where[1]);
+            $query .= sprintf('%s %s ?', $this->quoteIdentifier($where[0]), $where[1]);
             $this->addParam($where[2]);
         }
 
@@ -69,11 +71,11 @@ class MysqlSelector extends AbstractSelector
             $where = $this->where[$i];
             switch ($where[3]) {
             case self::AND_WHERE:
-                $query .= sprintf(' AND `%s` %s ?', $where[0], $where[1]);
+                $query .= sprintf(' AND %s %s ?', $this->quoteIdentifier($where[0]), $where[1]);
                 $this->addParam($where[2]);
                 break;
             case self::OR_WHERE:
-                $query .= sprintf(' OR `%s` %s ?', $where[0], $where[1]);
+                $query .= sprintf(' OR %s %s ?', $this->quoteIdentifier($where[0]), $where[1]);
                 $this->addParam($where[2]);
                 break;
             case self::AND_WHERE_IN:
@@ -92,18 +94,18 @@ class MysqlSelector extends AbstractSelector
 
     protected function addWhereInSegment(&$query, $where)
     {
-        $query .= sprintf('`%s` IN (%s)', $where[0], substr(str_repeat('?, ', count($where[1])), 0, -2));
+        $query .= sprintf('%s IN (%s)', $this->quoteIdentifier($where[0]), substr(str_repeat('?, ', count($where[1])), 0, -2));
         $this->addParam($where[1]);
     }
 
     protected function addOrderBy(&$query)
     {
         $order = $this->order_by[0];
-        $query .= sprintf(' ORDER BY `%s` %s', $order[0], $order[1]);
+        $query .= sprintf(' ORDER BY %s %s', $this->quoteIdentifier($order[0]), $order[1]);
         $count = count($this->order_by);
         for ($i = 1; $i < $count; $i++) {
             $order = $this->order_by[$i];
-            $query .= sprintf(', `%s` %s', $order[0], $order[1]);
+            $query .= sprintf(', %s %s', $this->quoteIdentifier($order[0]), $order[1]);
         }
     }
 

@@ -38,9 +38,29 @@ abstract class AbstractSelector
     protected $offset;
     protected $counting;
 
+    protected $quote_char = '`';
+
     public function __construct($table)
     {
         $this->table = $table;
+    }
+
+    /**
+     * Quote an identifier so it can be used as a table or column
+     * name. Composite identifiers (table.column) are not supported
+     * because selectors operate on one table only.
+     *
+     * @see Doctrine\DBAL\Platforms\AbstractPlatform#quoteSingleIdentifier() It has been added here so selectors don't rely on Connection or Platform instances.
+     *
+     * @param string $identifier The identifier to quote
+     *
+     * @return string The quoted identifier
+     */
+    protected function quoteIdentifier($identifier)
+    {
+        $c = $this->quote_char;
+
+        return $c . str_replace($c, $c.$c, $identifier) . $c;
     }
 
     /**
