@@ -19,6 +19,8 @@ class BookshopSchema implements SchemaInterface
         $id->setAutoIncrement(true);
         $table->setPrimaryKey(['id']);
         $table->addColumn('name', 'string', ['length' => '255']);
+        $table->addColumn('description', 'text');
+        $id = $table->addColumn('authors_id', 'integer', ['unsigned' => true]);
     }
 
     public function down(Schema $schema)
