@@ -37,4 +37,6 @@ Documentation and usage examples are in the `docs/` folder.
 
 ## License
 
-MIT
+MIT, see LICENSE for details.
+
+Copyright 2014 Glynn Forrest
