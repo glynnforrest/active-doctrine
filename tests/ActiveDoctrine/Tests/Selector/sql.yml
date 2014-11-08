@@ -1,75 +1,93 @@
 testSimple:
     mysql: "SELECT * FROM `table`"
+    sqlite: 'SELECT * FROM "table"'
 
 testWhereEquals:
     mysql: "SELECT * FROM `table` WHERE `id` = ?"
+    sqlite: 'SELECT * FROM "table" WHERE "id" = ?'
 
 params_testWhereEquals: [1]
 
 testWhereLessThan:
     mysql: "SELECT * FROM `table` WHERE `id` < ?"
+    sqlite: 'SELECT * FROM "table" WHERE "id" < ?'
 
 params_testWhereLessThan: [4]
 
 testWhereEqualsAndLessThan:
     mysql: "SELECT * FROM `table` WHERE `id` = ? AND `index` < ?"
+    sqlite: 'SELECT * FROM "table" WHERE "id" = ? AND "index" < ?'
 
 params_testWhereEqualsAndLessThan: [4, 10]
 
 testWhereMoreThanOrLessThan:
     mysql: "SELECT * FROM `table` WHERE `id` > ? OR `id` < ?"
+    sqlite: 'SELECT * FROM "table" WHERE "id" > ? OR "id" < ?'
 
 params_testWhereMoreThanOrLessThan: [100, 50]
 
 testLimit:
     mysql: "SELECT * FROM `table` LIMIT 10"
+    sqlite: 'SELECT * FROM "table" LIMIT 10'
 
 testLimitOffset:
     mysql: "SELECT * FROM `table` LIMIT 10 OFFSET 20"
+    sqlite: 'SELECT * FROM "table" LIMIT 10 OFFSET 20'
 
 testOrderBy:
     mysql: "SELECT * FROM `table` ORDER BY `name` ASC"
+    sqlite: 'SELECT * FROM "table" ORDER BY "name" ASC'
 
 testOrderByAsc:
     mysql: "SELECT * FROM `table` ORDER BY `name` ASC"
+    sqlite: 'SELECT * FROM "table" ORDER BY "name" ASC'
 
 testOrderByAscDesc:
     mysql: "SELECT * FROM `table` ORDER BY `name` ASC, `id` DESC"
+    sqlite: 'SELECT * FROM "table" ORDER BY "name" ASC, "id" DESC'
 
 testMixed1:
     mysql: "SELECT * FROM `table` WHERE `id` < ? AND `id` > ? ORDER BY `name` DESC, `id` ASC LIMIT 20"
+    sqlite: 'SELECT * FROM "table" WHERE "id" < ? AND "id" > ? ORDER BY "name" DESC, "id" ASC LIMIT 20'
 
 params_testMixed1: [200, 100]
 
 testWhereIn:
     mysql: "SELECT * FROM `table` WHERE `id` IN (?, ?, ?, ?, ?, ?)"
+    sqlite: 'SELECT * FROM "table" WHERE "id" IN (?, ?, ?, ?, ?, ?)'
 
 params_testWhereIn: [1, 2, 3, 4, 5, 20]
 
 testWhereInAndWhereIn:
     mysql: "SELECT * FROM `table` WHERE `id` IN (?, ?, ?) AND `name` IN (?, ?, ?)"
+    sqlite: 'SELECT * FROM "table" WHERE "id" IN (?, ?, ?) AND "name" IN (?, ?, ?)'
 
 params_testWhereInAndWhereIn: [1, 2, 3, 'foo', 'bar', 'baz']
 
 testWhereInOrWhereIn:
     mysql: "SELECT * FROM `table` WHERE `id` IN (?, ?, ?) OR `name` IN (?, ?, ?)"
+    sqlite: 'SELECT * FROM "table" WHERE "id" IN (?, ?, ?) OR "name" IN (?, ?, ?)'
 
 params_testWhereInOrWhereIn: [1, 2, 3, 'foo', 'bar', 'baz']
 
 testWhereAndWhereIn:
     mysql: "SELECT * FROM `table` WHERE `name` = ? AND `id` IN (?, ?, ?)"
+    sqlite: 'SELECT * FROM "table" WHERE "name" = ? AND "id" IN (?, ?, ?)'
 
 params_testWhereAndWhereIn: ['bar', 1, 2, 3]
 
 testCount:
     mysql: "SELECT COUNT(1) FROM `table`"
+    sqlite: 'SELECT COUNT(1) FROM "table"'
 
 testCountWhere:
     mysql: "SELECT COUNT(1) FROM `table` WHERE `name` IN (?, ?, ?) OR `id` > ?"
+    sqlite: 'SELECT COUNT(1) FROM "table" WHERE "name" IN (?, ?, ?) OR "id" > ?'
 
 params_testCountWhere: ['foo', 'bar', 'baz', 100]
 
 testCountWhereLimit:
     mysql: "SELECT COUNT(1) FROM (SELECT * FROM `table` WHERE `name` IN (?, ?, ?) OR `id` > ? LIMIT 100) t"
+    sqlite: 'SELECT COUNT(1) FROM (SELECT * FROM "table" WHERE "name" IN (?, ?, ?) OR "id" > ? LIMIT 100) t'
 
 params_testCountWhereLimit: ['foo', 'bar', 'baz', 100]

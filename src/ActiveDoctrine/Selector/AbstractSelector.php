@@ -38,7 +38,7 @@ abstract class AbstractSelector
     protected $offset;
     protected $counting;
 
-    protected $quote_char = '`';
+    protected $quote_char = '"';
 
     public function __construct($table)
     {

@@ -3,13 +3,11 @@
 namespace ActiveDoctrine\Selector;
 
 /**
- * MysqlSelector
+ * SqliteSelector
  *
  * @author Glynn Forrest <me@glynnforrest.com>
  **/
-class MysqlSelector extends GenericSelector
+class SqliteSelector extends GenericSelector
 {
-
-    protected $quote_char = '`';
 
 }
