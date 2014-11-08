@@ -94,6 +94,8 @@ abstract class AbstractSelector
         switch ($name) {
         case 'pdo_mysql':
             return new MysqlSelector($table);
+        case 'pdo_sqlite':
+            return new SqliteSelector($table);
         default:
             throw new DBALException("Unsupported database type: $name");
         }

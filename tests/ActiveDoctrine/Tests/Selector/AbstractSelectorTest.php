@@ -16,7 +16,8 @@ class AbstractSelectorTest extends \PHPUnit_Framework_TestCase
     public function fromConnectionProvider()
     {
         return [
-            ['pdo_mysql', 'MysqlSelector']
+            ['pdo_mysql', 'MysqlSelector'],
+            ['pdo_sqlite', 'SqliteSelector']
         ];
     }
 
