@@ -43,7 +43,7 @@ class SelectionTest extends FunctionalTestCase
         $this->assertInstanceOf('ActiveDoctrine\Entity\EntityCollection', $books);
         $this->assertSame(50, count($books));
         $book = $books[0];
-        $this->assertInstanceOf(Book::CLASS, $book);
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Entities\Bookshop\Book', $book);
         $this->assertSame('Book 1', $book->name);
         $this->assertSame('The very first book', $book->description);
         $this->assertSame('1', $book->authors_id);
@@ -58,7 +58,7 @@ class SelectionTest extends FunctionalTestCase
         $this->assertInstanceOf('ActiveDoctrine\Entity\EntityCollection', $books);
         $this->assertSame(1, count($books));
         $book = $books[0];
-        $this->assertInstanceOf(Book::CLASS, $book);
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Entities\Bookshop\Book', $book);
         $this->assertSame('Book 3', $book->name);
         $this->assertSame('Book 3 description', $book->description);
         $this->assertSame('3', $book->authors_id);
@@ -107,7 +107,7 @@ class SelectionTest extends FunctionalTestCase
         $this->assertInstanceOf('ActiveDoctrine\Entity\EntityCollection', $books);
         $this->assertSame(50, count($books));
         $book = $books[0];
-        $this->assertInstanceOf(Book::CLASS, $book);
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Entities\Bookshop\Book', $book);
         $this->assertSame('50', $book->get('id'));
     }
 
