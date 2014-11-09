@@ -35,6 +35,42 @@ php composer.phar update
 
 Documentation and usage examples are in the `docs/` folder.
 
+## Tests
+
+As well as unit tests, there are functional tests which run against a
+real database connection. By default this uses an in-memory sqlite
+database, so will fail if the sqlite extension is not set up.
+
+* `phpunit` runs all tests.
+* `phpunit --testsuite unit` runs the unit tests only.
+* `phpunit --testsuite functional` runs the functional tests only.
+
+### Changing connection parameters
+
+To change the database used in the functional tests, copy
+`phpunit.xml.dist` to a new file and set the `db_*` environment
+variables.
+
+```xml
+<phpunit>
+  <!-- Don't change the rest of the file -->
+
+  <php>
+    <env name="db_driver" value="pdo_mysql" />
+    <env name="db_user" value="root" />
+    <env name="db_password" value="" />
+    <env name="db_host" value="localhost" />
+    <env name="db_name" value="active_doctrine_tests" />
+    <env name="db_port" value="3306" />
+  </php>
+</phpunit>
+```
+
+Make sure the target database exists, then run the tests with the new
+configuration.
+
+`phpunit -c mysql.xml`
+
 ## License
 
 MIT, see LICENSE for details.

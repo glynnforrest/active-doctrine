@@ -2,8 +2,12 @@
 
 <phpunit bootstrap="vendor/autoload.php" colors="true">
   <testsuites>
-    <testsuite name="Reform Test Suite">
-      <directory suffix="Test.php">./tests/ActiveDoctrine/</directory>
+    <testsuite name="unit">
+      <directory suffix="Test.php">./tests/ActiveDoctrine</directory>
+      <exclude>./tests/ActiveDoctrine/Tests/Functional</exclude>
+    </testsuite>
+    <testsuite name="functional">
+      <directory suffix="Test.php">./tests/ActiveDoctrine/Tests/Functional</directory>
     </testsuite>
   </testsuites>
 
@@ -12,4 +16,13 @@
       <directory>./src</directory>
     </whitelist>
   </filter>
+
+  <!-- <php> -->
+  <!--   <env name="db_driver" value="pdo_mysql" /> -->
+  <!--   <env name="db_user" value="root" /> -->
+  <!--   <env name="db_password" value="" /> -->
+  <!--   <env name="db_host" value="localhost" /> -->
+  <!--   <env name="db_name" value="active_doctrine_tests" /> -->
+  <!--   <env name="db_port" value="3306" /> -->
+  <!-- </php> -->
 </phpunit>
