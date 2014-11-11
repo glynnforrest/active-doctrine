@@ -16,6 +16,7 @@ abstract class Entity
     protected static $primary_key = 'id';
     protected static $fields = [];
     protected static $relations = [];
+    protected static $types = [];
 
     protected $connection;
     protected $values = [];
@@ -397,7 +398,7 @@ abstract class Entity
         }
 
         $values = array_intersect_key($this->values, $this->modified);
-        $this->connection->insert(static::$table, $values);
+        $this->connection->insert(static::$table, $values, static::$types);
         $this->modified = array();
         //this will only work with some database vendors for now.
         $this->values[static::$primary_key] = $this->connection->lastInsertId();
