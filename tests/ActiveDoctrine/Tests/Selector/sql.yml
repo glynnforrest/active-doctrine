@@ -91,3 +91,19 @@ testCountWhereLimit:
     sqlite: 'SELECT COUNT(1) FROM (SELECT * FROM "table" WHERE "name" IN (?, ?, ?) OR "id" > ? LIMIT 100) t'
 
 params_testCountWhereLimit: ['foo', 'bar', 'baz', 100]
+
+testWhereTypeConversion:
+    mysql: 'SELECT * FROM `table` WHERE `date` > ?'
+    sqlite: 'SELECT * FROM "table" WHERE "date" > ?'
+
+params_testWhereTypeConversion:
+    mysql: ['2000-01-01']
+    sqlite: ['2000-01-01']
+
+testWhereInTypeConversion:
+    mysql: 'SELECT * FROM `table` WHERE `date` IN (?, ?, ?, ?)'
+    sqlite: 'SELECT * FROM "table" WHERE "date" IN (?, ?, ?, ?)'
+
+params_testWhereInTypeConversion:
+    mysql: ['2000-01-01', '2001-02-02', '2002-03-03', '2003-04-04']
+    sqlite: ['2000-01-01', '2001-02-02', '2002-03-03', '2003-04-04']
