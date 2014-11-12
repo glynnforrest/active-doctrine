@@ -573,7 +573,7 @@ abstract class Entity
      */
     public static function select(Connection $connection)
     {
-        return new EntitySelector(AbstractSelector::fromConnection($connection, static::$table), get_called_class());
+        return new EntitySelector(AbstractSelector::fromConnection($connection, static::$table, static::$types), get_called_class());
     }
 
     /**
@@ -584,7 +584,7 @@ abstract class Entity
      */
     public static function selectOne(Connection $connection)
     {
-        $selector = new EntitySelector(AbstractSelector::fromConnection($connection, static::$table), get_called_class());
+        $selector = new EntitySelector(AbstractSelector::fromConnection($connection, static::$table, static::$types), get_called_class());
 
         return $selector->one();
     }

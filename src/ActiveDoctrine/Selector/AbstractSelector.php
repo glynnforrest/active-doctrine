@@ -132,14 +132,14 @@ abstract class AbstractSelector
      * @return AbstractSelector A selector instance
      * @throws DBALException
      */
-    public static function fromConnection(Connection $connection, $table)
+    public static function fromConnection(Connection $connection, $table, array $types = [])
     {
         $name = $connection->getDriver()->getName();
         switch ($name) {
         case 'pdo_mysql':
-            return new MysqlSelector($connection, $table);
+            return new MysqlSelector($connection, $table, $types);
         case 'pdo_sqlite':
-            return new SqliteSelector($connection, $table);
+            return new SqliteSelector($connection, $table, $types);
         default:
             throw new DBALException("Unsupported database type: $name");
         }
