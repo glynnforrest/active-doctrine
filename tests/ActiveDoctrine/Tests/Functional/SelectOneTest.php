@@ -3,6 +3,7 @@
 namespace ActiveDoctrine\Tests\Functional;
 
 use ActiveDoctrine\Tests\Fixtures\Entities\Bookshop\Book;
+use ActiveDoctrine\Selector\AbstractSelector;
 
 /**
  * SelectOneTest
@@ -44,6 +45,18 @@ class SelectOneTest extends FunctionalTestCase
         $this->loadData('bookshop');
         $book = $selector->where('id', '=', 3)
             ->execute();
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Entities\Bookshop\Book', $book);
+        $this->assertSame('3', $book->id);
+    }
+
+    public function testSelectSQLSingleId()
+    {
+        $this->loadData('bookshop');
+        $conn = $this->getConn();
+        $s = AbstractSelector::fromConnection($conn, 'books')->where('id', '=', 3);
+        $sql = $s->getSQL();
+        $params = $s->getParams();
+        $book = Book::selectOneSQL($this->getConn(), $sql, $params);
         $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Entities\Bookshop\Book', $book);
         $this->assertSame('3', $book->id);
     }
