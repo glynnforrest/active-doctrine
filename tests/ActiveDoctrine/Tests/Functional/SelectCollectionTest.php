@@ -3,6 +3,7 @@
 namespace ActiveDoctrine\Tests\Functional;
 
 use ActiveDoctrine\Tests\Fixtures\Entities\Bookshop\Book;
+use ActiveDoctrine\Selector\AbstractSelector;
 
 /**
  * SelectCollectionTest
@@ -30,6 +31,22 @@ class SelectCollectionTest extends FunctionalTestCase
         $this->loadData('bookshop');
         $books = Book::select($this->getConn())
             ->execute();
+        $this->assertInstanceOf('ActiveDoctrine\Entity\EntityCollection', $books);
+        $this->assertSame(50, count($books));
+        $book = $books[0];
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Entities\Bookshop\Book', $book);
+        $this->assertSame('Book 1', $book->name);
+        $this->assertSame('The very first book', $book->description);
+        $this->assertSame('1', $book->authors_id);
+    }
+
+    public function testSelectSQL()
+    {
+        $conn = $this->getConn();
+        $this->loadData('bookshop');
+        $sql = AbstractSelector::fromConnection($conn, 'books')
+            ->getSQL();
+        $books = Book::selectSQL($this->getConn(), $sql);
         $this->assertInstanceOf('ActiveDoctrine\Entity\EntityCollection', $books);
         $this->assertSame(50, count($books));
         $book = $books[0];
