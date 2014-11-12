@@ -21,11 +21,11 @@ class EntitySelector
     protected $counting;
     protected $with = [];
 
-    public function __construct(Connection $connection, $entity_class, $table)
+    public function __construct(AbstractSelector $selector, $entity_class)
     {
         $this->entity_class = $entity_class;
-        $this->connection = $connection;
-        $this->selector = AbstractSelector::fromConnection($connection, $table);
+        $this->selector = $selector;
+        $this->connection = $selector->getConnection();
     }
 
     /**

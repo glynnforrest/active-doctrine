@@ -45,6 +45,11 @@ abstract class SelectorTestCase extends \PHPUnit_Framework_TestCase
         return $this->yaml['params_' . $name][$this->yaml_key];
     }
 
+    public function testGetConnection()
+    {
+        $this->assertInstanceOf('Doctrine\DBAL\Connection', $this->getSelector()->getConnection());
+    }
+
     public function testSimple()
     {
         $s = $this->getSelector();

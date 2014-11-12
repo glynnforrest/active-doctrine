@@ -50,6 +50,16 @@ abstract class AbstractSelector
     }
 
     /**
+     * Get the Connection.
+     *
+     * @return Connection
+     */
+    public function getConnection()
+    {
+        return $this->connection;
+    }
+
+    /**
      * Quote an identifier so it can be used as a table or column
      * name. Composite identifiers (table.column) are not supported
      * because selectors operate on one table only.

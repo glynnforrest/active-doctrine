@@ -3,6 +3,7 @@
 namespace ActiveDoctrine\Entity;
 
 use Doctrine\DBAL\Connection;
+use ActiveDoctrine\Selector\AbstractSelector;
 
 /**
  * Entity
@@ -572,7 +573,7 @@ abstract class Entity
      */
     public static function select(Connection $connection)
     {
-        return new EntitySelector($connection, get_called_class(), static::$table);
+        return new EntitySelector(AbstractSelector::fromConnection($connection, static::$table), get_called_class());
     }
 
     /**
@@ -583,7 +584,7 @@ abstract class Entity
      */
     public static function selectOne(Connection $connection)
     {
-        $selector = new EntitySelector($connection, get_called_class(), static::$table);
+        $selector = new EntitySelector(AbstractSelector::fromConnection($connection, static::$table), get_called_class());
 
         return $selector->one();
     }
