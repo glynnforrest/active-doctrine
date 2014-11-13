@@ -40,6 +40,16 @@ abstract class SelectorTestCase extends \PHPUnit_Framework_TestCase
         return $this->yaml['params_' . $name];
     }
 
+    protected function getPlatformYamlParams($name)
+    {
+        return $this->yaml['params_' . $name][$this->yaml_key];
+    }
+
+    public function testGetConnection()
+    {
+        $this->assertInstanceOf('Doctrine\DBAL\Connection', $this->getSelector()->getConnection());
+    }
+
     public function testSimple()
     {
         $s = $this->getSelector();
@@ -190,6 +200,37 @@ abstract class SelectorTestCase extends \PHPUnit_Framework_TestCase
             ->limit(100);
         $this->assertSame($this->getYaml(__FUNCTION__), $s->getSQL());
         $this->assertSame($this->getYamlParams(__FUNCTION__), $s->getParams());
+    }
+
+    public function testWhereTypeConversion()
+    {
+        $date = new \DateTime('Jan 1st 2000');
+        $types = ['date' => 'date'];
+
+        $s = $this->getSelector($types)
+            ->where('date', '>', $date);
+
+        $this->assertSame($this->getYaml(__FUNCTION__), $s->getSQL());
+        $this->assertSame([$date], $s->getParamsRaw());
+        $this->assertSame($this->getPlatformYamlParams(__FUNCTION__), $s->getParams());
+    }
+
+    public function testWhereInTypeConversion()
+    {
+        $dates = [
+            new \DateTime('Jan 1st 2000'),
+            new \DateTime('Feb 2nd 2001'),
+            new \DateTime('Mar 3rd 2002'),
+            new \DateTime('Apr 4th 2003'),
+        ];
+        $types = ['date' => 'date'];
+
+        $s = $this->getSelector($types)
+            ->whereIn('date', $dates);
+
+        $this->assertSame($this->getYaml(__FUNCTION__), $s->getSQL());
+        $this->assertSame($dates, $s->getParamsRaw());
+        $this->assertSame($this->getPlatformYamlParams(__FUNCTION__), $s->getParams());
     }
 
 }

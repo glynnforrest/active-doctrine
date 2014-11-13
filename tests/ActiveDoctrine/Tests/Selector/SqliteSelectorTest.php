@@ -4,6 +4,9 @@ namespace ActiveDoctrine\Tests\Selector;
 
 use ActiveDoctrine\Selector\SqliteSelector;
 
+use Doctrine\DBAL\Platforms\SqlitePlatform;
+use Doctrine\DBAL\Connection;
+
 /**
  * SqliteSelectorTest
  *
@@ -12,9 +15,12 @@ use ActiveDoctrine\Selector\SqliteSelector;
 class SqliteSelectorTest extends SelectorTestCase
 {
 
-    protected function getSelector()
+    protected function getSelector(array $types = [])
     {
-        return new SqliteSelector('table');
+        $params = ['platform' => new SqlitePlatform];
+        $driver = $this->getMock('Doctrine\DBAL\Driver');
+
+        return new SqliteSelector(new Connection($params, $driver), 'table', $types);
     }
 
 }

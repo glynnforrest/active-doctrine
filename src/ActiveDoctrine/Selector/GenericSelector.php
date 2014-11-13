@@ -61,7 +61,7 @@ abstract class GenericSelector extends AbstractSelector
             $this->addWhereInSegment($query, $where);
         } else {
             $query .= sprintf('%s %s ?', $this->quoteIdentifier($where[0]), $where[1]);
-            $this->addParam($where[2]);
+            $this->addParam($where[0], $where[2]);
         }
 
         //loop through the remaining where segments, adding AND/OR
@@ -72,11 +72,11 @@ abstract class GenericSelector extends AbstractSelector
             switch ($where[3]) {
             case self::AND_WHERE:
                 $query .= sprintf(' AND %s %s ?', $this->quoteIdentifier($where[0]), $where[1]);
-                $this->addParam($where[2]);
+                $this->addParam($where[0], $where[2]);
                 break;
             case self::OR_WHERE:
                 $query .= sprintf(' OR %s %s ?', $this->quoteIdentifier($where[0]), $where[1]);
-                $this->addParam($where[2]);
+                $this->addParam($where[0], $where[2]);
                 break;
             case self::AND_WHERE_IN:
                 $query .= ' AND ';
@@ -95,7 +95,7 @@ abstract class GenericSelector extends AbstractSelector
     protected function addWhereInSegment(&$query, $where)
     {
         $query .= sprintf('%s IN (%s)', $this->quoteIdentifier($where[0]), substr(str_repeat('?, ', count($where[1])), 0, -2));
-        $this->addParam($where[1]);
+        $this->addParam($where[0], $where[1]);
     }
 
     protected function addOrderBy(&$query)

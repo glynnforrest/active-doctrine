@@ -28,9 +28,11 @@ abstract class AbstractSelector
     const AND_WHERE_IN = 3;
     const OR_WHERE_IN = 4;
 
-    protected $query = array();
-    protected $params = array();
+    protected $connection;
     protected $table;
+    protected $types = [];
+    protected $params = [];
+    protected $param_columns = [];
 
     protected $where = [];
     protected $order_by = [];
@@ -40,9 +42,21 @@ abstract class AbstractSelector
 
     protected $quote_char = '"';
 
-    public function __construct($table)
+    public function __construct(Connection $connection = null, $table, array $types = [])
     {
+        $this->connection = $connection;
         $this->table = $table;
+        $this->types = $types;
+    }
+
+    /**
+     * Get the Connection.
+     *
+     * @return Connection
+     */
+    public function getConnection()
+    {
+        return $this->connection;
     }
 
     /**
@@ -71,13 +85,43 @@ abstract class AbstractSelector
     abstract public function getSQL();
 
     /**
-     * Get the parameters to be used in the prepared query.
+     * Get the parameters to be used in the prepared query. No type
+     * conversion will take place.
+     *
+     * @return array The parameters
+     */
+    public function getParamsRaw()
+    {
+        return $this->params;
+    }
+
+    /**
+     * Get the parameters to be used in the prepared query, converted
+     * to the correct database type.
      *
      * @return array The parameters
      */
     public function getParams()
     {
-        return $this->params;
+        //exit early if no types are set
+        if (empty($this->types)) {
+            return $this->params;
+        }
+
+        $params = [];
+        $num_params = count($this->params);
+        for ($i = 0; $i < $num_params; $i++) {
+            $value = $this->params[$i];
+            $column = $this->param_columns[$i];
+
+            if (isset($this->types[$column])) {
+                $params[] = $this->connection->convertToDatabaseValue($value, $this->types[$column]);
+                continue;
+            }
+            $params[] = $value;
+        }
+
+        return $params;
     }
 
     /**
@@ -88,14 +132,14 @@ abstract class AbstractSelector
      * @return AbstractSelector A selector instance
      * @throws DBALException
      */
-    public static function fromConnection(Connection $connection, $table)
+    public static function fromConnection(Connection $connection, $table, array $types = [])
     {
         $name = $connection->getDriver()->getName();
         switch ($name) {
         case 'pdo_mysql':
-            return new MysqlSelector($table);
+            return new MysqlSelector($connection, $table, $types);
         case 'pdo_sqlite':
-            return new SqliteSelector($table);
+            return new SqliteSelector($connection, $table, $types);
         default:
             throw new DBALException("Unsupported database type: $name");
         }
@@ -105,11 +149,18 @@ abstract class AbstractSelector
      * Add a param to be executed in the query. To ensure the order of
      * parameters, this should be called during the buildSQL method.
      *
+     * @param string $column
      * @param mixed $value
      */
-    protected function addParam($value)
+    protected function addParam($column, $value)
     {
-        $this->params = array_merge($this->params, (array) $value);
+        if (is_array($value)) {
+            $this->params = array_merge($this->params, $value);
+            $this->param_columns = array_merge($this->param_columns, array_fill(0, count($value), $column));
+            return;
+        }
+        $this->params[] = $value;
+        $this->param_columns[] = $column;
     }
 
     /**

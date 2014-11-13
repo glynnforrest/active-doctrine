@@ -3,6 +3,7 @@
 namespace ActiveDoctrine\Tests\Functional;
 
 use ActiveDoctrine\Tests\Fixtures\Entities\Bookshop\Book;
+use ActiveDoctrine\Tests\Fixtures\Entities\Events\Event;
 
 /**
  * InsertTest
@@ -42,6 +43,15 @@ class InsertTest extends FunctionalTestCase
             $book->insert();
             $this->assertEquals($i, $book->id);
         }
+    }
+
+    public function testInsertTypeDatetime()
+    {
+        $this->loadSchema('events');
+        $event = new Event($this->getConn());
+        $event->name = 'Concert';
+        $event->start_time = new \DateTime();
+        $event->insert();
     }
 
 }

@@ -3,6 +3,7 @@
 namespace ActiveDoctrine\Tests\Entity;
 
 use ActiveDoctrine\Entity\EntitySelector;
+use ActiveDoctrine\Selector\MysqlSelector;
 
 /**
  * EntitySelectorTest
@@ -17,19 +18,23 @@ class EntitySelectorTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
+        //these calls need to be stubbed so
+        //AbstractSelector::fromConnection() works when fetching
+        //related objects. See Entity::select() and
+        //Entity::selectOne().
         $driver = $this->getMock('Doctrine\DBAL\Driver');
-        $driver->expects($this->atLeastOnce())
+        $driver->expects($this->any())
                ->method('getName')
                ->will($this->returnValue('pdo_mysql'));
         $this->conn = $this->getMockBuilder('Doctrine\DBAL\Connection')
                            ->disableOriginalConstructor()
                            ->getMock();
-        $this->conn->expects($this->atLeastOnce())
+        $this->conn->expects($this->any())
                    ->method('getDriver')
                    ->will($this->returnValue($driver));
-
+        $selector = new MysqlSelector($this->conn, 'books');
         $entity_class = 'ActiveDoctrine\Tests\Entity\Book';
-        $this->selector = new EntitySelector($this->conn, $entity_class, 'books');
+        $this->selector = new EntitySelector($selector, $entity_class);
     }
 
     public function test__call()
@@ -201,7 +206,7 @@ class EntitySelectorTest extends \PHPUnit_Framework_TestCase
                    ->will($this->onConsecutiveCalls($details_statement, $book_statement));
 
         $entity_class = 'ActiveDoctrine\Tests\Entity\BookDetails';
-        $selector = new EntitySelector($this->conn, $entity_class, 'book_details');
+        $selector = new EntitySelector(new MysqlSelector($this->conn, 'book_details'), $entity_class);
         $details = $selector->one()
                             ->with('book')
                             ->execute();
@@ -249,7 +254,7 @@ class EntitySelectorTest extends \PHPUnit_Framework_TestCase
                    ->will($this->onConsecutiveCalls($author_statement, $book_statement));
 
         $entity_class = 'ActiveDoctrine\Tests\Entity\Author';
-        $selector = new EntitySelector($this->conn, $entity_class, 'authors');
+        $selector = new EntitySelector(new MysqlSelector($this->conn, 'authors'), $entity_class);
         $author = $selector->one()
                            ->with('books')
                            ->execute();
@@ -360,7 +365,7 @@ class EntitySelectorTest extends \PHPUnit_Framework_TestCase
                    ->will($this->onConsecutiveCalls($author_statement, $book_statement));
 
         $entity_class = 'ActiveDoctrine\Tests\Entity\Author';
-        $selector = new EntitySelector($this->conn, $entity_class, 'authors');
+        $selector = new EntitySelector(new MysqlSelector($this->conn, 'authors'), $entity_class);
         $authors = $selector->limit(3)
                             ->with('books')
                             ->execute();

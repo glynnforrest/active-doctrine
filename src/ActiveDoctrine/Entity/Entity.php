@@ -3,6 +3,7 @@
 namespace ActiveDoctrine\Entity;
 
 use Doctrine\DBAL\Connection;
+use ActiveDoctrine\Selector\AbstractSelector;
 
 /**
  * Entity
@@ -16,6 +17,7 @@ abstract class Entity
     protected static $primary_key = 'id';
     protected static $fields = [];
     protected static $relations = [];
+    protected static $types = [];
 
     protected $connection;
     protected $values = [];
@@ -397,7 +399,7 @@ abstract class Entity
         }
 
         $values = array_intersect_key($this->values, $this->modified);
-        $this->connection->insert(static::$table, $values);
+        $this->connection->insert(static::$table, $values, static::$types);
         $this->modified = array();
         //this will only work with some database vendors for now.
         $this->values[static::$primary_key] = $this->connection->lastInsertId();
@@ -430,7 +432,7 @@ abstract class Entity
         }
         $values = array_intersect_key($this->values, $this->modified);
         $where = [static::$primary_key => $this->getPrimaryKey()];
-        $this->connection->update(static::$table, $values, $where);
+        $this->connection->update(static::$table, $values, $where, static::$types);
         $this->modified = [];
         $this->stored = true;
     }
@@ -529,6 +531,12 @@ abstract class Entity
         $stmt->execute($parameters);
         $results = array();
         while ($result = $stmt->fetch()) {
+            foreach (static::$types as $column => $type) {
+                if (isset($result[$column])) {
+                    $result[$column] = $connection->convertToPHPValue($result[$column], $type);
+                }
+            }
+
             $obj = new static($connection, $result);
             $obj->setStored();
             $results[] = $obj;
@@ -555,6 +563,11 @@ abstract class Entity
         $stmt->execute($parameters);
         $result = $stmt->fetch();
         if ($result) {
+            foreach (static::$types as $column => $type) {
+                if (isset($result[$column])) {
+                    $result[$column] = $connection->convertToPHPValue($result[$column], $type);
+                }
+            }
             $entity = new static($connection, $result);
 
             return $entity->setStored();
@@ -571,7 +584,7 @@ abstract class Entity
      */
     public static function select(Connection $connection)
     {
-        return new EntitySelector($connection, get_called_class(), static::$table);
+        return new EntitySelector(AbstractSelector::fromConnection($connection, static::$table, static::$types), get_called_class());
     }
 
     /**
@@ -582,7 +595,7 @@ abstract class Entity
      */
     public static function selectOne(Connection $connection)
     {
-        $selector = new EntitySelector($connection, get_called_class(), static::$table);
+        $selector = new EntitySelector(AbstractSelector::fromConnection($connection, static::$table, static::$types), get_called_class());
 
         return $selector->one();
     }

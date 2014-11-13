@@ -4,6 +4,9 @@ namespace ActiveDoctrine\Tests\Selector;
 
 use ActiveDoctrine\Selector\MysqlSelector;
 
+use Doctrine\DBAL\Platforms\MysqlPlatform;
+use Doctrine\DBAL\Connection;
+
 /**
  * MysqlSelectorTest
  *
@@ -12,9 +15,12 @@ use ActiveDoctrine\Selector\MysqlSelector;
 class MysqlSelectorTest extends SelectorTestCase
 {
 
-    protected function getSelector()
+    protected function getSelector(array $types = [])
     {
-        return new MysqlSelector('table');
+        $params = ['platform' => new MysqlPlatform];
+        $driver = $this->getMock('Doctrine\DBAL\Driver');
+
+        return new MysqlSelector(new Connection($params, $driver), 'table', $types);
     }
 
 }
