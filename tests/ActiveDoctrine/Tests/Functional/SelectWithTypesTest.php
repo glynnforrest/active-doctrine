@@ -25,6 +25,7 @@ class SelectWithTypesTest extends FunctionalTestCase
         $event = $events[0];
         $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Entities\Events\Event', $event);
         $this->assertSame('Millennium', $event->name);
+        $this->assertEquals($date, $event->start_time);
     }
 
     public function testSelectOneTypeConversion()
@@ -37,6 +38,7 @@ class SelectWithTypesTest extends FunctionalTestCase
             ->execute();
         $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Entities\Events\Event', $event);
         $this->assertSame('Millennium', $event->name);
+        $this->assertEquals($date, $event->start_time);
     }
 
 }

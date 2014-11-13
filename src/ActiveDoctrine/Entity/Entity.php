@@ -531,6 +531,12 @@ abstract class Entity
         $stmt->execute($parameters);
         $results = array();
         while ($result = $stmt->fetch()) {
+            foreach (static::$types as $column => $type) {
+                if (isset($result[$column])) {
+                    $result[$column] = $connection->convertToPHPValue($result[$column], $type);
+                }
+            }
+
             $obj = new static($connection, $result);
             $obj->setStored();
             $results[] = $obj;
@@ -557,6 +563,11 @@ abstract class Entity
         $stmt->execute($parameters);
         $result = $stmt->fetch();
         if ($result) {
+            foreach (static::$types as $column => $type) {
+                if (isset($result[$column])) {
+                    $result[$column] = $connection->convertToPHPValue($result[$column], $type);
+                }
+            }
             $entity = new static($connection, $result);
 
             return $entity->setStored();
