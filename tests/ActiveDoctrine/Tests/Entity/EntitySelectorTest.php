@@ -448,6 +448,54 @@ class EntitySelectorTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    public function testExecuteManyWithNoResult()
+    {
+        $book_statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $book_statement->expects($this->once())
+            ->method('execute')
+            ->with([]);
+        $book_statement->expects($this->exactly(3))
+            ->method('fetch')
+            ->will($this->onConsecutiveCalls(
+                ['name' => 'foo', 'authors_id' => 4],
+                ['name' => 'bar', 'authors_id' => 5],
+                false
+            ));
+
+        $author_statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $author_statement->expects($this->once())
+            ->method('execute')
+            ->with([4, 5]);
+        $author_statement->expects($this->once())
+            ->method('fetch')
+            ->will($this->returnValue(null));
+
+        $this->conn->expects($this->exactly(2))
+            ->method('prepare')
+            ->with($this->logicalOr(
+                'SELECT * FROM `books` LIMIT 2',
+                'SELECT * FROM `authors` WHERE `id` IN (?, ?)'
+            ))
+            ->will($this->onConsecutiveCalls($book_statement, $author_statement));
+
+        $books = $this->selector->with('author')
+            ->limit(2)
+            ->execute();
+        $this->assertInstanceOf('ActiveDoctrine\Entity\EntityCollection', $books);
+        $this->assertSame(2, count($books));
+        $this->assertSame(['foo', 'bar'], $books->getColumn('name'));
+
+        for ($i = 0; $i < 2; $i++) {
+            $book = $books[$i];
+            $this->assertInstanceOf('ActiveDoctrine\Tests\Entity\Book', $book);
+            $this->assertFalse($book->getRelation('author'));;
+        }
+    }
+
     public function testExecuteCount()
     {
         $statement = $this->getMockBuilder('Doctrine\DBAL\Statement')

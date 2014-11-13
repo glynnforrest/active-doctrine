@@ -190,11 +190,6 @@ class EntitySelector
             //fetch the related entities
             $foreign_collection = $selector->execute();
 
-            //exit early if there are no related entities
-            if (empty($foreign_collection)) {
-                continue;
-            }
-
             //match up the entities from the query with the current
             //entities
             switch ($type) {
