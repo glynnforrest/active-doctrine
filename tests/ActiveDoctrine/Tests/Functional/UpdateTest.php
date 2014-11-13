@@ -3,6 +3,7 @@
 namespace ActiveDoctrine\Tests\Functional;
 
 use ActiveDoctrine\Tests\Fixtures\Entities\Bookshop\Book;
+use ActiveDoctrine\Tests\Fixtures\Entities\Events\Event;
 
 /**
  * UpdateTest
@@ -11,7 +12,18 @@ use ActiveDoctrine\Tests\Fixtures\Entities\Bookshop\Book;
  **/
 class UpdateTest extends FunctionalTestCase
 {
-    public function testSimpleUpdate()
+    public function updateMethodProvider()
+    {
+        return [
+            ['update'],
+            ['save']
+        ];
+    }
+
+    /**
+     * @dataProvider updateMethodProvider()
+     */
+    public function testSimpleUpdate($update_method)
     {
         $this->loadSchema('bookshop');
         $this->loadData('bookshop');
@@ -20,7 +32,7 @@ class UpdateTest extends FunctionalTestCase
             ->execute();
         $this->assertSame('Book 2', $book->name);
         $book->name = 'Hello world';
-        $book->update();
+        $book->$update_method();
         //select it again to check the row has been updated
         $selected = Book::selectOne($this->getConn())
             ->where('id', '=', 2)
@@ -28,20 +40,26 @@ class UpdateTest extends FunctionalTestCase
         $this->assertSame('Hello world', $selected->name);
     }
 
-    public function testSimpleUpdateCallSave()
+    /**
+     * @dataProvider updateMethodProvider()
+     */
+    public function testUpdateWithType($update_method)
     {
-        $this->loadSchema('bookshop');
-        $this->loadData('bookshop');
-        $book = Book::selectOne($this->getConn())
+        $this->loadSchema('events');
+        $this->loadData('events');
+        $event = Event::selectOne($this->getConn())
             ->where('id', '=', 2)
             ->execute();
-        $this->assertSame('Book 2', $book->name);
-        $book->name = 'Hello world';
-        $book->save();
+        $this->assertSame('Millennium', $event->name);
+        $event->name = 'Party';
+        $now = new \DateTime();
+        $event->start_time = $now;
+        $event->$update_method();
         //select it again to check the row has been updated
-        $selected = Book::selectOne($this->getConn())
+        $selected = Event::selectOne($this->getConn())
             ->where('id', '=', 2)
             ->execute();
-        $this->assertSame('Hello world', $selected->name);
+        $this->assertSame('Party', $selected->name);
+        $this->assertEquals($now, $selected->start_time);
     }
 }

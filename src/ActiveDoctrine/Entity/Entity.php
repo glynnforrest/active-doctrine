@@ -432,7 +432,7 @@ abstract class Entity
         }
         $values = array_intersect_key($this->values, $this->modified);
         $where = [static::$primary_key => $this->getPrimaryKey()];
-        $this->connection->update(static::$table, $values, $where);
+        $this->connection->update(static::$table, $values, $where, static::$types);
         $this->modified = [];
         $this->stored = true;
     }
