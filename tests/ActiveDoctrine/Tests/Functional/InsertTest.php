@@ -12,27 +12,40 @@ use ActiveDoctrine\Tests\Fixtures\Entities\Events\Event;
  **/
 class InsertTest extends FunctionalTestCase
 {
-
     public function setup()
     {
         $this->loadSchema('bookshop');
     }
 
-    public function testInsertOne()
+    public function insertMethodProvider()
+    {
+        return [
+            ['insert'],
+            ['save']
+        ];
+    }
+
+    /**
+     * @dataProvider insertMethodProvider()
+     */
+    public function testInsertOne($insert_method)
     {
         $conn = $this->getConn();
         $book = new Book($conn);
         $book->name = 'Foo';
         $book->description = 'Bar';
         $book->authors_id = 0;
-        $book->insert();
+        $book->$insert_method();
         //select it to check it has been inserted
         $selected = Book::selectOne($conn)->execute();
         $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Entities\Bookshop\Book', $selected);
         $this->assertEquals($book->getValues(), $selected->getValues());
     }
 
-    public function testInsertAddsPrimaryKey()
+    /**
+     * @dataProvider insertMethodProvider()
+     */
+    public function testInsertAddsPrimaryKey($insert_method)
     {
         $conn = $this->getConn();
         for ($i = 1; $i < 4; $i++) {
@@ -40,18 +53,20 @@ class InsertTest extends FunctionalTestCase
             $book->name = 'Foo';
             $book->description = 'Bar';
             $book->authors_id = 0;
-            $book->insert();
+            $book->$insert_method();
             $this->assertEquals($i, $book->id);
         }
     }
 
-    public function testInsertTypeDatetime()
+    /**
+     * @dataProvider insertMethodProvider()
+     */
+    public function testInsertTypeDatetime($insert_method)
     {
         $this->loadSchema('events');
         $event = new Event($this->getConn());
         $event->name = 'Concert';
         $event->start_time = new \DateTime();
-        $event->insert();
+        $event->$insert_method();
     }
-
 }
