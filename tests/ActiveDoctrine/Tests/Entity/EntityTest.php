@@ -820,4 +820,15 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(3, $details->books_id);
     }
 
+    public function testSerialize()
+    {
+        $book = new Book($this->conn, ['id' => 3, 'name' => 'foo']);
+        $details = new BookDetails($this->conn, ['books_id' => 3]);
+        $book->setRelation('details', $details);
+
+        $stored = serialize($book);
+        $fetched = unserialize($stored);
+        $this->assertSame($book->getValues(), $fetched->getValues());
+        $this->assertSame($details->getValues(), $fetched->details->getValues());
+    }
 }

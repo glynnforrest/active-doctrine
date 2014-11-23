@@ -38,6 +38,17 @@ abstract class Entity
     }
 
     /**
+     * Save a small subset of properties when serializing.
+     */
+    public function __sleep()
+    {
+        return [
+            'values',
+            'relation_objects'
+        ];
+    }
+
+    /**
      * Get the names of all fields.
      *
      * @return array The fields
