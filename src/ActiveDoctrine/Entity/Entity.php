@@ -26,10 +26,12 @@ abstract class Entity
     protected $current_index;
     protected $relation_objects = [];
 
-    public function __construct(Connection $connection, array $values = array())
+    public function __construct(Connection $connection, array $values = [])
     {
         $this->connection = $connection;
         $this->values = $values;
+        //set modified for values in static::$fields
+        $this->modified = array_intersect_key($values, array_flip(static::$fields));
 
         //keep a copy of the primary key for updating in case it changes
         if (isset($values[static::$primary_key])) {
@@ -456,6 +458,7 @@ abstract class Entity
     public function setStored($stored = true)
     {
         $this->stored = (bool) $stored;
+        $this->modified = [];
 
         return $this;
     }
