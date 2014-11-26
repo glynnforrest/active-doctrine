@@ -1,6 +1,6 @@
 # Creating entities
 
-In ActiveDoctrine, all entities should subclass
+In Active Doctrine, all entities should subclass
 ActiveDoctrine\Entity\Entity. Each instance of an Entity represents a
 single row in the database table.
 
@@ -33,6 +33,11 @@ A valid Entity class contains 3 static properties:
 $primary_key defaults to 'id' so is optional if 'id' is the primary
 key on the table.
 
+## Defining types
+
+Active Doctrine uses Doctrine's excellent type system to convert
+values between their PHP and database representations.
+
 ## Defining associations between entities
 
 There are currently three types of associations available:
@@ -49,8 +54,8 @@ example, the Book entity could have the following relations:
 
 ```php
 protected static $relations = [
-    'details' => ['has_one', 'ActiveDoctrine\Tests\Entity\BookDetails', 'books_id', 'id'],
-    'author' => ['belongs_to', 'ActiveDoctrine\Tests\Entity\Author', 'id', 'authors_id']
+    'details' => ['has_one', 'MyApp\Entity\BookDetails', 'books_id', 'id'],
+    'author' => ['belongs_to', 'MyApp\Entity\Author', 'id', 'authors_id']
 ];
 ```
 
@@ -63,7 +68,7 @@ The has_many relationship is defined in the Author entity:
 
 ```php
 protected static $relations = [
-    'books' => ['has_many', 'ActiveDoctrine\Tests\Entity\Book', 'authors_id', 'id']
+    'books' => ['has_many', 'MyApp\Entity\Book', 'authors_id', 'id']
 ];
 ```
 
