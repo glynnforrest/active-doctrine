@@ -31,7 +31,7 @@ abstract class Entity
         $this->connection = $connection;
         $this->values = $values;
         //set modified for values in static::$fields
-        $this->modified = array_intersect_key($values, array_flip(static::$fields));
+        $this->modified = array_fill_keys(array_intersect(array_keys($values), static::$fields), true);
 
         //keep a copy of the primary key for updating in case it changes
         if (isset($values[static::$primary_key])) {
@@ -413,10 +413,9 @@ abstract class Entity
 
         $values = array_intersect_key($this->values, $this->modified);
         $this->connection->insert(static::$table, $values, static::$types);
-        $this->modified = array();
         //this will only work with some database vendors for now.
         $this->values[static::$primary_key] = $this->connection->lastInsertId();
-        $this->stored = true;
+        $this->setStored();
     }
 
     /**
@@ -446,8 +445,7 @@ abstract class Entity
         $values = array_intersect_key($this->values, $this->modified);
         $where = [static::$primary_key => $this->getPrimaryKey()];
         $this->connection->update(static::$table, $values, $where, static::$types);
-        $this->modified = [];
-        $this->stored = true;
+        $this->setStored();
     }
 
     /**
@@ -458,7 +456,7 @@ abstract class Entity
     public function setStored($stored = true)
     {
         $this->stored = (bool) $stored;
-        $this->modified = [];
+        $this->modified = $stored ? [] : $this->values;
 
         return $this;
     }

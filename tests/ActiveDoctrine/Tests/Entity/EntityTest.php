@@ -151,6 +151,18 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($obj->isStored());
     }
 
+    public function testSetStoredRestoresModifiedFields()
+    {
+        $obj = new Book($this->conn, ['name' => 'foo']);
+        $this->assertSame(['name'], $obj->getModifiedFields());
+
+        $obj->setStored();
+        $this->assertSame([], $obj->getModifiedFields());
+
+        $obj->setStored(false);
+        $this->assertSame(['name'], $obj->getModifiedFields());
+    }
+
     public function testInsert()
     {
         $obj = new Book($this->conn);
@@ -270,6 +282,23 @@ class EntityTest extends \PHPUnit_Framework_TestCase
                    ->with('books', ['name' => 'foo', 'description' => 'bar']);
 
         $obj->insert();
+    }
+
+    public function testInsertAfterSetStored()
+    {
+        $book = new Book($this->conn, ['name' => 'foo', 'description' => 'bar']);
+
+        //the book is stored, don't save it
+        $book->setStored();
+
+        //oh wait, no it isn't
+        $book->setStored(false);
+
+        $this->conn->expects($this->once())
+                   ->method('insert')
+                   ->with('books', ['name' => 'foo', 'description' => 'bar']);
+
+        $book->insert();
     }
 
     public function testUpdate()
