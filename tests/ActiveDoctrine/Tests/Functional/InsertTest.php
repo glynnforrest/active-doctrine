@@ -69,4 +69,17 @@ class InsertTest extends FunctionalTestCase
         $event->start_time = new \DateTime();
         $event->$insert_method();
     }
+
+    /**
+     * @dataProvider insertMethodProvider()
+     */
+    public function testInsertFromConstructor($insert_method)
+    {
+        $conn = $this->getConn();
+        for ($i = 1; $i < 4; $i++) {
+            $book = new Book($conn, ['name' => 'foo', 'description' => 'bar', 'authors_id' => 0]);
+            $book->$insert_method();
+            $this->assertEquals($i, $book->id);
+        }
+    }
 }

@@ -73,6 +73,9 @@ class EntityTest extends \PHPUnit_Framework_TestCase
     public function testGetModifiedFields()
     {
         $obj = new Book($this->conn, ['name' => 'foo', 'description' => 'bar']);
+        $this->assertSame(['name', 'description'], $obj->getModifiedFields());
+
+        $obj->setStored();
         $this->assertSame([], $obj->getModifiedFields());
 
         $obj->setRaw('name', 'foo');
@@ -88,6 +91,9 @@ class EntityTest extends \PHPUnit_Framework_TestCase
     public function testIsModified()
     {
         $obj = new Book($this->conn, ['name' => 'foo', 'description' => 'bar']);
+        $this->assertTrue($obj->isModified());
+
+        $obj->setStored();
         $this->assertFalse($obj->isModified());
 
         //setting a column that isn't part of the entity
@@ -145,6 +151,18 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($obj->isStored());
     }
 
+    public function testSetStoredRestoresModifiedFields()
+    {
+        $obj = new Book($this->conn, ['name' => 'foo']);
+        $this->assertSame(['name'], $obj->getModifiedFields());
+
+        $obj->setStored();
+        $this->assertSame([], $obj->getModifiedFields());
+
+        $obj->setStored(false);
+        $this->assertSame(['name'], $obj->getModifiedFields());
+    }
+
     public function testInsert()
     {
         $obj = new Book($this->conn);
@@ -168,7 +186,6 @@ class EntityTest extends \PHPUnit_Framework_TestCase
                    ->method('insert');
 
         $obj->insert();
-
     }
 
     public function testInsertUnknownFields()
@@ -191,6 +208,18 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $obj = new Book($this->conn);
 
         $obj->something = 'bar';
+        $this->assertSame('bar', $obj->something);
+
+        $this->conn->expects($this->never())
+                   ->method('insert');
+
+        $obj->insert();
+    }
+
+    public function testInsertUnknownFieldsFromConstructor()
+    {
+        $obj = new Book($this->conn, ['something' => 'bar']);
+
         $this->assertSame('bar', $obj->something);
 
         $this->conn->expects($this->never())
@@ -232,6 +261,44 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $obj->name = 'foo2';
         $this->setExpectedException('\LogicException');
         $obj->insert();
+    }
+
+    public function testInsertFromConstructor()
+    {
+        $obj = new Book($this->conn, ['name' => 'foo', 'description' => 'bar']);
+        $this->conn->expects($this->once())
+                   ->method('insert')
+                   ->with('books', ['name' => 'foo', 'description' => 'bar']);
+
+        $obj->insert();
+    }
+
+    public function testInsertFromConstructorAndModification()
+    {
+        $obj = new Book($this->conn, ['name' => 'foo']);
+        $obj->description = 'bar';
+        $this->conn->expects($this->once())
+                   ->method('insert')
+                   ->with('books', ['name' => 'foo', 'description' => 'bar']);
+
+        $obj->insert();
+    }
+
+    public function testInsertAfterSetStored()
+    {
+        $book = new Book($this->conn, ['name' => 'foo', 'description' => 'bar']);
+
+        //the book is stored, don't save it
+        $book->setStored();
+
+        //oh wait, no it isn't
+        $book->setStored(false);
+
+        $this->conn->expects($this->once())
+                   ->method('insert')
+                   ->with('books', ['name' => 'foo', 'description' => 'bar']);
+
+        $book->insert();
     }
 
     public function testUpdate()
@@ -288,6 +355,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
     public function testUpdateNoChangedFields()
     {
         $obj = new Book($this->conn, ['id' => 1, 'name' => 'foo']);
+        $obj->setStored();
 
         $this->conn->expects($this->never())
                    ->method('update');
@@ -790,9 +858,13 @@ class EntityTest extends \PHPUnit_Framework_TestCase
     public function testAssociateRelationHasMany()
     {
         $author = new Author($this->conn, ['id' => 1]);
+        $author->setStored();
         $book1 = new Book($this->conn, ['authors_id' => 3]);
+        $book1->setStored();
         $book2 = new Book($this->conn, ['authors_id' => 5]);
+        $book2->setStored();
         $book3 = new Book($this->conn, ['authors_id' => 1]);
+        $book3->setStored();
         $this->assertSame(1, $author->id);
         $this->assertSame(3, $book1->authors_id);
         $this->assertSame(5, $book2->authors_id);
