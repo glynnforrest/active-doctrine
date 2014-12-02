@@ -829,15 +829,16 @@ class EntityTest extends \PHPUnit_Framework_TestCase
     public function testHasRelation()
     {
         $book = new Book($this->conn);
-
-        //avoid mocking a database call by setting a relation to null,
-        //which is what an empty database result would do
-        $book->setRelation('author', null);
-
         $this->assertFalse($book->hasRelation('author'));
 
         $book->setRelation('author', new Author($this->conn));
         $this->assertTrue($book->hasRelation('author'));
+
+        $author = new Author($this->conn);
+        $this->assertFalse($author->hasRelation('books'));
+
+        $author->setRelation('books', Book::newCollection([$book]));
+        $this->assertTrue($author->hasRelation('books'));
     }
 
     public function testHasRelationThrowsExceptionForInvalidName()
@@ -917,5 +918,17 @@ class EntityTest extends \PHPUnit_Framework_TestCase
 
         $author = new Author($this->conn);
         $this->assertInstanceOf('ActiveDoctrine\Entity\EntityCollection', $author->getRelation('books'));
+    }
+
+    public function testHasRelationNotStored()
+    {
+        $book = new Book($this->conn);
+        $this->assertFalse($book->hasRelation('details'));
+
+        $details = new BookDetails($this->conn);
+        $this->assertFalse($details->hasRelation('book'));
+
+        $author = new Author($this->conn);
+        $this->assertFalse($author->hasRelation('books'));
     }
 }
