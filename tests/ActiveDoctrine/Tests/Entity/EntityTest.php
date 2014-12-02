@@ -931,4 +931,52 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $author = new Author($this->conn);
         $this->assertFalse($author->hasRelation('books'));
     }
+
+    public function testAssociateRelationHasOneInvalid()
+    {
+        $book = new Book($this->conn);
+        $msg = 'Relation "details" on ActiveDoctrine\Tests\Entity\Book must be an instance of ActiveDoctrine\Tests\Entity\BookDetails, ActiveDoctrine\Entity\EntityCollection given.';
+        $this->setExpectedException('\InvalidArgumentException', $msg);
+        $book->associateRelation('details', new EntityCollection());
+    }
+
+    public function testAssociateRelationHasOneJunk()
+    {
+        $book = new Book($this->conn);
+        $msg = 'Relation "details" on ActiveDoctrine\Tests\Entity\Book must be an instance of ActiveDoctrine\Tests\Entity\BookDetails, string given.';
+        $this->setExpectedException('\InvalidArgumentException', $msg);
+        $book->associateRelation('details', 'junk');
+    }
+
+    public function testAssociateRelationBelongsToInvalid()
+    {
+        $details = new BookDetails($this->conn);
+        $msg = 'Relation "book" on ActiveDoctrine\Tests\Entity\BookDetails must be an instance of ActiveDoctrine\Tests\Entity\Book, ActiveDoctrine\Entity\EntityCollection given.';
+        $this->setExpectedException('\InvalidArgumentException', $msg);
+        $details->associateRelation('book', new EntityCollection());
+    }
+
+    public function testAssociateRelationBelongsToJunk()
+    {
+        $details = new BookDetails($this->conn);
+        $msg = 'Relation "book" on ActiveDoctrine\Tests\Entity\BookDetails must be an instance of ActiveDoctrine\Tests\Entity\Book, integer given.';
+        $this->setExpectedException('\InvalidArgumentException', $msg);
+        $details->associateRelation('book', 20);
+    }
+
+    public function testAssociateRelationHasManyInvalid()
+    {
+        $author = new Author($this->conn);
+        $msg = 'Relation "books" on ActiveDoctrine\Tests\Entity\Author must be an instance of ActiveDoctrine\Entity\EntityCollection, ActiveDoctrine\Tests\Entity\Book given.';
+        $this->setExpectedException('\InvalidArgumentException', $msg);
+        $author->associateRelation('books', new Book($this->conn));
+    }
+
+    public function testAssociateRelationHasManyJunk()
+    {
+        $author = new Author($this->conn);
+        $msg = 'Relation "books" on ActiveDoctrine\Tests\Entity\Author must be an instance of ActiveDoctrine\Entity\EntityCollection, boolean given.';
+        $this->setExpectedException('\InvalidArgumentException', $msg);
+        $author->associateRelation('books', true);
+    }
 }

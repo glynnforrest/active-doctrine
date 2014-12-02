@@ -357,15 +357,34 @@ abstract class Entity
 
         list($type, $foreign_class, $foreign_column, $column) = static::getRelationDefinition($name);
         if ($type === 'has_one') {
+            $this->ensureObjectIsRelation($related_object, $foreign_class, $name);
             $related_object->setRaw($foreign_column, $this->getRaw($column));
         }
         if ($type === 'belongs_to') {
+            $this->ensureObjectIsRelation($related_object, $foreign_class, $name);
             $this->setRaw($column, $related_object->getRaw($foreign_column));
         }
         if ($type === 'has_many') {
+            $this->ensureObjectIsRelation($related_object, 'ActiveDoctrine\Entity\EntityCollection', $name);
             $related_object->setColumn($foreign_column, $this->getRaw($column));
         }
+    }
 
+    /**
+     * Ensure a related object is the correct class.
+     *
+     * @param mixed  $related_object The related object
+     * @param string $class_name     The class of the expected entity
+     * @param string $relation_name  The name of the relation
+     */
+    protected function ensureObjectIsRelation($related_object, $class_name, $relation_name)
+    {
+        if (!$related_object instanceof $class_name) {
+            $msg = sprintf('Relation "%s" on %s must be an instance of %s, ', $relation_name, get_class($this), $class_name);
+            $msg .= sprintf('%s given.', is_object($related_object) ? get_class($related_object) : gettype($related_object));
+
+            throw new \InvalidArgumentException($msg);
+        }
     }
 
     /**
