@@ -647,6 +647,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
     public function testGetRelationHasOne()
     {
         $book = new Book($this->conn, ['id' => 5]);
+        $book->setStored();
         $driver = $this->expectDriver();
         $statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
                           ->disableOriginalConstructor()
@@ -673,6 +674,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
     public function testGetRelationBelongsTo()
     {
         $details = new BookDetails($this->conn, ['books_id' => 5]);
+        $details->setStored();
         $driver = $this->expectDriver();
         $statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
                           ->disableOriginalConstructor()
@@ -741,6 +743,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
     public function testGetRelationHasMany()
     {
         $author = new Author($this->conn, ['id' => 2]);
+        $author->setStored();
         $driver = $this->expectDriver();
         $statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
                           ->disableOriginalConstructor()
@@ -902,5 +905,17 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $fetched = unserialize($stored);
         $this->assertSame($book->getValues(), $fetched->getValues());
         $this->assertSame($details->getValues(), $fetched->details->getValues());
+    }
+
+    public function testGetRelationNotStored()
+    {
+        $book = new Book($this->conn);
+        $this->assertFalse($book->getRelation('details'));
+
+        $details = new BookDetails($this->conn);
+        $this->assertFalse($details->getRelation('book'));
+
+        $author = new Author($this->conn);
+        $this->assertInstanceOf('ActiveDoctrine\Entity\EntityCollection', $author->getRelation('books'));
     }
 }

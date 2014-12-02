@@ -146,7 +146,7 @@ abstract class Entity
 
         $relation = self::getRelationDefinition($name);
 
-        $this->relation_objects[$name] = $this->fetchRelation($relation);
+        $this->relation_objects[$name] = $this->stored ? $this->fetchRelation($relation) : $this->getDefaultRelation($relation);
 
         return $this->relation_objects[$name];
     }
@@ -201,6 +201,18 @@ abstract class Entity
             return $this->fetchOneToMany($foreign_class, $foreign_column, $column);
         default:
         }
+    }
+
+    /**
+     * Get the default for a related entity.
+     *
+     * @param array $relation The relation to get the default for
+     */
+    protected function getDefaultRelation(array $relation)
+    {
+        list($type, $foreign_class, $foreign_column, $column) = $relation;
+
+        return $type === 'has_many' ? $foreign_class::newCollection() : false;
     }
 
     /**
