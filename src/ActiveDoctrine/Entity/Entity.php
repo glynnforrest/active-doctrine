@@ -162,7 +162,7 @@ abstract class Entity
         $result =  $this->get($key);
 
         //an empty EntityCollection means no related entities
-        if ($result instanceof EntityCollection && count($result) === 0) {
+        if ($result instanceof EntityCollection && !isset($result[0])) {
             return false;
         }
 
@@ -180,11 +180,11 @@ abstract class Entity
     {
         $related = $this->getRelation($name);
 
-        if (!$related || $related instanceof EntityCollection && !isset($related[0])) {
+        if ($related instanceof EntityCollection && !isset($related[0])) {
             return false;
         }
 
-        return true;
+        return $related ? true : false;
     }
 
     /**
