@@ -39,12 +39,28 @@ abstract class AbstractRepository
     }
 
     /**
-     * Find all Entities.
+     * Select all entities.
      *
-     * @return EntityCollection A collection of entities
+     * @return EntityCollection The selected entities
      */
     public function findAll()
     {
         return $this->selector()->execute();
+    }
+
+    /**
+     * Select entities matching an array of conditions.
+     *
+     * @param  array            $conditions An array of the form 'column => value'
+     * @return EntityCollection The selected entities
+     */
+    public function findBy(array $conditions)
+    {
+        $s = $this->selector();
+        foreach ($conditions as $column => $value) {
+            $s->where($column, '=', $value);
+        }
+
+        return $s->execute();
     }
 }
