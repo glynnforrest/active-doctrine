@@ -63,4 +63,20 @@ abstract class AbstractRepository
 
         return $s->execute();
     }
+
+    /**
+     * Select a single entity matching an array of conditions.
+     *
+     * @param  array       $conditions An array of the form 'column => value'
+     * @return Entity|null The selected entity or null
+     */
+    public function findOneBy(array $conditions)
+    {
+        $s = $this->selector()->one();
+        foreach ($conditions as $column => $value) {
+            $s->where($column, '=', $value);
+        }
+
+        return $s->execute();
+    }
 }

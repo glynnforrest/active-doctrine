@@ -84,4 +84,25 @@ class AbstractRepositoryTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(1, count($books));
         $this->assertSame(['foo'], $books->getColumn('name'));
     }
+
+    public function testFindOneBy()
+    {
+        $stmt = $this->getMockBuilder('Doctrine\DBAL\Statement')
+                     ->disableOriginalConstructor()
+                     ->getMock();
+        $stmt->expects($this->once())
+             ->method('execute')
+             ->with([4]);
+        $stmt->expects($this->once())
+             ->method('fetch')
+             ->will($this->returnValue(['name' => 'foo', 'id' => 4]));
+        $this->conn->expects($this->once())
+                   ->method('prepare')
+                   ->with('SELECT * FROM `books` WHERE `id` = ? LIMIT 1')
+                   ->will($this->returnValue($stmt));
+
+        $book = $this->repo->findOneBy(['id' => 4]);
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Entities\Bookshop\Book', $book);
+        $this->assertSame(['name' => 'foo', 'id' => 4], $book->getValues());
+    }
 }
