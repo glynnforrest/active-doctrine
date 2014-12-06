@@ -100,13 +100,10 @@ abstract class GenericSelector extends AbstractSelector
 
     protected function addOrderBy(&$query)
     {
-        $order = $this->order_by[0];
-        $query .= sprintf(' ORDER BY %s %s', $this->quoteIdentifier($order[0]), $order[1]);
-        $count = count($this->order_by);
-        for ($i = 1; $i < $count; $i++) {
-            $order = $this->order_by[$i];
-            $query .= sprintf(', %s %s', $this->quoteIdentifier($order[0]), $order[1]);
+        $sql = '';
+        foreach ($this->order_by as $column => $sort) {
+            $sql .= sprintf(', %s %s', $this->quoteIdentifier($column), $sort);
         }
+        $query .= ' ORDER BY ' . substr($sql, 2);
     }
-
 }

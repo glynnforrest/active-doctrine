@@ -46,6 +46,10 @@ testOrderByAscDesc:
     mysql: "SELECT * FROM `table` ORDER BY `name` ASC, `id` DESC"
     sqlite: 'SELECT * FROM "table" ORDER BY "name" ASC, "id" DESC'
 
+testOrderBySameColumnTwice:
+    mysql: "SELECT * FROM `table` ORDER BY `id` DESC"
+    sqlite: 'SELECT * FROM "table" ORDER BY "id" DESC'
+
 testMixed1:
     mysql: "SELECT * FROM `table` WHERE `id` < ? AND `id` > ? ORDER BY `name` DESC, `id` ASC LIMIT 20"
     sqlite: 'SELECT * FROM "table" WHERE "id" < ? AND "id" > ? ORDER BY "name" DESC, "id" ASC LIMIT 20'

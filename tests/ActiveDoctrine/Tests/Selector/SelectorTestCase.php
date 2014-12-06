@@ -130,6 +130,14 @@ abstract class SelectorTestCase extends \PHPUnit_Framework_TestCase
         $this->assertSame($this->getYaml(__FUNCTION__), $s->getSQL());
     }
 
+    public function testOrderBySameColumnTwice()
+    {
+        $s = $this->getSelector()
+                  ->orderBy('id', 'ASC')
+                  ->orderBy('id', 'DESC');
+        $this->assertSame($this->getYaml(__FUNCTION__), $s->getSQL());
+    }
+
     public function testMixed1()
     {
         $s = $this->getSelector()

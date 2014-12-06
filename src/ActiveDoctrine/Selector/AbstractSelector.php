@@ -280,7 +280,7 @@ abstract class AbstractSelector
         if ($sort !== 'DESC') {
             $sort = 'ASC';
         }
-        $this->order_by[] = [$column, $sort];
+        $this->order_by[$column] = $sort;
 
         return $this;
     }
