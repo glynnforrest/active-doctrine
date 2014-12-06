@@ -145,7 +145,7 @@ abstract class AbstractSelector
         $stmt = $this->connection->prepare($this->getSQL());
         $stmt->execute($this->getParams());
 
-        return $stmt->fetchAll();
+        return $this->counting ? (int) $stmt->fetchColumn() : $stmt->fetchAll();
     }
 
     /**

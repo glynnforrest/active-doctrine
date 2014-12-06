@@ -63,4 +63,12 @@ class SelectorTest extends FunctionalTestCase
             'authors_id' => '3',
         ], $results[49]);
     }
+
+    public function testCountExecute()
+    {
+        $this->loadData('bookshop');
+        $count = $this->getSelector()->where('id', '<', 30)->count()->execute();
+        $this->assertSame(29, $count);
+    }
+
 }
