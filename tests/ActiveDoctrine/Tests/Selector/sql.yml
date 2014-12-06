@@ -107,3 +107,11 @@ testWhereInTypeConversion:
 params_testWhereInTypeConversion:
     mysql: ['2000-01-01', '2001-02-02', '2002-03-03', '2003-04-04']
     sqlite: ['2000-01-01', '2001-02-02', '2002-03-03', '2003-04-04']
+
+testPrepare:
+    mysql: 'SELECT * FROM `table` WHERE `foo` = ? OR `id` < ? ORDER BY `foo` ASC'
+    sqlite: 'SELECT * FROM "table" WHERE "foo" = ? OR "id" < ? ORDER BY "foo" ASC'
+
+testExecute:
+    mysql: 'SELECT * FROM `table` WHERE `foo` = ? OR `id` < ? ORDER BY `foo` ASC'
+    sqlite: 'SELECT * FROM "table" WHERE "foo" = ? OR "id" < ? ORDER BY "foo" ASC'

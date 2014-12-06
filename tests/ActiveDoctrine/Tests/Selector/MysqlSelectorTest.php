@@ -23,4 +23,8 @@ class MysqlSelectorTest extends SelectorTestCase
         return new MysqlSelector(new Connection($params, $driver), 'table', $types);
     }
 
+    protected function getSelectorWithMock(Connection $connection)
+    {
+        return new MysqlSelector($connection, 'table');
+    }
 }

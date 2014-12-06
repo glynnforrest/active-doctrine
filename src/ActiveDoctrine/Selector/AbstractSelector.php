@@ -125,6 +125,30 @@ abstract class AbstractSelector
     }
 
     /**
+     * Prepare the current SQL query.
+     *
+     * @return \Doctrine\DBAL\Driver\Statement The prepared statement
+     */
+    public function prepare()
+    {
+        return $this->connection->prepare($this->getSQL());
+    }
+
+    /**
+     * Prepare and execute the current SQL query, returning an array
+     * of the results.
+     *
+     * @return array The results
+     */
+    public function execute()
+    {
+        $stmt = $this->connection->prepare($this->getSQL());
+        $stmt->execute($this->getParams());
+
+        return $stmt->fetchAll();
+    }
+
+    /**
      * Get a vendor-specific selector based on a connection instance.
      *
      * @param  Connection       $connection A connection instance

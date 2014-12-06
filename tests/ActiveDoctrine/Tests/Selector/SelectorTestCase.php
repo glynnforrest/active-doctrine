@@ -3,6 +3,7 @@
 namespace ActiveDoctrine\Tests\Selector;
 
 use Symfony\Component\Yaml\Yaml;
+use Doctrine\DBAL\Connection;
 
 /**
  * SelectorTestCase
@@ -29,6 +30,8 @@ abstract class SelectorTestCase extends \PHPUnit_Framework_TestCase
     }
 
     abstract protected function getSelector();
+
+    abstract protected function getSelectorWithMock(Connection $connection);
 
     protected function getYaml($name)
     {
@@ -233,4 +236,50 @@ abstract class SelectorTestCase extends \PHPUnit_Framework_TestCase
         $this->assertSame($this->getPlatformYamlParams(__FUNCTION__), $s->getParams());
     }
 
+    public function testPrepare()
+    {
+        $conn = $this->getMockBuilder('Doctrine\DBAL\Connection')
+                     ->disableOriginalConstructor()
+                     ->getMock();
+        $stmt = $this->getMock('Doctrine\DBAL\Driver\Statement');
+        $conn->expects($this->once())
+             ->method('prepare')
+             ->with($this->getYaml(__FUNCTION__))
+             ->will($this->returnValue($stmt));
+        $s = $this->getSelectorWithMock($conn)
+                  ->where('foo', '=', 'bar')
+                  ->orWhere('id', '<', 400)
+                  ->orderBy('foo');
+        $this->assertSame($stmt, $s->prepare());
+    }
+
+    public function testExecute()
+    {
+        $conn = $this->getMockBuilder('Doctrine\DBAL\Connection')
+                     ->disableOriginalConstructor()
+                     ->getMock();
+
+        $stmt = $this->getMock('Doctrine\DBAL\Driver\Statement');
+        $stmt->expects($this->once())
+             ->method('execute')
+             ->with(['bar', 400]);
+        $result = [
+            ['foo' => 'bar', 'id' => 30],
+            ['foo' => 'bar', 'id' => 40],
+        ];
+        $stmt->expects($this->once())
+             ->method('fetchAll')
+             ->will($this->returnValue($result));
+
+        $conn->expects($this->once())
+             ->method('prepare')
+             ->with($this->getYaml(__FUNCTION__))
+             ->will($this->returnValue($stmt));
+
+        $s = $this->getSelectorWithMock($conn)
+                  ->where('foo', '=', 'bar')
+                  ->orWhere('id', '<', 400)
+                  ->orderBy('foo');
+        $this->assertSame($result, $s->execute());
+    }
 }

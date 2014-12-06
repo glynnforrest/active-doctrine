@@ -23,4 +23,8 @@ class SqliteSelectorTest extends SelectorTestCase
         return new SqliteSelector(new Connection($params, $driver), 'table', $types);
     }
 
+    protected function getSelectorWithMock(Connection $connection)
+    {
+        return new SqliteSelector($connection, 'table');
+    }
 }
