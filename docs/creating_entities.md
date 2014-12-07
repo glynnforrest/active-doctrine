@@ -18,6 +18,7 @@ class Book extends Entity
         'id',
         'name',
         'description',
+        'date_published',
         'authors_id'
     ];
 
@@ -26,17 +27,12 @@ class Book extends Entity
 
 A valid Entity class contains 3 static properties:
 
-* The name of the database table, $table
-* The name of the primary key in the database table, $primary_key
-* An array containing the names of the columns in the database table, $fields
+* The name of the database table, `$table`
+* The name of the primary key in the database table, `$primary_key` (defaults to 'id')
+* An array containing the names of the columns in the database table, `$fields`
 
-$primary_key defaults to 'id' so is optional if 'id' is the primary
-key on the table.
-
-## Defining types
-
-Active Doctrine uses Doctrine's excellent type system to convert
-values between their PHP and database representations.
+The `$relations` and `$types` properties are available for defining
+relationships to other entities and the types of the table columns.
 
 ## Defining associations between entities
 
@@ -47,7 +43,7 @@ There are currently three types of associations available:
 * belongs_to
 
 The syntax for defining these relationships is straightforward. The
-static variable `$relations` should be an array, where the keys are
+static property `$relations` should be an array, where the keys are
 names given to a relationship, and the values are arrays of the form
 `[$type, $foreign_class, $foreign_column, $column]`. As a contrived
 example, the Book entity could have the following relations:
@@ -74,3 +70,21 @@ protected static $relations = [
 
 An Author has many Book instances, where the 'id' column joins to the
 'authors_id' column on the Book table.
+
+## Defining types
+
+By leveraging the type system of the DBAL, values can be converted
+between their PHP and database representations. Types are set in the
+`$types` property, an array of column names and their corresponding
+types. If no type is set on a column, it will be returned as a
+string. For large result sets the number of type conversions can make
+a noticeable difference to execution time, so only define a type if
+necessary.
+
+```php
+protected static $types = [
+    'date_published' => 'date'
+];
+```
+
+Any Doctrine type is supported, and custom types can be added too.
