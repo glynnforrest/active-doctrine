@@ -56,6 +56,12 @@ testWhereGroupingNestedHeadFirst:
 
 params_testWhereGroupingNestedHeadFirst: [100, 4, 200, 50]
 
+testWhereGroupingWhereIn:
+    mysql: 'SELECT * FROM `table` WHERE `id` > ? AND ((`status` IN (?, ?, ?) AND `id` = ?) OR `status` > ?)'
+    sqlite: 'SELECT * FROM "table" WHERE "id" > ? AND (("status" IN (?, ?, ?) AND "id" = ?) OR "status" > ?)'
+
+params_testWhereGroupingWhereIn: [100, 4, 5, 7, 200, 50]
+
 testSillyNesting:
   mysql: 'SELECT * FROM `table` WHERE (((((`id` = ? AND `id` = ?) AND `id` = ?) AND `id` = ?) AND `id` = ?) AND `id` = ?) AND `id` = ?'
   sqlite: 'SELECT * FROM "table" WHERE ((((("id" = ? AND "id" = ?) AND "id" = ?) AND "id" = ?) AND "id" = ?) AND "id" = ?) AND "id" = ?'

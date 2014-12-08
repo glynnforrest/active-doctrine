@@ -183,6 +183,24 @@ abstract class SelectorTestCase extends \PHPUnit_Framework_TestCase
         $this->assertSame($this->getYamlParams(__FUNCTION__), $s->getParams());
     }
 
+    /**
+     * @dataProvider whereMethodsProvider()
+     */
+    public function testWhereGroupingWhereIn($method)
+    {
+        $s = $this->getSelector()
+                  ->$method('id', '>', 100)
+                  ->andWhere(function ($s) use ($method) {
+                          $s->$method(function($s) {
+                              $s->whereIn('status', [4, 5, 7])
+                                ->andWhere('id', '=', 200);
+                                  })
+                          ->orWhere('status', '>', 50);
+                      });
+        $this->assertSame($this->getYaml(__FUNCTION__), $s->getSQL());
+        $this->assertSame($this->getYamlParams(__FUNCTION__), $s->getParams());
+    }
+
     public function testSillyNesting()
     {
         $s = $this->getSelector()
