@@ -9,7 +9,7 @@ namespace ActiveDoctrine\Selector;
  **/
 abstract class GenericSelector extends AbstractSelector
 {
-    protected $group_nesting = 0;
+    protected $begin_group;
 
     public function getSQL()
     {
@@ -53,12 +53,13 @@ abstract class GenericSelector extends AbstractSelector
          * e.g. ['id', '=', 1, 'self::AND_WHERE']
          */
 
+        $this->begin_group = true;
         $query .= ' WHERE ';
 
         $count = count($this->where);
         for ($i = 0; $i < $count; $i++) {
             $where = $this->where[$i];
-            $this->maybePrependWhere($query, $where, $i);
+            $this->maybePrependWhere($query, $where);
 
             if ($where[3] === self::AND_WHERE || $where[3] === self::OR_WHERE) {
                 $query .= sprintf('%s %s ?', $this->quoteIdentifier($where[0]), $where[1]);
@@ -71,7 +72,7 @@ abstract class GenericSelector extends AbstractSelector
             }
             if ($where[3] === self::BEGIN_GROUP_AND || $where[3] === self::BEGIN_GROUP_OR) {
                 $query .= '(';
-                $this->group_nesting++;
+                $this->begin_group = true;
                 continue;
             }
 
@@ -80,13 +81,10 @@ abstract class GenericSelector extends AbstractSelector
         }
     }
 
-    protected function maybePrependWhere(&$query, array $where, $count)
+    protected function maybePrependWhere(&$query, array $where)
     {
-        if ($count === 0) {
-            return;
-        }
-        if ($this->group_nesting > 0) {
-            $this->group_nesting--;
+        if ($this->begin_group) {
+            $this->begin_group = false;
 
             return;
         }
