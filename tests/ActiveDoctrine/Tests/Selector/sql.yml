@@ -44,6 +44,24 @@ testWhereGroupingAnd:
 
 params_testWhereGroupingAnd: [100, 4, 1]
 
+testWhereGroupingNested:
+    mysql: 'SELECT * FROM `table` WHERE `id` > ? AND (`status` > ? OR (`status` = ? AND `id` = ?))'
+    sqlite: 'SELECT * FROM "table" WHERE "id" > ? AND ("status" > ? OR ("status" = ? AND "id" = ?))'
+
+params_testWhereGroupingNested: [100, 50, 4, 200]
+
+testWhereGroupingNestedHeadFirst:
+    mysql: 'SELECT * FROM `table` WHERE `id` > ? AND ((`status` = ? AND `id` = ?) OR `status` > ?)'
+    sqlite: 'SELECT * FROM "table" WHERE "id" > ? AND (("status" = ? AND "id" = ?) OR "status" > ?)'
+
+params_testWhereGroupingNestedHeadFirst: [100, 4, 200, 50]
+
+testSillyNesting:
+  mysql: 'SELECT * FROM `table` WHERE (((((`id` = ? AND `id` = ?) AND `id` = ?) AND `id` = ?) AND `id` = ?) AND `id` = ?) AND `id` = ?'
+  sqlite: 'SELECT * FROM "table" WHERE ((((("id" = ? AND "id" = ?) AND "id" = ?) AND "id" = ?) AND "id" = ?) AND "id" = ?) AND "id" = ?'
+
+params_testSillyNesting: [4, 4, 4, 4, 4, 4, 4]
+
 testLimit:
     mysql: "SELECT * FROM `table` LIMIT 10"
     sqlite: 'SELECT * FROM "table" LIMIT 10'

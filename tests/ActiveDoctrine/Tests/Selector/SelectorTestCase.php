@@ -147,6 +147,66 @@ abstract class SelectorTestCase extends \PHPUnit_Framework_TestCase
         $this->assertSame($this->getYamlParams(__FUNCTION__), $s->getParams());
     }
 
+    /**
+     * @dataProvider whereMethodsProvider()
+     */
+    public function testWhereGroupingNested($method)
+    {
+        $s = $this->getSelector()
+                  ->$method('id', '>', 100)
+                  ->andWhere(function ($s) use ($method) {
+                          $s->$method('status', '>', 50)
+                          ->orWhere(function($s) {
+                              $s->where('status', '=', 4)
+                                ->andWhere('id', '=', 200);
+                                  });
+                      });
+        $this->assertSame($this->getYaml(__FUNCTION__), $s->getSQL());
+        $this->assertSame($this->getYamlParams(__FUNCTION__), $s->getParams());
+    }
+
+    /**
+     * @dataProvider whereMethodsProvider()
+     */
+    public function testWhereGroupingNestedHeadFirst($method)
+    {
+        $s = $this->getSelector()
+                  ->$method('id', '>', 100)
+                  ->andWhere(function ($s) use ($method) {
+                          $s->$method(function($s) {
+                              $s->where('status', '=', 4)
+                                ->andWhere('id', '=', 200);
+                                  })
+                          ->orWhere('status', '>', 50);
+                      });
+        $this->assertSame($this->getYaml(__FUNCTION__), $s->getSQL());
+        $this->assertSame($this->getYamlParams(__FUNCTION__), $s->getParams());
+    }
+
+    public function testSillyNesting()
+    {
+        $s = $this->getSelector()
+                  ->where(function($s) {
+                      $s->where(function($s) {
+                          $s->where(function($s) {
+                              $s->where(function($s) {
+                                  $s->where(function($s) {
+                                    $s->where('id', '=', 4)
+                                      ->andWhere('id', '=', 4);
+                                  })
+                                    ->andWhere('id', '=', 4);
+                              })
+                                ->andWhere('id', '=', 4);
+                          })
+                            ->andWhere('id', '=', 4);
+                      })
+                        ->andWhere('id', '=', 4);
+                  })
+                  ->andWhere('id', '=', 4);
+        $this->assertSame($this->getYaml(__FUNCTION__), $s->getSQL());
+        $this->assertSame($this->getYamlParams(__FUNCTION__), $s->getParams());
+    }
+
     public function testLimit()
     {
         $s = $this->getSelector()
