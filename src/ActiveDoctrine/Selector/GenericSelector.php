@@ -9,6 +9,7 @@ namespace ActiveDoctrine\Selector;
  **/
 abstract class GenericSelector extends AbstractSelector
 {
+    protected $group_nesting = 0;
 
     public function getSQL()
     {
@@ -54,45 +55,54 @@ abstract class GenericSelector extends AbstractSelector
 
         $query .= ' WHERE ';
 
-        //for the first where, there is no AND / OR logic. Just make
-        //the distinction between an ordinary where and a where in
-        $where = $this->where[0];
-        if ($where[3] === self::AND_WHERE_IN || $where[3] === self::OR_WHERE_IN) {
-            $this->addWhereInSegment($query, $where);
-        } else {
-            $query .= sprintf('%s %s ?', $this->quoteIdentifier($where[0]), $where[1]);
-            $this->addParam($where[0], $where[2]);
-        }
-
-        //loop through the remaining where segments, adding AND/OR
-        //plus the segment.
         $count = count($this->where);
-        for ($i = 1; $i < $count; $i++) {
+        for ($i = 0; $i < $count; $i++) {
             $where = $this->where[$i];
-            switch ($where[3]) {
-            case self::AND_WHERE:
-                $query .= sprintf(' AND %s %s ?', $this->quoteIdentifier($where[0]), $where[1]);
+            $this->maybePrependWhere($query, $where, $i);
+
+            if ($where[3] === self::AND_WHERE || $where[3] === self::OR_WHERE) {
+                $query .= sprintf('%s %s ?', $this->quoteIdentifier($where[0]), $where[1]);
                 $this->addParam($where[0], $where[2]);
-                break;
-            case self::OR_WHERE:
-                $query .= sprintf(' OR %s %s ?', $this->quoteIdentifier($where[0]), $where[1]);
-                $this->addParam($where[0], $where[2]);
-                break;
-            case self::AND_WHERE_IN:
-                $query .= ' AND ';
-                $this->addWhereInSegment($query, $where);
-                break;
-            case self::OR_WHERE_IN:
-                $query .= ' OR ';
-                $this->addWhereInSegment($query, $where);
-                break;
-            default:
-                throw new \InvalidArgumentException(sprintf('Unknown where clause type "%s"', $where[3]));
+                continue;
             }
+            if ($where[3] === self::AND_WHERE_IN || $where[3] === self::OR_WHERE_IN) {
+                $this->addWhereInSegment($query, $where);
+                continue;
+            }
+            if ($where[3] === self::BEGIN_GROUP_AND || $where[3] === self::BEGIN_GROUP_OR) {
+                $query .= '(';
+                $this->group_nesting++;
+                continue;
+            }
+
+            // self::END_GROUP
+            $query .= ')';
         }
     }
 
-    protected function addWhereInSegment(&$query, $where)
+    protected function maybePrependWhere(&$query, array $where, $count)
+    {
+        if ($count === 0) {
+            return;
+        }
+        if ($this->group_nesting > 0) {
+            $this->group_nesting--;
+
+            return;
+        }
+        if ($where[3] === self::AND_WHERE || $where[3] === self::AND_WHERE_IN || $where[3] === self::BEGIN_GROUP_AND) {
+            $query .= ' AND ';
+
+            return;
+        }
+        if ($where[3] === self::OR_WHERE || $where[3] === self::OR_WHERE_IN || $where[3] === self::BEGIN_GROUP_OR) {
+            $query .= ' OR ';
+
+            return;
+        }
+    }
+
+    protected function addWhereInSegment(&$query, array $where)
     {
         $query .= sprintf('%s IN (%s)', $this->quoteIdentifier($where[0]), substr(str_repeat('?, ', count($where[1])), 0, -2));
         $this->addParam($where[0], $where[1]);

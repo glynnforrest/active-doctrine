@@ -27,6 +27,9 @@ abstract class AbstractSelector
     const OR_WHERE = 2;
     const AND_WHERE_IN = 3;
     const OR_WHERE_IN = 4;
+    const END_GROUP = 5;
+    const BEGIN_GROUP_OR = 6;
+    const BEGIN_GROUP_AND = 7;
 
     protected $connection;
     protected $table;
@@ -187,6 +190,20 @@ abstract class AbstractSelector
         $this->param_columns[] = $column;
     }
 
+    protected function doWhere($type, $column, $expression = null, $value = null)
+    {
+        if ($column instanceof \Closure) {
+            $this->where[] = [null, null, null, $type === self::OR_WHERE ? self::BEGIN_GROUP_OR : self::BEGIN_GROUP_AND];
+            $column($this);
+            $this->where[] = [null, null, null, self::END_GROUP];
+
+            return $this;
+        }
+        $this->where[] = [$column, $expression, $value, $type];
+
+        return $this;
+    }
+
     /**
      * Add a 'where' clause to the query.
      *
@@ -194,11 +211,9 @@ abstract class AbstractSelector
      * @param string $expression The comparison, e.g. '=' or '<'
      * @param string $value      The value
      */
-    public function where($column, $expression, $value)
+    public function where($column, $expression = null, $value = null)
     {
-        $this->where[] = [$column, $expression, $value, self::AND_WHERE];
-
-        return $this;
+        return $this->doWhere(self::AND_WHERE, $column, $expression, $value);
     }
 
     /**
@@ -208,11 +223,9 @@ abstract class AbstractSelector
      * @param string $expression The comparison, e.g. '=' or '<'
      * @param string $value      The value
      */
-    public function andWhere($column, $expression, $value)
+    public function andWhere($column, $expression = null, $value = null)
     {
-        $this->where[] = [$column, $expression, $value, self::AND_WHERE];
-
-        return $this;
+        return $this->doWhere(self::AND_WHERE, $column, $expression, $value);
     }
 
     /**
@@ -222,11 +235,9 @@ abstract class AbstractSelector
      * @param string $expression The comparison, e.g. '=' or '<'
      * @param string $value      The value
      */
-    public function orWhere($column, $expression, $value)
+    public function orWhere($column, $expression = null, $value = null)
     {
-        $this->where[] = [$column, $expression, $value, self::OR_WHERE];
-
-        return $this;
+        return $this->doWhere(self::OR_WHERE, $column, $expression, $value);
     }
 
     /**

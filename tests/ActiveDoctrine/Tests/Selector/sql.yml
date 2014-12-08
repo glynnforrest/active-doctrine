@@ -26,6 +26,24 @@ testWhereMoreThanOrLessThan:
 
 params_testWhereMoreThanOrLessThan: [100, 50]
 
+testWhereGrouping:
+    mysql: 'SELECT * FROM `table` WHERE (`id` > ? OR `id` < ?) AND `status` = ?'
+    sqlite: 'SELECT * FROM "table" WHERE ("id" > ? OR "id" < ?) AND "status" = ?'
+
+params_testWhereGrouping: [20, 10, 1]
+
+testWhereGroupingOr:
+    mysql: 'SELECT * FROM `table` WHERE `id` > ? OR (`id` < ? AND `status` = ?)'
+    sqlite: 'SELECT * FROM "table" WHERE "id" > ? OR ("id" < ? AND "status" = ?)'
+
+params_testWhereGroupingOr: [100, 50, 1]
+
+testWhereGroupingAnd:
+    mysql: 'SELECT * FROM `table` WHERE `id` > ? AND (`status` > ? OR `status` = ?)'
+    sqlite: 'SELECT * FROM "table" WHERE "id" > ? AND ("status" > ? OR "status" = ?)'
+
+params_testWhereGroupingAnd: [100, 4, 1]
+
 testLimit:
     mysql: "SELECT * FROM `table` LIMIT 10"
     sqlite: 'SELECT * FROM "table" LIMIT 10'

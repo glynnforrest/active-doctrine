@@ -93,6 +93,60 @@ abstract class SelectorTestCase extends \PHPUnit_Framework_TestCase
         $this->assertSame($this->getYamlParams(__FUNCTION__), $s->getParams());
     }
 
+    public function whereMethodsProvider()
+    {
+        return [
+            ['where'],
+            ['orWhere'],
+            ['andWhere'],
+        ];
+    }
+
+    /**
+     * @dataProvider whereMethodsProvider()
+     */
+    public function testWhereGrouping($method)
+    {
+        $s = $this->getSelector()
+                  ->$method(function ($s) {
+                      $s->where('id', '>', 20)
+                        ->orWhere('id', '<', 10);
+                  })
+                  ->andWhere('status', '=', 1);
+        $this->assertSame($this->getYaml(__FUNCTION__), $s->getSQL());
+        $this->assertSame($this->getYamlParams(__FUNCTION__), $s->getParams());
+    }
+
+    /**
+     * @dataProvider whereMethodsProvider()
+     */
+    public function testWhereGroupingOr($method)
+    {
+        $s = $this->getSelector()
+                  ->$method('id', '>', 100)
+                  ->orWhere(function ($s) use ($method) {
+                      $s->$method('id', '<', 50)
+                        ->andWhere('status', '=', 1);
+                  });
+        $this->assertSame($this->getYaml(__FUNCTION__), $s->getSQL());
+        $this->assertSame($this->getYamlParams(__FUNCTION__), $s->getParams());
+    }
+
+    /**
+     * @dataProvider whereMethodsProvider()
+     */
+    public function testWhereGroupingAnd($method)
+    {
+        $s = $this->getSelector()
+                  ->$method('id', '>', 100)
+                  ->andWhere(function ($s) use ($method) {
+                      $s->$method('status', '>', 4)
+                        ->orWhere('status', '=', 1);
+                  });
+        $this->assertSame($this->getYaml(__FUNCTION__), $s->getSQL());
+        $this->assertSame($this->getYamlParams(__FUNCTION__), $s->getParams());
+    }
+
     public function testLimit()
     {
         $s = $this->getSelector()
