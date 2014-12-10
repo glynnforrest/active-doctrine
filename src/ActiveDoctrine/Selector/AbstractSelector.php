@@ -200,6 +200,10 @@ abstract class AbstractSelector
             return $this;
         }
 
+        if (!$expression) {
+            throw new \InvalidArgumentException('A where clause not containing a closure must have at least 2 arguments.');
+        }
+
         //assume an equality if only two arguments are provided
         if (!$value) {
             $value = $expression;

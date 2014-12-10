@@ -59,20 +59,46 @@ abstract class SelectorTestCase extends \PHPUnit_Framework_TestCase
         $this->assertSame($this->getYaml(__FUNCTION__), $s->getSQL());
     }
 
-    public function testWhereEquals()
+    public function whereMethodsProvider()
+    {
+        return [
+            ['where'],
+            ['orWhere'],
+            ['andWhere'],
+        ];
+    }
+
+    /**
+     * @dataProvider whereMethodsProvider
+     */
+    public function testWhereEquals($method)
     {
         $s = $this->getSelector()
-                  ->where('id', '=', 1);
+                  ->$method('id', '=', 1);
         $this->assertSame($this->getYaml(__FUNCTION__), $s->getSQL());
         $this->assertSame($this->getYamlParams(__FUNCTION__), $s->getParams());
     }
 
-    public function testWhereEqualsShorthand()
+    /**
+     * @dataProvider whereMethodsProvider
+     */
+    public function testWhereEqualsShorthand($method)
     {
         $s = $this->getSelector()
-                  ->where('id', 1);
+                  ->$method('id', 1);
         $this->assertSame($this->getYaml(__FUNCTION__), $s->getSQL());
         $this->assertSame($this->getYamlParams(__FUNCTION__), $s->getParams());
+    }
+
+    /**
+     * @dataProvider whereMethodsProvider
+     */
+    public function testWhereNotEnoughArguments($method)
+    {
+        $msg = 'A where clause not containing a closure must have at least 2 arguments.';
+        $this->setExpectedException('\InvalidArgumentException', $msg);
+        $s = $this->getSelector()
+                  ->$method('id');
     }
 
     public function testWhereLessThan()
@@ -101,17 +127,8 @@ abstract class SelectorTestCase extends \PHPUnit_Framework_TestCase
         $this->assertSame($this->getYamlParams(__FUNCTION__), $s->getParams());
     }
 
-    public function whereMethodsProvider()
-    {
-        return [
-            ['where'],
-            ['orWhere'],
-            ['andWhere'],
-        ];
-    }
-
     /**
-     * @dataProvider whereMethodsProvider()
+     * @dataProvider whereMethodsProvider
      */
     public function testWhereGrouping($method)
     {
@@ -126,7 +143,7 @@ abstract class SelectorTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider whereMethodsProvider()
+     * @dataProvider whereMethodsProvider
      */
     public function testWhereGroupingOr($method)
     {
@@ -141,7 +158,7 @@ abstract class SelectorTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider whereMethodsProvider()
+     * @dataProvider whereMethodsProvider
      */
     public function testWhereGroupingAnd($method)
     {
@@ -156,7 +173,7 @@ abstract class SelectorTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider whereMethodsProvider()
+     * @dataProvider whereMethodsProvider
      */
     public function testWhereGroupingNested($method)
     {
@@ -174,7 +191,7 @@ abstract class SelectorTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider whereMethodsProvider()
+     * @dataProvider whereMethodsProvider
      */
     public function testWhereGroupingNestedHeadFirst($method)
     {
@@ -192,7 +209,7 @@ abstract class SelectorTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider whereMethodsProvider()
+     * @dataProvider whereMethodsProvider
      */
     public function testWhereGroupingWhereIn($method)
     {
