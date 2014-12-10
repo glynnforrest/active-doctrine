@@ -67,6 +67,14 @@ abstract class SelectorTestCase extends \PHPUnit_Framework_TestCase
         $this->assertSame($this->getYamlParams(__FUNCTION__), $s->getParams());
     }
 
+    public function testWhereEqualsShorthand()
+    {
+        $s = $this->getSelector()
+                  ->where('id', 1);
+        $this->assertSame($this->getYaml(__FUNCTION__), $s->getSQL());
+        $this->assertSame($this->getYamlParams(__FUNCTION__), $s->getParams());
+    }
+
     public function testWhereLessThan()
     {
         $s = $this->getSelector()
@@ -221,6 +229,19 @@ abstract class SelectorTestCase extends \PHPUnit_Framework_TestCase
                         ->andWhere('id', '=', 4);
                   })
                   ->andWhere('id', '=', 4);
+        $this->assertSame($this->getYaml(__FUNCTION__), $s->getSQL());
+        $this->assertSame($this->getYamlParams(__FUNCTION__), $s->getParams());
+    }
+
+    public function testWhereNestedShorthandEquals()
+    {
+        $s = $this->getSelector()
+                  ->where('id', 1)
+                  ->orWhere('foo', 'bar')
+                  ->andWhere(function($s) {
+                      $s->where('bar', 'baz')
+                        ->orWhere('foo', 'baz');
+                  });
         $this->assertSame($this->getYaml(__FUNCTION__), $s->getSQL());
         $this->assertSame($this->getYamlParams(__FUNCTION__), $s->getParams());
     }

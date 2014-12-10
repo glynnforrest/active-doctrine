@@ -8,6 +8,12 @@ testWhereEquals:
 
 params_testWhereEquals: [1]
 
+testWhereEqualsShorthand:
+    mysql: "SELECT * FROM `table` WHERE `id` = ?"
+    sqlite: 'SELECT * FROM "table" WHERE "id" = ?'
+
+params_testWhereEqualsShorthand: [1]
+
 testWhereLessThan:
     mysql: "SELECT * FROM `table` WHERE `id` < ?"
     sqlite: 'SELECT * FROM "table" WHERE "id" < ?'
@@ -67,6 +73,12 @@ testSillyNesting:
   sqlite: 'SELECT * FROM "table" WHERE ((((("id" = ? AND "id" = ?) AND "id" = ?) AND "id" = ?) AND "id" = ?) AND "id" = ?) AND "id" = ?'
 
 params_testSillyNesting: [4, 4, 4, 4, 4, 4, 4]
+
+testWhereNestedShorthandEquals:
+    mysql: 'SELECT * FROM `table` WHERE `id` = ? OR `foo` = ? AND (`bar` = ? OR `foo` = ?)'
+    sqlite: 'SELECT * FROM "table" WHERE "id" = ? OR "foo" = ? AND ("bar" = ? OR "foo" = ?)'
+
+params_testWhereNestedShorthandEquals: [1, bar, baz, baz]
 
 testLimit:
     mysql: "SELECT * FROM `table` LIMIT 10"

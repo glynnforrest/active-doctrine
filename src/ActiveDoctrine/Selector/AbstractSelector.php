@@ -199,6 +199,13 @@ abstract class AbstractSelector
 
             return $this;
         }
+
+        //assume an equality if only two arguments are provided
+        if (!$value) {
+            $value = $expression;
+            $expression = '=';
+        }
+
         $this->where[] = [$type, $column, $expression, $value];
 
         return $this;

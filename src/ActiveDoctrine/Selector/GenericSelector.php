@@ -54,7 +54,7 @@ abstract class GenericSelector extends AbstractSelector
          *     [$type],
          *     //etc
          * ]
-         * e.g. ['id', '=', 1, self::AND_WHERE],
+         * e.g. [self::AND_WHERE, 'id', '=', 1],
          *      [self::AND_WHERE_IN, 'id', [3, 4, 5]],
          *      [self::BEGIN_GROUP_AND]
          */
