@@ -193,13 +193,13 @@ abstract class AbstractSelector
     protected function doWhere($type, $column, $expression = null, $value = null)
     {
         if ($column instanceof \Closure) {
-            $this->where[] = [null, null, null, $type === self::OR_WHERE ? self::BEGIN_GROUP_OR : self::BEGIN_GROUP_AND];
+            $this->where[] = [$type === self::OR_WHERE ? self::BEGIN_GROUP_OR : self::BEGIN_GROUP_AND];
             $column($this);
-            $this->where[] = [null, null, null, self::END_GROUP];
+            $this->where[] = [self::END_GROUP];
 
             return $this;
         }
-        $this->where[] = [$column, $expression, $value, $type];
+        $this->where[] = [$type, $column, $expression, $value];
 
         return $this;
     }
@@ -248,7 +248,7 @@ abstract class AbstractSelector
      */
     public function whereIn($column, array $values)
     {
-        $this->where[] = [$column, $values, null, self::AND_WHERE_IN];
+        $this->where[] = [self::AND_WHERE_IN, $column, $values];
 
         return $this;
     }
@@ -261,7 +261,7 @@ abstract class AbstractSelector
      */
     public function andWhereIn($column, array $values)
     {
-        $this->where[] = [$column, $values, null, self::AND_WHERE_IN];
+        $this->where[] = [self::AND_WHERE_IN, $column, $values];
 
         return $this;
     }
@@ -274,7 +274,7 @@ abstract class AbstractSelector
      */
     public function orWhereIn($column, array $values)
     {
-        $this->where[] = [$column, $values, null, self::OR_WHERE_IN];
+        $this->where[] = [self::OR_WHERE_IN, $column, $values];
 
         return $this;
     }

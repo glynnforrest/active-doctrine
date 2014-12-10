@@ -47,10 +47,16 @@ abstract class GenericSelector extends AbstractSelector
         /**
          * $this->where is of the form
          * [
-         *     [$column, $expression, $value, $type],
+         *     [$type, $column, $expression, $value],
+         *     //or
+         *     [$type, $column, $value],
+         *     //or
+         *     [$type],
          *     //etc
          * ]
-         * e.g. ['id', '=', 1, 'self::AND_WHERE']
+         * e.g. ['id', '=', 1, self::AND_WHERE],
+         *      [self::AND_WHERE_IN, 'id', [3, 4, 5]],
+         *      [self::BEGIN_GROUP_AND]
          */
 
         $this->begin_group = true;
@@ -61,16 +67,16 @@ abstract class GenericSelector extends AbstractSelector
             $where = $this->where[$i];
             $this->maybePrependWhere($query, $where);
 
-            if ($where[3] === self::AND_WHERE || $where[3] === self::OR_WHERE) {
-                $query .= sprintf('%s %s ?', $this->quoteIdentifier($where[0]), $where[1]);
-                $this->addParam($where[0], $where[2]);
+            if ($where[0] === self::AND_WHERE || $where[0] === self::OR_WHERE) {
+                $query .= sprintf('%s %s ?', $this->quoteIdentifier($where[1]), $where[2]);
+                $this->addParam($where[1], $where[3]);
                 continue;
             }
-            if ($where[3] === self::AND_WHERE_IN || $where[3] === self::OR_WHERE_IN) {
+            if ($where[0] === self::AND_WHERE_IN || $where[0] === self::OR_WHERE_IN) {
                 $this->addWhereInSegment($query, $where);
                 continue;
             }
-            if ($where[3] === self::BEGIN_GROUP_AND || $where[3] === self::BEGIN_GROUP_OR) {
+            if ($where[0] === self::BEGIN_GROUP_AND || $where[0] === self::BEGIN_GROUP_OR) {
                 $query .= '(';
                 $this->begin_group = true;
                 continue;
@@ -88,12 +94,12 @@ abstract class GenericSelector extends AbstractSelector
 
             return;
         }
-        if ($where[3] === self::AND_WHERE || $where[3] === self::AND_WHERE_IN || $where[3] === self::BEGIN_GROUP_AND) {
+        if ($where[0] === self::AND_WHERE || $where[0] === self::AND_WHERE_IN || $where[0] === self::BEGIN_GROUP_AND) {
             $query .= ' AND ';
 
             return;
         }
-        if ($where[3] === self::OR_WHERE || $where[3] === self::OR_WHERE_IN || $where[3] === self::BEGIN_GROUP_OR) {
+        if ($where[0] === self::OR_WHERE || $where[0] === self::OR_WHERE_IN || $where[0] === self::BEGIN_GROUP_OR) {
             $query .= ' OR ';
 
             return;
@@ -102,8 +108,8 @@ abstract class GenericSelector extends AbstractSelector
 
     protected function addWhereInSegment(&$query, array $where)
     {
-        $query .= sprintf('%s IN (%s)', $this->quoteIdentifier($where[0]), substr(str_repeat('?, ', count($where[1])), 0, -2));
-        $this->addParam($where[0], $where[1]);
+        $query .= sprintf('%s IN (%s)', $this->quoteIdentifier($where[1]), substr(str_repeat('?, ', count($where[2])), 0, -2));
+        $this->addParam($where[1], $where[2]);
     }
 
     protected function addOrderBy(&$query)
