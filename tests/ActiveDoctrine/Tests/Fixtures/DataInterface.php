@@ -1,6 +1,6 @@
 <?php
 
-namespace ActiveDoctrine\Tests\Fixtures\Data;
+namespace ActiveDoctrine\Tests\Fixtures;
 
 use Doctrine\DBAL\Connection;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace ActiveDoctrine\Tests\Fixtures\Entities\Bookshop;
+namespace ActiveDoctrine\Tests\Fixtures\Bookshop;
 
 use ActiveDoctrine\Entity\Entity;
 

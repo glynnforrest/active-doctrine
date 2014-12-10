@@ -1,6 +1,6 @@
 <?php
 
-namespace ActiveDoctrine\Tests\Fixtures\Repository;
+namespace ActiveDoctrine\Tests\Fixtures\Bookshop;
 
 use ActiveDoctrine\Repository\AbstractRepository;
 
@@ -11,5 +11,5 @@ use ActiveDoctrine\Repository\AbstractRepository;
  **/
 class BookRepository extends AbstractRepository
 {
-    protected $entity_class = 'ActiveDoctrine\Tests\Fixtures\Entities\Bookshop\Book';
+    protected $entity_class = 'ActiveDoctrine\Tests\Fixtures\Bookshop\Book';
 }

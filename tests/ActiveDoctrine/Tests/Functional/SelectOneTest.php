@@ -2,7 +2,7 @@
 
 namespace ActiveDoctrine\Tests\Functional;
 
-use ActiveDoctrine\Tests\Fixtures\Entities\Bookshop\Book;
+use ActiveDoctrine\Tests\Fixtures\Bookshop\Book;
 use ActiveDoctrine\Selector\AbstractSelector;
 
 /**
@@ -45,7 +45,7 @@ class SelectOneTest extends FunctionalTestCase
         $this->loadData('bookshop');
         $book = $selector->where('id', '=', 3)
             ->execute();
-        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Entities\Bookshop\Book', $book);
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Bookshop\Book', $book);
         $this->assertSame('3', $book->id);
     }
 
@@ -57,7 +57,7 @@ class SelectOneTest extends FunctionalTestCase
         $sql = $s->getSQL();
         $params = $s->getParams();
         $book = Book::selectOneSQL($this->getConn(), $sql, $params);
-        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Entities\Bookshop\Book', $book);
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Bookshop\Book', $book);
         $this->assertSame('3', $book->id);
     }
 
@@ -70,7 +70,7 @@ class SelectOneTest extends FunctionalTestCase
         $book = $selector->orderBy('id', 'DESC')
             ->limit(100)
             ->execute();
-        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Entities\Bookshop\Book', $book);
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Bookshop\Book', $book);
         $this->assertSame('50', $book->id);
     }
 

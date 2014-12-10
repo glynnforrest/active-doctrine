@@ -2,8 +2,8 @@
 
 namespace ActiveDoctrine\Tests\Functional;
 
-use ActiveDoctrine\Tests\Fixtures\Entities\Bookshop\Book;
-use ActiveDoctrine\Tests\Fixtures\Entities\Events\Event;
+use ActiveDoctrine\Tests\Fixtures\Bookshop\Book;
+use ActiveDoctrine\Tests\Fixtures\Events\Event;
 
 /**
  * InsertTest
@@ -38,7 +38,7 @@ class InsertTest extends FunctionalTestCase
         $book->$insert_method();
         //select it to check it has been inserted
         $selected = Book::selectOne($conn)->execute();
-        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Entities\Bookshop\Book', $selected);
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Bookshop\Book', $selected);
         $this->assertEquals($book->getValues(), $selected->getValues());
     }
 

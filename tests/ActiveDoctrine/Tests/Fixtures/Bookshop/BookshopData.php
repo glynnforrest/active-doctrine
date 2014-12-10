@@ -1,8 +1,9 @@
 <?php
 
-namespace ActiveDoctrine\Tests\Fixtures\Data;
+namespace ActiveDoctrine\Tests\Fixtures\Bookshop;
 
 use Doctrine\DBAL\Connection;
+use ActiveDoctrine\Tests\Fixtures\DataInterface;
 
 /**
  * BookshopData

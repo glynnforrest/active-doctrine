@@ -1,6 +1,6 @@
 <?php
 
-namespace ActiveDoctrine\Tests\Fixtures\Entities\Events;
+namespace ActiveDoctrine\Tests\Fixtures\Events;
 
 use ActiveDoctrine\Entity\Entity;
 

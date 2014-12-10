@@ -2,7 +2,7 @@
 
 namespace ActiveDoctrine\Tests\Functional;
 
-use ActiveDoctrine\Tests\Fixtures\Entities\Events\Event;
+use ActiveDoctrine\Tests\Fixtures\Events\Event;
 
 /**
  * SelectWithTypesTest
@@ -23,7 +23,7 @@ class SelectWithTypesTest extends FunctionalTestCase
         $this->assertInstanceOf('ActiveDoctrine\Entity\EntityCollection', $events);
         $this->assertSame(1, count($events));
         $event = $events[0];
-        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Entities\Events\Event', $event);
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Events\Event', $event);
         $this->assertSame('Millennium', $event->name);
         $this->assertEquals($date, $event->start_time);
     }
@@ -36,7 +36,7 @@ class SelectWithTypesTest extends FunctionalTestCase
         $event = Event::selectOne($this->getConn())
             ->where('start_time', '=', $date)
             ->execute();
-        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Entities\Events\Event', $event);
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Events\Event', $event);
         $this->assertSame('Millennium', $event->name);
         $this->assertEquals($date, $event->start_time);
     }

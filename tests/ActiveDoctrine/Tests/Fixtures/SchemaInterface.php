@@ -1,6 +1,6 @@
 <?php
 
-namespace ActiveDoctrine\Tests\Fixtures\Schemas;
+namespace ActiveDoctrine\Tests\Fixtures;
 
 use Doctrine\DBAL\Schema\Schema;
 

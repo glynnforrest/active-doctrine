@@ -2,7 +2,7 @@
 
 namespace ActiveDoctrine\Tests\Functional;
 
-use ActiveDoctrine\Tests\Fixtures\Entities\Bookshop\Book;
+use ActiveDoctrine\Tests\Fixtures\Bookshop\Book;
 
 /**
  * SelectCountTest

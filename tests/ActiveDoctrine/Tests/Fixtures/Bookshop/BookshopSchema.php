@@ -1,8 +1,9 @@
 <?php
 
-namespace ActiveDoctrine\Tests\Fixtures\Schemas;
+namespace ActiveDoctrine\Tests\Fixtures\Bookshop;
 
 use Doctrine\DBAL\Schema\Schema;
+use ActiveDoctrine\Tests\Fixtures\SchemaInterface;
 
 /**
  * BookshopSchema

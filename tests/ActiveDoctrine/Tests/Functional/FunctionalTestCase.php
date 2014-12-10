@@ -78,7 +78,7 @@ abstract class FunctionalTestCase extends \PHPUnit_Framework_TestCase
         $current = $conn->getSchemaManager()->createSchema();
         $new = clone $current;
 
-        $schema_class = 'ActiveDoctrine\Tests\Fixtures\Schemas\\' . ucfirst($entity_group) . 'Schema';
+        $schema_class = sprintf('ActiveDoctrine\Tests\Fixtures\%s\%sSchema', ucfirst($entity_group), ucfirst($entity_group));
         $schema = new $schema_class();
 
         try {
@@ -99,7 +99,7 @@ abstract class FunctionalTestCase extends \PHPUnit_Framework_TestCase
 
     protected function loadData($entity_group)
     {
-        $data_class = 'ActiveDoctrine\Tests\Fixtures\Data\\' . ucfirst($entity_group) . 'Data';
+        $data_class = sprintf('ActiveDoctrine\Tests\Fixtures\%s\%sData', ucfirst($entity_group), ucfirst($entity_group));
         $data = new $data_class();
         $data->loadData($this->getConn());
 

@@ -2,7 +2,7 @@
 
 namespace ActiveDoctrine\Tests\Repository;
 
-use ActiveDoctrine\Tests\Fixtures\Repository\BookRepository;
+use ActiveDoctrine\Tests\Fixtures\Bookshop\BookRepository;
 
 /**
  * AbstractRepositoryTest
@@ -31,7 +31,7 @@ class AbstractRepositoryTest extends \PHPUnit_Framework_TestCase
 
     public function testCreate()
     {
-        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Entities\Bookshop\Book', $this->repo->create());
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Bookshop\Book', $this->repo->create());
     }
 
     public function testFindAll()
@@ -102,7 +102,7 @@ class AbstractRepositoryTest extends \PHPUnit_Framework_TestCase
                    ->will($this->returnValue($stmt));
 
         $book = $this->repo->findOneBy(['id' => 4]);
-        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Entities\Bookshop\Book', $book);
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Bookshop\Book', $book);
         $this->assertSame(['name' => 'foo', 'id' => 4], $book->getValues());
     }
 }

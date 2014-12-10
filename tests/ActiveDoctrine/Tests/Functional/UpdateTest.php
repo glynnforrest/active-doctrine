@@ -2,8 +2,8 @@
 
 namespace ActiveDoctrine\Tests\Functional;
 
-use ActiveDoctrine\Tests\Fixtures\Entities\Bookshop\Book;
-use ActiveDoctrine\Tests\Fixtures\Entities\Events\Event;
+use ActiveDoctrine\Tests\Fixtures\Bookshop\Book;
+use ActiveDoctrine\Tests\Fixtures\Events\Event;
 
 /**
  * UpdateTest

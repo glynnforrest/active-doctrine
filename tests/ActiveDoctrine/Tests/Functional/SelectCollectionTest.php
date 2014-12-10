@@ -2,7 +2,7 @@
 
 namespace ActiveDoctrine\Tests\Functional;
 
-use ActiveDoctrine\Tests\Fixtures\Entities\Bookshop\Book;
+use ActiveDoctrine\Tests\Fixtures\Bookshop\Book;
 use ActiveDoctrine\Selector\AbstractSelector;
 
 /**
@@ -34,7 +34,7 @@ class SelectCollectionTest extends FunctionalTestCase
         $this->assertInstanceOf('ActiveDoctrine\Entity\EntityCollection', $books);
         $this->assertSame(50, count($books));
         $book = $books[0];
-        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Entities\Bookshop\Book', $book);
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Bookshop\Book', $book);
         $this->assertSame('Book 1', $book->name);
         $this->assertSame('The very first book', $book->description);
         $this->assertSame('1', $book->authors_id);
@@ -50,7 +50,7 @@ class SelectCollectionTest extends FunctionalTestCase
         $this->assertInstanceOf('ActiveDoctrine\Entity\EntityCollection', $books);
         $this->assertSame(50, count($books));
         $book = $books[0];
-        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Entities\Bookshop\Book', $book);
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Bookshop\Book', $book);
         $this->assertSame('Book 1', $book->name);
         $this->assertSame('The very first book', $book->description);
         $this->assertSame('1', $book->authors_id);
@@ -65,7 +65,7 @@ class SelectCollectionTest extends FunctionalTestCase
         $this->assertInstanceOf('ActiveDoctrine\Entity\EntityCollection', $books);
         $this->assertSame(1, count($books));
         $book = $books[0];
-        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Entities\Bookshop\Book', $book);
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Bookshop\Book', $book);
         $this->assertSame('Book 3', $book->name);
         $this->assertSame('Book 3 description', $book->description);
         $this->assertSame('3', $book->authors_id);
@@ -114,7 +114,7 @@ class SelectCollectionTest extends FunctionalTestCase
         $this->assertInstanceOf('ActiveDoctrine\Entity\EntityCollection', $books);
         $this->assertSame(50, count($books));
         $book = $books[0];
-        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Entities\Bookshop\Book', $book);
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Bookshop\Book', $book);
         $this->assertSame('50', $book->get('id'));
     }
 
