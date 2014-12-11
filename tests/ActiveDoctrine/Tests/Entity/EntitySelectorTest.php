@@ -33,7 +33,7 @@ class EntitySelectorTest extends \PHPUnit_Framework_TestCase
                    ->method('getDriver')
                    ->will($this->returnValue($driver));
         $selector = new MysqlSelector($this->conn, 'books');
-        $entity_class = 'ActiveDoctrine\Tests\Entity\Book';
+        $entity_class = 'ActiveDoctrine\Tests\Fixtures\Bookshop\Book';
         $this->selector = new EntitySelector($selector, $entity_class);
     }
 
@@ -127,7 +127,7 @@ class EntitySelectorTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame($this->selector, $this->selector->one());
         $book = $this->selector->where('authors_id', '=', 4)->execute();
-        $this->assertInstanceOf('ActiveDoctrine\Tests\Entity\Book', $book);
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Bookshop\Book', $book);
         $this->assertSame('something', $book->getRaw('name'));
         $this->assertSame(4, $book->getRaw('authors_id'));
     }
@@ -167,11 +167,11 @@ class EntitySelectorTest extends \PHPUnit_Framework_TestCase
         $book = $this->selector->one()
                                ->with('details')
                                ->execute();
-        $this->assertInstanceOf('ActiveDoctrine\Tests\Entity\Book', $book);
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Bookshop\Book', $book);
         $this->assertSame('something', $book->name);
 
         $details = $book->getRelation('details');
-        $this->assertInstanceOf('ActiveDoctrine\Tests\Entity\BookDetails', $details);
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Bookshop\BookDetails', $details);
         $this->assertSame('foo', $details->synopsis);
     }
 
@@ -205,16 +205,16 @@ class EntitySelectorTest extends \PHPUnit_Framework_TestCase
                    ))
                    ->will($this->onConsecutiveCalls($details_statement, $book_statement));
 
-        $entity_class = 'ActiveDoctrine\Tests\Entity\BookDetails';
+        $entity_class = 'ActiveDoctrine\Tests\Fixtures\Bookshop\BookDetails';
         $selector = new EntitySelector(new MysqlSelector($this->conn, 'book_details'), $entity_class);
         $details = $selector->one()
                             ->with('book')
                             ->execute();
-        $this->assertInstanceOf('ActiveDoctrine\Tests\Entity\BookDetails', $details);
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Bookshop\BookDetails', $details);
         $this->assertSame('foo synopsis', $details->synopsis);
 
         $book = $details->getRelation('book');
-        $this->assertInstanceOf('ActiveDoctrine\Tests\Entity\Book', $book);
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Bookshop\Book', $book);
         $this->assertSame('foo', $book->name);
     }
 
@@ -253,12 +253,12 @@ class EntitySelectorTest extends \PHPUnit_Framework_TestCase
                    ))
                    ->will($this->onConsecutiveCalls($author_statement, $book_statement));
 
-        $entity_class = 'ActiveDoctrine\Tests\Entity\Author';
+        $entity_class = 'ActiveDoctrine\Tests\Fixtures\Bookshop\Author';
         $selector = new EntitySelector(new MysqlSelector($this->conn, 'authors'), $entity_class);
         $author = $selector->one()
                            ->with('books')
                            ->execute();
-        $this->assertInstanceOf('ActiveDoctrine\Tests\Entity\Author', $author);
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Bookshop\Author', $author);
         $this->assertSame('author', $author->name);
 
         $books = $author->getRelation('books');
@@ -314,9 +314,9 @@ class EntitySelectorTest extends \PHPUnit_Framework_TestCase
 
         for ($i = 0; $i < 2; $i++) {
             $book = $books[$i];
-            $this->assertInstanceOf('ActiveDoctrine\Tests\Entity\Book', $book);
+            $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Bookshop\Book', $book);
             $details = $book->getRelation('details');
-            $this->assertInstanceOf('ActiveDoctrine\Tests\Entity\BookDetails', $details);
+            $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Bookshop\BookDetails', $details);
             $this->assertSame($book->getRaw('name') . '_details', $details->synopsis);
         }
     }
@@ -364,7 +364,7 @@ class EntitySelectorTest extends \PHPUnit_Framework_TestCase
                    ))
                    ->will($this->onConsecutiveCalls($author_statement, $book_statement));
 
-        $entity_class = 'ActiveDoctrine\Tests\Entity\Author';
+        $entity_class = 'ActiveDoctrine\Tests\Fixtures\Bookshop\Author';
         $selector = new EntitySelector(new MysqlSelector($this->conn, 'authors'), $entity_class);
         $authors = $selector->limit(3)
                             ->with('books')
@@ -441,9 +441,9 @@ class EntitySelectorTest extends \PHPUnit_Framework_TestCase
 
         for ($i = 0; $i < 2; $i++) {
             $book = $books[$i];
-            $this->assertInstanceOf('ActiveDoctrine\Tests\Entity\Book', $book);
+            $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Bookshop\Book', $book);
             $author = $book->getRelation('author');
-            $this->assertInstanceOf('ActiveDoctrine\Tests\Entity\Author', $author);
+            $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Bookshop\Author', $author);
             $this->assertSame($book->getRaw('name') . '_author', $author->name);
         }
     }
@@ -491,7 +491,7 @@ class EntitySelectorTest extends \PHPUnit_Framework_TestCase
 
         for ($i = 0; $i < 2; $i++) {
             $book = $books[$i];
-            $this->assertInstanceOf('ActiveDoctrine\Tests\Entity\Book', $book);
+            $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Bookshop\Book', $book);
             $this->assertFalse($book->getRelation('author'));;
         }
     }

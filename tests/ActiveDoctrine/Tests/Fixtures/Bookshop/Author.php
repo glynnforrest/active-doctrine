@@ -1,6 +1,6 @@
 <?php
 
-namespace ActiveDoctrine\Tests\Entity;
+namespace ActiveDoctrine\Tests\Fixtures\Bookshop;
 
 use ActiveDoctrine\Entity\Entity;
 
@@ -18,7 +18,7 @@ class Author extends Entity
         'name',
     ];
     protected static $relations = [
-        'books' => ['has_many', 'ActiveDoctrine\Tests\Entity\Book', 'authors_id', 'id']
+        'books' => ['has_many', 'ActiveDoctrine\Tests\Fixtures\Bookshop\Book', 'authors_id', 'id']
     ];
 
 }

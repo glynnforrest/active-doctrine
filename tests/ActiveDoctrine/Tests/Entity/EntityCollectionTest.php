@@ -3,6 +3,7 @@
 namespace ActiveDoctrine\Tests\Entity;
 
 use ActiveDoctrine\Entity\EntityCollection;
+use ActiveDoctrine\Tests\Fixtures\SetterGetter\UpperCase;
 
 /**
  * EntityCollectionTest
@@ -25,14 +26,14 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
     {
         $collection = new EntityCollection();
         $this->assertSame([], $collection->getEntities());
-        $entities = [new Book($this->conn), new Book($this->conn)];
+        $entities = [new UpperCase($this->conn), new UpperCase($this->conn)];
         $this->assertSame($collection, $collection->setEntities($entities));
         $this->assertSame($entities, $collection->getEntities());
     }
 
     public function testAddEntitiesOnConstruct()
     {
-        $entities = [new Book($this->conn), new Book($this->conn)];
+        $entities = [new UpperCase($this->conn), new UpperCase($this->conn)];
         $collection = new EntityCollection($entities);
         $this->assertSame($entities, $collection->getEntities());
     }
@@ -44,26 +45,26 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
 
     public function testIterator()
     {
-        $book1 = new Book($this->conn);
-        $book2 = new Book($this->conn);
-        $book3 = new Book($this->conn);
-        $collection = new EntityCollection([$book1, $book2, $book3]);
+        $item1 = new UpperCase($this->conn);
+        $item2 = new UpperCase($this->conn);
+        $item3 = new UpperCase($this->conn);
+        $collection = new EntityCollection([$item1, $item2, $item3]);
 
         $this->assertInstanceOf('\ArrayIterator', $iterator = $collection->getIterator());
-        $this->assertSame([$book1, $book2, $book3], $iterator->getArrayCopy());
+        $this->assertSame([$item1, $item2, $item3], $iterator->getArrayCopy());
     }
 
     public function testForeach()
     {
-        $book1 = new Book($this->conn);
-        $book2 = new Book($this->conn);
-        $book3 = new Book($this->conn);
-        $expected = [$book1, $book2, $book3];
+        $item1 = new UpperCase($this->conn);
+        $item2 = new UpperCase($this->conn);
+        $item3 = new UpperCase($this->conn);
+        $expected = [$item1, $item2, $item3];
         $collection = new EntityCollection($expected);
 
         $results = [];
-        foreach ($collection as $book) {
-            $results[] = $book;
+        foreach ($collection as $item) {
+            $results[] = $item;
         }
 
         $this->assertSame($expected, $results);
@@ -78,9 +79,9 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
     {
         $collection = new EntityCollection();
         $this->assertSame(0, count($collection));
-        $collection->setEntities([new Book($this->conn)]);
+        $collection->setEntities([new UpperCase($this->conn)]);
         $this->assertSame(1, count($collection));
-        $collection->setEntities([new Book($this->conn), new Book($this->conn)]);
+        $collection->setEntities([new UpperCase($this->conn), new UpperCase($this->conn)]);
         $this->assertSame(2, count($collection));
         $collection->setEntities([]);
         $this->assertSame(0, count($collection));
@@ -100,28 +101,28 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse(isset($collection[0]));
         $this->assertFalse(isset($collection[3]));
 
-        $book1 = new Book($this->conn);
-        $book2 = new Book($this->conn);
+        $item1 = new UpperCase($this->conn);
+        $item2 = new UpperCase($this->conn);
 
-        $collection[] = $book1;
-        $this->assertSame($book1, $collection[0]);
+        $collection[] = $item1;
+        $this->assertSame($item1, $collection[0]);
 
-        $collection[] = $book2;
-        $this->assertSame($book2, $collection[1]);
+        $collection[] = $item2;
+        $this->assertSame($item2, $collection[1]);
 
-        $collection[0] = $book2;
-        $collection[1] = $book1;
+        $collection[0] = $item2;
+        $collection[1] = $item1;
 
-        $this->assertSame($book1, $collection[1]);
-        $this->assertSame($book2, $collection[0]);
+        $this->assertSame($item1, $collection[1]);
+        $this->assertSame($item2, $collection[0]);
         $this->assertFalse(isset($collection[3]));
 
-        $this->assertSame([$book2, $book1], $collection->getEntities());
+        $this->assertSame([$item2, $item1], $collection->getEntities());
 
         unset($collection[1]);
         $this->assertFalse(isset($collection[1]));
         $this->assertNull($collection[1]);
-        $this->assertSame([$book2], $collection->getEntities());
+        $this->assertSame([$item2], $collection->getEntities());
 
         unset($collection[0]);
         $this->assertFalse(isset($collection[0]));
@@ -133,24 +134,24 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
     {
         $collection = new EntityCollection();
         $this->setExpectedException('\InvalidArgumentException');
-        $collection['foo'] = new Book($this->conn);
+        $collection['foo'] = new UpperCase($this->conn);
     }
 
     public function testGetColumn()
     {
         $collection = new EntityCollection();
-        $collection[] = new Book($this->conn, ['description' => 'foo']);
-        $collection[] = new Book($this->conn);
-        $collection[] = new Book($this->conn, ['description' => 'bar']);
+        $collection[] = new UpperCase($this->conn, ['description' => 'foo']);
+        $collection[] = new UpperCase($this->conn);
+        $collection[] = new UpperCase($this->conn, ['description' => 'bar']);
         $this->assertSame(['FOO', '', 'BAR'], $collection->getColumn('description'));
     }
 
     public function testGetColumnRaw()
     {
         $collection = new EntityCollection();
-        $collection[] = new Book($this->conn, ['description' => 'foo']);
-        $collection[] = new Book($this->conn);
-        $collection[] = new Book($this->conn, ['description' => 'bar']);
+        $collection[] = new UpperCase($this->conn, ['description' => 'foo']);
+        $collection[] = new UpperCase($this->conn);
+        $collection[] = new UpperCase($this->conn, ['description' => 'bar']);
         $this->assertSame(['foo', null, 'bar'], $collection->getColumnRaw('description'));
     }
 
@@ -158,13 +159,13 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
     {
         $collection = new EntityCollection();
         for ($i = 1; $i < 9; $i++) {
-            ${'book' . $i} = new Book($this->conn);
-            $collection[] = ${'book' . $i};
+            ${'item' . $i} = new UpperCase($this->conn);
+            $collection[] = ${'item' . $i};
         }
         $expected = [
-            [$book1, $book2, $book3],
-            [$book4, $book5, $book6],
-            [$book7, $book8]
+            [$item1, $item2, $item3],
+            [$item4, $item5, $item6],
+            [$item7, $item8]
         ];
         $this->assertSame($expected, $collection->getEntitiesChunked(3));
     }
@@ -172,9 +173,9 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
     public function testSetColumn()
     {
         $collection = new EntityCollection();
-        $collection[] = new Book($this->conn, ['name' => 'foo']);
-        $collection[] = new Book($this->conn);
-        $collection[] = new Book($this->conn, ['name' => 'bar']);
+        $collection[] = new UpperCase($this->conn, ['name' => 'foo']);
+        $collection[] = new UpperCase($this->conn);
+        $collection[] = new UpperCase($this->conn, ['name' => 'bar']);
         $collection->setColumn('name', 'changed');
         $this->assertSame(['CHANGED', 'CHANGED', 'CHANGED'], $collection->getColumn('name'));
     }
@@ -182,9 +183,9 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
     public function testSetColumnRaw()
     {
         $collection = new EntityCollection();
-        $collection[] = new Book($this->conn, ['name' => 'foo']);
-        $collection[] = new Book($this->conn);
-        $collection[] = new Book($this->conn, ['name' => 'bar']);
+        $collection[] = new UpperCase($this->conn, ['name' => 'foo']);
+        $collection[] = new UpperCase($this->conn);
+        $collection[] = new UpperCase($this->conn, ['name' => 'bar']);
         $collection->setColumnRaw('name', 'changed');
         $this->assertSame(['changed', 'changed', 'changed'], $collection->getColumn('name'));
     }
@@ -192,14 +193,14 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
     public function testSave()
     {
         for ($i = 1; $i < 4; $i++) {
-            ${'book' . $i} = $this->getMockBuilder('ActiveDoctrine\Tests\Entity\Book')
+            ${'item' . $i} = $this->getMockBuilder('ActiveDoctrine\Tests\Fixtures\SetterGetter\UpperCase')
                                   ->disableOriginalConstructor()
                                   ->getMock();
-            ${'book' . $i}->expects($this->once())
+            ${'item' . $i}->expects($this->once())
                                 ->method('save');
         }
         $collection = new EntityCollection();
-        $collection->setEntities([$book1, $book2, $book3]);
+        $collection->setEntities([$item1, $item2, $item3]);
 
         $this->assertSame($collection, $collection->save());
     }
@@ -207,12 +208,12 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
     public function testGetOne()
     {
         for ($i = 1; $i < 4; $i++) {
-            ${'book' . $i} = new Book($this->conn, ['name' => 'book' . $i]);
+            ${'item' . $i} = new UpperCase($this->conn, ['name' => 'item' . $i]);
         }
         $collection = new EntityCollection;
-        $collection->setEntities([$book1, $book2, $book3]);
+        $collection->setEntities([$item1, $item2, $item3]);
 
-        $this->assertSame($book3, $collection->getOne('name', 'book3'));
+        $this->assertSame($item3, $collection->getOne('name', 'item3'));
 
         $this->assertNull($collection->getOne('name', 'foo'));
     }
@@ -220,52 +221,52 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
     public function testRemove()
     {
         for ($i = 1; $i < 4; $i++) {
-            ${'book' . $i} = new Book($this->conn, ['name' => 'book' . $i]);
+            ${'item' . $i} = new UpperCase($this->conn, ['name' => 'item' . $i]);
         }
         $collection = new EntityCollection;
-        $collection->setEntities([$book1, $book2, $book3]);
+        $collection->setEntities([$item1, $item2, $item3]);
 
-        $this->assertSame($book2, $collection->remove('name', 'book2'));
-        $this->assertSame([$book1, $book3], $collection->getEntities());
-        $this->assertNull($collection->remove('name', 'book2'));
+        $this->assertSame($item2, $collection->remove('name', 'item2'));
+        $this->assertSame([$item1, $item3], $collection->getEntities());
+        $this->assertNull($collection->remove('name', 'item2'));
 
-        $this->assertSame($book3, $collection->remove('name', 'book3'));
-        $this->assertSame([$book1], $collection->getEntities());
-        $this->assertNull($collection->remove('name', 'book3'));
+        $this->assertSame($item3, $collection->remove('name', 'item3'));
+        $this->assertSame([$item1], $collection->getEntities());
+        $this->assertNull($collection->remove('name', 'item3'));
 
-        $this->assertSame($book1, $collection->remove('name', 'book1'));
+        $this->assertSame($item1, $collection->remove('name', 'item1'));
         $this->assertSame([], $collection->getEntities());
-        $this->assertNull($collection->remove('name', 'book1'));
+        $this->assertNull($collection->remove('name', 'item1'));
     }
 
     public function testGetOneAndRemoveUseGet()
     {
         $collection = new EntityCollection;
         for ($i = 1; $i < 4; $i++) {
-            ${'book' . $i} = new Book($this->conn, ['description' => 'book' . $i]);
+            ${'item' . $i} = new UpperCase($this->conn, ['description' => 'item' . $i]);
         }
-        $collection->setEntities([$book1, $book2, $book3]);
+        $collection->setEntities([$item1, $item2, $item3]);
 
-        //book has a getterDescription() method that returns the upper case description
-        $this->assertSame($book2, $collection->getOne('description', 'BOOK2'));
-        $this->assertSame($book2, $collection->remove('description', 'BOOK2'));
+        //item has a getterDescription() method that returns the upper case description
+        $this->assertSame($item2, $collection->getOne('description', 'ITEM2'));
+        $this->assertSame($item2, $collection->remove('description', 'ITEM2'));
     }
 
     public function testFilter()
     {
         $collection = new EntityCollection;
         for ($i = 1; $i < 9; $i++) {
-            ${'book' . $i} = $book = new Book($this->conn, ['name' => 'book' . $i, 'description' => 'book' . $i]);
-            $collection[] = $book;
+            ${'item' . $i} = $item = new UpperCase($this->conn, ['name' => 'item' . $i, 'description' => 'item' . $i]);
+            $collection[] = $item;
         }
 
         $callback = function ($entity) {
-            return $entity->description === 'BOOK3' || $entity->name === 'book1';
+            return $entity->description === 'ITEM3' || $entity->name === 'item1';
         };
 
         $filtered = $collection->filter($callback);
         $this->assertInstanceOf('ActiveDoctrine\Entity\EntityCollection', $filtered);
-        $this->assertSame([$book1, $book3], $filtered->getEntities());
+        $this->assertSame([$item1, $item3], $filtered->getEntities());
     }
 
 }
