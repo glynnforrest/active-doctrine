@@ -1,25 +1,23 @@
 <?php
 
-namespace ActiveDoctrine\Tests\Fixtures\Events;
+namespace ActiveDoctrine\Tests\Fixtures\MusicFestival;
 
 use ActiveDoctrine\Entity\Entity;
 
 /**
- * Event
+ * Performance
  *
  * @author Glynn Forrest <me@glynnforrest.com>
  **/
-class Event extends Entity
+class Performance extends Entity
 {
-
-    protected static $table = 'events';
+    protected static $table = 'performances';
     protected static $fields = [
         'id',
         'name',
-        'start_time'
+        'start_time',
     ];
     protected static $types = [
-        'start_time' => 'datetime'
+        'start_time' => 'datetime',
     ];
-
 }

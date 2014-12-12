@@ -3,7 +3,7 @@
 namespace ActiveDoctrine\Tests\Functional;
 
 use ActiveDoctrine\Tests\Fixtures\Bookshop\Book;
-use ActiveDoctrine\Tests\Fixtures\Events\Event;
+use ActiveDoctrine\Tests\Fixtures\MusicFestival\Performance;
 
 /**
  * UpdateTest
@@ -45,18 +45,18 @@ class UpdateTest extends FunctionalTestCase
      */
     public function testUpdateWithType($update_method)
     {
-        $this->loadSchema('events');
-        $this->loadData('events');
-        $event = Event::selectOne($this->getConn())
+        $this->loadSchema('music_festival');
+        $this->loadData('music_festival');
+        $perf = Performance::selectOne($this->getConn())
             ->where('id', '=', 2)
             ->execute();
-        $this->assertSame('Millennium', $event->name);
-        $event->name = 'Party';
+        $this->assertSame('Millennium', $perf->name);
+        $perf->name = 'Party';
         $now = new \DateTime();
-        $event->start_time = $now;
-        $event->$update_method();
+        $perf->start_time = $now;
+        $perf->$update_method();
         //select it again to check the row has been updated
-        $selected = Event::selectOne($this->getConn())
+        $selected = Performance::selectOne($this->getConn())
             ->where('id', '=', 2)
             ->execute();
         $this->assertSame('Party', $selected->name);

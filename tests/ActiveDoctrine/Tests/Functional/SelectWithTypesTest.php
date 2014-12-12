@@ -2,7 +2,7 @@
 
 namespace ActiveDoctrine\Tests\Functional;
 
-use ActiveDoctrine\Tests\Fixtures\Events\Event;
+use ActiveDoctrine\Tests\Fixtures\MusicFestival\Performance;
 
 /**
  * SelectWithTypesTest
@@ -11,34 +11,32 @@ use ActiveDoctrine\Tests\Fixtures\Events\Event;
  **/
 class SelectWithTypesTest extends FunctionalTestCase
 {
-
     public function testSelectTypeConversion()
     {
         $date = new \DateTime('2000-01-01');
-        $this->loadSchema('events');
-        $this->loadData('events');
-        $events = Event::select($this->getConn())
+        $this->loadSchema('music_festival');
+        $this->loadData('music_festival');
+        $perfs = Performance::select($this->getConn())
             ->where('start_time', '=', $date)
             ->execute();
-        $this->assertInstanceOf('ActiveDoctrine\Entity\EntityCollection', $events);
-        $this->assertSame(1, count($events));
-        $event = $events[0];
-        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Events\Event', $event);
-        $this->assertSame('Millennium', $event->name);
-        $this->assertEquals($date, $event->start_time);
+        $this->assertInstanceOf('ActiveDoctrine\Entity\EntityCollection', $perfs);
+        $this->assertSame(1, count($perfs));
+        $perf = $perfs[0];
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\MusicFestival\Performance', $perf);
+        $this->assertSame('Millennium', $perf->name);
+        $this->assertEquals($date, $perf->start_time);
     }
 
     public function testSelectOneTypeConversion()
     {
         $date = new \DateTime('2000-01-01');
-        $this->loadSchema('events');
-        $this->loadData('events');
-        $event = Event::selectOne($this->getConn())
+        $this->loadSchema('music_festival');
+        $this->loadData('music_festival');
+        $perf = Performance::selectOne($this->getConn())
             ->where('start_time', '=', $date)
             ->execute();
-        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Events\Event', $event);
-        $this->assertSame('Millennium', $event->name);
-        $this->assertEquals($date, $event->start_time);
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\MusicFestival\Performance', $perf);
+        $this->assertSame('Millennium', $perf->name);
+        $this->assertEquals($date, $perf->start_time);
     }
-
 }

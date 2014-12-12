@@ -1,18 +1,17 @@
 <?php
 
-namespace ActiveDoctrine\Tests\Fixtures\Events;
+namespace ActiveDoctrine\Tests\Fixtures\MusicFestival;
 
 use Doctrine\DBAL\Connection;
 use ActiveDoctrine\Tests\Fixtures\DataInterface;
 
 /**
- * EventsData
+ * MusicFestivalData
  *
  * @author Glynn Forrest <me@glynnforrest.com>
  **/
-class EventsData implements DataInterface
+class MusicFestivalData implements DataInterface
 {
-
     public function loadData(Connection $connection)
     {
         $records = [
@@ -23,11 +22,11 @@ class EventsData implements DataInterface
         //pad to 50
         $count = count($records);
         for ($i = $count + 1; $i < 51; $i++) {
-            $records[] = ["Event $i", new \DateTime()];
+            $records[] = ["Performance $i", new \DateTime()];
         }
 
         foreach ($records as $r) {
-            $connection->insert('events', [
+            $connection->insert('performances', [
                 'name' => $r[0],
                 'start_time' => $r[1]
             ],
@@ -36,5 +35,4 @@ class EventsData implements DataInterface
             ]);
         }
     }
-
 }

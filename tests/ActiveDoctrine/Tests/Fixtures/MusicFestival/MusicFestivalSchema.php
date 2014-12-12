@@ -1,21 +1,20 @@
 <?php
 
-namespace ActiveDoctrine\Tests\Fixtures\Events;
+namespace ActiveDoctrine\Tests\Fixtures\MusicFestival;
 
 use Doctrine\DBAL\Schema\Schema;
 use ActiveDoctrine\Tests\Fixtures\SchemaInterface;
 
 /**
- * EventsSchema
+ * MusicFestivalSchema
  *
  * @author Glynn Forrest <me@glynnforrest.com>
  **/
-class EventsSchema implements SchemaInterface
+class MusicFestivalSchema implements SchemaInterface
 {
-
     public function up(Schema $schema)
     {
-        $table = $schema->createTable('events');
+        $table = $schema->createTable('performances');
         $id = $table->addColumn('id', 'integer', ['unsigned' => true]);
         $id->setAutoIncrement(true);
         $table->setPrimaryKey(['id']);
@@ -25,7 +24,6 @@ class EventsSchema implements SchemaInterface
 
     public function down(Schema $schema)
     {
-        $schema->dropTable('events');
+        $schema->dropTable('performances');
     }
-
 }

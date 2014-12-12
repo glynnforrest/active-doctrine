@@ -72,13 +72,27 @@ abstract class FunctionalTestCase extends \PHPUnit_Framework_TestCase
         return static::$connection;
     }
 
+    /**
+     * Normalise a name for instantiating schema and data classes.
+     *
+     * music_festival => MusicFestival
+     *
+     * @param string $string
+     * @return string
+     */
+    protected function normalize($string)
+    {
+        return str_replace(' ', '', ucwords(preg_replace('/(_|-)+/', ' ', $string)));
+    }
+
     protected function loadSchema($entity_group)
     {
         $conn = $this->getConn();
         $current = $conn->getSchemaManager()->createSchema();
         $new = clone $current;
 
-        $schema_class = sprintf('ActiveDoctrine\Tests\Fixtures\%s\%sSchema', ucfirst($entity_group), ucfirst($entity_group));
+        $entity_group = $this->normalize($entity_group);
+        $schema_class = sprintf('ActiveDoctrine\Tests\Fixtures\%s\%sSchema', $entity_group, $entity_group);
         $schema = new $schema_class();
 
         try {
@@ -99,7 +113,8 @@ abstract class FunctionalTestCase extends \PHPUnit_Framework_TestCase
 
     protected function loadData($entity_group)
     {
-        $data_class = sprintf('ActiveDoctrine\Tests\Fixtures\%s\%sData', ucfirst($entity_group), ucfirst($entity_group));
+        $entity_group = $this->normalize($entity_group);
+        $data_class = sprintf('ActiveDoctrine\Tests\Fixtures\%s\%sData', $entity_group, $entity_group);
         $data = new $data_class();
         $data->loadData($this->getConn());
 

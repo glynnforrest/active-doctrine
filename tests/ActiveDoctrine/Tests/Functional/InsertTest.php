@@ -3,7 +3,7 @@
 namespace ActiveDoctrine\Tests\Functional;
 
 use ActiveDoctrine\Tests\Fixtures\Bookshop\Book;
-use ActiveDoctrine\Tests\Fixtures\Events\Event;
+use ActiveDoctrine\Tests\Fixtures\MusicFestival\Performance;
 
 /**
  * InsertTest
@@ -63,11 +63,11 @@ class InsertTest extends FunctionalTestCase
      */
     public function testInsertTypeDatetime($insert_method)
     {
-        $this->loadSchema('events');
-        $event = new Event($this->getConn());
-        $event->name = 'Concert';
-        $event->start_time = new \DateTime();
-        $event->$insert_method();
+        $this->loadSchema('music_festival');
+        $perf = new Performance($this->getConn());
+        $perf->name = 'Concert';
+        $perf->start_time = new \DateTime();
+        $perf->$insert_method();
     }
 
     /**
