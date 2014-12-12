@@ -155,7 +155,7 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(['foo', null, 'bar'], $collection->getColumnRaw('description'));
     }
 
-    public function testGetEntitiesChunked()
+    public function testChunk()
     {
         $collection = new EntityCollection();
         for ($i = 1; $i < 9; $i++) {
@@ -167,7 +167,7 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
             [$item4, $item5, $item6],
             [$item7, $item8]
         ];
-        $this->assertSame($expected, $collection->getEntitiesChunked(3));
+        $this->assertSame($expected, $collection->chunk(3));
     }
 
     public function testSetColumn()

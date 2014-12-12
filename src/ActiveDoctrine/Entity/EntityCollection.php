@@ -52,7 +52,7 @@ class EntityCollection implements IteratorAggregate, Countable, ArrayAccess
      * @param  int   $size The size of each chunk
      * @return array An array of entities
      */
-    public function getEntitiesChunked($chunk)
+    public function chunk($chunk)
     {
         return array_chunk($this->entities, $chunk);
     }
