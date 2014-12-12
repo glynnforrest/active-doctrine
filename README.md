@@ -14,7 +14,7 @@ A minimal active record implementation built on top of the Doctrine DBAL.
 
 ## Installation
 
-Add the following to your composer.json file:
+Add `glynnforrest/active-doctrine` to your composer.json file:
 
 ```json
 {
@@ -24,16 +24,64 @@ Add the following to your composer.json file:
 }
 ```
 
-And run composer to update your dependencies:
+## Quickstart
 
-```bash
-curl -s http://getcomposer.org/installer | php
-php composer.phar update
+```php
+//create a Doctrine database connection to use
+$config = [
+    'driver' => 'pdo_mysql',
+    'user' => 'user',
+    ''
+];
+
+$conn = Doctrine\DBAL\DriverManager::getConnection($config);
+
+// insert and update
+$author = new App\Entity\Author($conn);
+
+$author->name = 'Glynn';
+$author->age = 102;
+
+// insert
+$author->save();
+
+$author->age = 100;
+
+// update
+$author->save();
+
+// selecting
+// SELECT * FROM authors WHERE age > ?
+$old_authors = Author::select($conn)
+    ->where('age', '>', 100)
+    ->execute();
+
+foreach ($old_authors as $author) {
+    echo $author->name;
+    // books are loaded lazily
+    // SELECT * FROM books WHERE authors_id = ?
+    foreach ($author->books as $book) {
+        echo $book->name;
+        echo $book->page_count;
+    }
+}
+
+// selecting with eager loading
+// SELECT * FROM authors WHERE age > ?
+// SELECT * FROM books WHERE id IN (?, ?, ?, ?) AND page_count > ?
+$old_authors = Author::select($conn)
+    ->where('age', '>', 100)
+    ->with('books', function($s) {
+        $s->where('page_count', '>', 100);
+    })
+    ->execute();
+
+// deleting
+$old_authors->delete();
 ```
 
-## Usage
-
-Documentation and usage examples are in the `docs/` folder.
+There are many more features. Documentation and examples are in the
+`docs/` folder.
 
 ## Tests
 
