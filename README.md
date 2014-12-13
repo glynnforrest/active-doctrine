@@ -1,7 +1,9 @@
 # Active Doctrine
 A minimal active record implementation built on top of the Doctrine DBAL.
 
-[![Build Status](https://travis-ci.org/glynnforrest/active-doctrine.svg)](https://travis-ci.org/glynnforrest/active-doctrine)
+[![Build Status](https://img.shields.io/travis/glynnforrest/active-doctrine/master.svg)](https://travis-ci.org/glynnforrest/active-doctrine)
+[![Packagist](http://img.shields.io/packagist/v/glynnforrest/active-doctrine.svg)](https://packagist.org/packages/glynnforrest/active-doctrine)
+[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
 
 ## Project goals
 
