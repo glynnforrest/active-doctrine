@@ -135,3 +135,61 @@ Use `delete()` to remove the entity from the database.
 ```php
 $author->delete();
 ```
+
+## Select
+
+Use `select()` to select entities from the database. This creates an
+`ActiveDoctrine\Entity\EntitySelector` instance to build the
+query. After building, call `execute()` to get the results.
+
+```php
+
+// SELECT * FROM authors
+$authors = Author::select($conn)->execute();
+
+// SELECT * FROM authors WHERE age > ?
+$old_authors = Author::select($conn)
+    ->where('age', '>', 100)
+    ->execute();
+
+// SELECT
+$young_authors = Author::select($conn)
+    ->where('age', '<', 25)
+    ->orderBy('age', 'ASC')
+    ->execute();
+```
+
+### Results
+
+Results are instances of `ActiveDoctrine\Entity\EntityCollection`,
+which can be iterated over and have methods for manipulating the
+entities. An empty collection is returned if there is no result.
+
+```php
+foreach ($young_authors as $author) {
+    echo $author->name;
+}
+
+$names = $young_authors->getColumn('name');
+
+$young_authors_with_z = $young_authors->filter(function ($a) {
+    return strpos($a->name, 'z') !== false;
+});
+```
+
+### SelectOne
+
+By using `one()` or `selectOne()`, the first entity will be returned
+instead of the whole collection. Null is returned if there is no
+result.
+
+```php
+// SELECT * FROM authors LIMIT 1
+$author = Author::select($conn)->one()->execute();
+
+// SELECT * FROM authors LIMIT 1
+$author = Author::selectOne($conn)->execute();
+
+// SELECT * FROM authors WHERE age < 30 LIMIT 1
+$author = Author::selectOne($conn)->where('age', '<', 30)->execute();
+```
