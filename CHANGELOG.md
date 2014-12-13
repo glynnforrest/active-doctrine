@@ -1,11 +1,20 @@
 Changelog
 =========
 
+### 0.2.0 2014-12-13
+
+* Adding SqliteSelector and sqlite support.
+* Adding support for column types using DBAL type abstraction.
+* Adding AbstractRepository for common select queries.
+* Adding support for nested where clauses in selectors.
+* Changing `getEntitiesChunked()` to `chunk()` in EntityCollection.
+* Implementing functional test suite.
+
 ### 0.1.4 2014-11-06
 
 * Implementing `count()` methods in Selector classes and
   EntitySelector.
-* Adding `setColumnRaw` to EntityCollection.
+* Adding `setColumnRaw()` to EntityCollection.
 
 ### 0.1.3 2014-11-03
 

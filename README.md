@@ -21,7 +21,7 @@ Add `glynnforrest/active-doctrine` to your composer.json file:
 ```json
 {
     "require": {
-        "glynnforrest/active-doctrine": "0.1.*"
+        "glynnforrest/active-doctrine": "0.2.*"
     }
 }
 ```
