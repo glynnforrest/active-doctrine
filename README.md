@@ -31,7 +31,7 @@ Add `glynnforrest/active-doctrine` to your composer.json file:
 $config = [
     'driver' => 'pdo_mysql',
     'host' => 'localhost',
-    'user' => 'user,
+    'user' => 'user',
     'password' => 'password',
     'dbname' => 'app',
 ];

@@ -9,7 +9,7 @@ Doctrine is a Doctrine connection instance.
 $config = [
     'driver' => 'pdo_mysql',
     'host' => 'localhost',
-    'user' => 'user,
+    'user' => 'user',
     'password' => 'password',
     'dbname' => 'app',
 ];
