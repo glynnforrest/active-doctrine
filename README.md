@@ -30,8 +30,10 @@ Add `glynnforrest/active-doctrine` to your composer.json file:
 //create a Doctrine database connection to use
 $config = [
     'driver' => 'pdo_mysql',
-    'user' => 'user',
-    ''
+    'host' => 'localhost',
+    'user' => 'user,
+    'password' => 'password',
+    'dbname' => 'app',
 ];
 
 $conn = Doctrine\DBAL\DriverManager::getConnection($config);
