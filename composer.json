@@ -17,8 +17,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "ActiveDoctrine\\": "src/ActiveDoctrine",
-            "ActiveDoctrine\\Tests\\": "tests/ActiveDoctrine/Tests"
+            "ActiveDoctrine\\": "src/ActiveDoctrine"
         }
     }
 }
