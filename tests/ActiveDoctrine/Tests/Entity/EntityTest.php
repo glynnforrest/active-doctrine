@@ -896,6 +896,17 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(3, $details->books_id);
     }
 
+    public function testAssociateRelationBelongsToUsesColumn()
+    {
+        $book = new Book($this->conn, ['id' => 3]);
+        $details = new BookDetails($this->conn, ['books_id' => 5]);
+        $this->assertSame(3, $book->id);
+        $this->assertSame(5, $details->books_id);
+        $details->associateRelation('book', 3);
+        $this->assertSame(3, $book->id);
+        $this->assertSame(3, $details->books_id);
+    }
+
     public function testSerialize()
     {
         $book = new Book($this->conn, ['id' => 3, 'name' => 'foo']);

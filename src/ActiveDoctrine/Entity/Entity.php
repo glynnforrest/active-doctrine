@@ -332,11 +332,19 @@ abstract class Entity
     {
         $this->setRelation($name, $related_object);
 
-        if (!$related_object) {
+        list($type, $foreign_class, $foreign_column, $column) = static::getRelationDefinition($name);
+
+        if (!is_object($related_object)) {
+            if ($type === 'belongs_to') {
+                $this->setRaw($column, $related_object);
+            }
             return;
         }
 
-        list($type, $foreign_class, $foreign_column, $column) = static::getRelationDefinition($name);
+        if (!$related_object instanceof Entity && !$related_object instanceof EntityCollection) {
+            return;
+        }
+
         if ($type === 'has_one') {
             $related_object->setRaw($foreign_column, $this->getRaw($column));
         }
