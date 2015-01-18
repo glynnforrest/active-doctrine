@@ -142,6 +142,17 @@ class EntityCollection implements IteratorAggregate, Countable, ArrayAccess
     }
 
     /**
+     * Get a random Entity from this collection, or null if the
+     * collection is empty.
+     *
+     * @return Entity|null
+     */
+    public function getRandom()
+    {
+        return empty($this->entities) ? null : $this->entities[array_rand($this->entities)];
+    }
+
+    /**
      * Remove a single Entity from this collection where column =
      * value. If more than one Entity is matched, the first will be
      * removed and returned. If no Entity is matched, null will be

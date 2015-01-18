@@ -252,6 +252,27 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($item2, $collection->remove('description', 'ITEM2'));
     }
 
+    public function testGetRandom()
+    {
+        $entities = [
+            new UpperCase($this->conn, ['id' => 1]),
+            new UpperCase($this->conn, ['id' => 2]),
+            new UpperCase($this->conn, ['id' => 3]),
+            new UpperCase($this->conn, ['id' => 4]),
+        ];
+        $collection = new EntityCollection($entities);
+        $random = $collection->getRandom();
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\SetterGetter\UpperCase', $random);
+        $this->assertTrue(in_array($random, $entities));
+        $this->assertSame(4, count($collection));
+    }
+
+    public function testGetRandomEmptyCollection()
+    {
+        $collection = new EntityCollection;
+        $this->assertNull($collection->getRandom());
+    }
+
     public function testFilter()
     {
         $collection = new EntityCollection;
