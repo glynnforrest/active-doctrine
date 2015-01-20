@@ -33,6 +33,31 @@ class BookshopData implements DataInterface
                 'authors_id' => $r[2]
             ]);
         }
+        $this->loadDetails($connection);
     }
 
+    protected function loadDetails(Connection $connection)
+    {
+        $records = [
+            [2, 'Something something something', 100, 10],
+            [3, 'Something something something', 100, 10],
+            [4, 'Something something something', 100, 10],
+            [5, 'Something something something', 100, 10],
+            [6, 'Something something something', 100, 10],
+            [7, 'Something something something', 100, 10],
+            [8, 'Something something something', 100, 10],
+            [9, 'Something something something', 100, 10],
+            [10, 'Something something something', 100, 10],
+            [11, 'Something something something', 100, 10]
+        ];
+
+        foreach ($records as $r) {
+            $connection->insert('book_details', [
+                'books_id' => $r[0],
+                'synopsis' => $r[1],
+                'pages' => $r[2],
+                'chapters' => $r[3]
+            ]);
+        }
+    }
 }
