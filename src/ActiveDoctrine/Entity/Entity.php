@@ -323,27 +323,21 @@ abstract class Entity
 
     /**
      * Set the named related object and ensure the joining columns are
-     * matched.
+     * matched. If $related_object is not an Entity or
+     * EntityCollection, the relationship will be removed.
      *
      * @param string $name           The name of the relation
      * @param mixed  $related_object The related object
      */
     public function associateRelation($name, $related_object)
     {
-        $this->setRelation($name, $related_object);
+        if (!$related_object instanceof Entity && !$related_object instanceof EntityCollection) {
+            return $this->unsetRelation($name, $related_object);
+        }
 
         list($type, $foreign_class, $foreign_column, $column) = static::getRelationDefinition($name);
 
-        if (!is_object($related_object)) {
-            if ($type === 'belongs_to') {
-                $this->setRaw($column, $related_object);
-            }
-            return;
-        }
-
-        if (!$related_object instanceof Entity && !$related_object instanceof EntityCollection) {
-            return;
-        }
+        $this->setRelation($name, $related_object);
 
         if ($type === 'has_one') {
             $related_object->setRaw($foreign_column, $this->getRaw($column));
@@ -354,7 +348,48 @@ abstract class Entity
         if ($type === 'has_many') {
             $related_object->setColumn($foreign_column, $this->getRaw($column));
         }
+    }
 
+    /**
+     * Unset a related object and assign the joining column a
+     * value. If the related object has not been fetched, it will be
+     * fetched and the joining column changed.
+     *
+     * @param string $name  The name of the relation
+     * @param mixed  $value The value to assign to the joining column
+     */
+    public function unsetRelation($name, $value)
+    {
+        list($type, $foreign_class, $foreign_column, $column) = static::getRelationDefinition($name);
+
+        //no need to get the relation, the column is on this object.
+        if ($type === 'belongs_to') {
+            $this->setRaw($column, $value);
+            $this->relation_objects[$name] = false;
+
+            return;
+        }
+
+        $related_object = $this->getRelation($name);
+
+        if (!$related_object) {
+            return;
+        }
+
+        //has one, the related object column is set to the value.
+        if ($type === 'has_one') {
+            $related_object->setRaw($foreign_column, $value);
+            $this->relation_objects[$name] = false;
+        }
+
+        //has many, the columns on the entities in the related
+        //collection are set to the value.
+        if ($type === 'has_many') {
+            $related_object->setColumnRaw($foreign_column, $value);
+            $this->relation_objects[$name] = $foreign_class::newCollection();
+        }
+
+        return;
     }
 
     /**

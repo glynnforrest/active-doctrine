@@ -894,17 +894,70 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $details->associateRelation('book', $book);
         $this->assertSame(3, $book->id);
         $this->assertSame(3, $details->books_id);
+        $this->assertSame($book, $details->book);
     }
 
-    public function testAssociateRelationBelongsToUsesColumn()
+    public function unsetRelationProvider()
+    {
+        return [
+            [0],
+            [false],
+            [null],
+        ];
+    }
+
+    /**
+     * @dataProvider unsetRelationProvider
+     */
+    public function testUnsetRelationHasOne($value)
     {
         $book = new Book($this->conn, ['id' => 3]);
         $details = new BookDetails($this->conn, ['books_id' => 5]);
-        $this->assertSame(3, $book->id);
-        $this->assertSame(5, $details->books_id);
-        $details->associateRelation('book', 3);
-        $this->assertSame(3, $book->id);
+        $book->associateRelation('details', $details);
         $this->assertSame(3, $details->books_id);
+        $this->assertSame($details, $book->details);
+
+        $book->unsetRelation('details', $value);
+        $this->assertSame($value, $details->books_id);
+        $this->assertFalse($book->details);
+    }
+
+    /**
+     * @dataProvider unsetRelationProvider
+     */
+    public function testUnsetRelationBelongsTo($value)
+    {
+        $book = new Book($this->conn, ['id' => 3]);
+        $details = new BookDetails($this->conn, ['books_id' => 5]);
+        $details->associateRelation('book', $book);
+        $this->assertSame(3, $details->books_id);
+        $this->assertSame($book, $details->book);
+
+        $details->unsetRelation('book', $value);
+        $this->assertSame($value, $details->books_id);
+        $this->assertFalse($details->book);
+    }
+
+    /**
+     * @dataProvider unsetRelationProvider
+     */
+    public function testUnsetRelationHasMany($value)
+    {
+        $author = new Author($this->conn, ['id' => 3]);
+        $book = new Book($this->conn, ['authors_id' => 5]);
+        $books = new EntityCollection([$book]);
+
+        $author->associateRelation('books', $books);
+        $this->assertSame(3, $book->authors_id);
+        $this->assertSame($books, $author->books);
+
+        $author->unsetRelation('books', $value);
+        $this->assertSame($value, $book->authors_id);
+        $no_books = $author->books;
+
+        $this->assertInstanceOf('ActiveDoctrine\Entity\EntityCollection', $no_books);
+        $this->assertSame(0, count($no_books));
+        $this->assertNotSame($books, $no_books);
     }
 
     public function testSerialize()
