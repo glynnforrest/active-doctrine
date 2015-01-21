@@ -12,21 +12,18 @@ use Doctrine\DBAL\Connection;
  **/
 abstract class SelectorTestCase extends \PHPUnit_Framework_TestCase
 {
-
-    protected $yaml;
+    protected static $yaml;
     protected $yaml_key;
 
     public function setUp()
     {
-        if (!$this->yaml) {
-            $this->yaml = Yaml::parse(file_get_contents(__DIR__ . '/sql.yml'));
+        if (!self::$yaml) {
+            self::$yaml = Yaml::parse(file_get_contents(__DIR__ . '/sql.yml'));
         }
-        if (!$this->yaml_key) {
-            //get basename of class
-            $key = basename(str_replace('\\', '/', get_called_class()));
-            //strip SelectorTest - 12 chars - and lowercase
-            $this->yaml_key = strtolower(substr($key, 0, -12));
-        }
+        //get basename of class
+        $key = basename(str_replace('\\', '/', get_called_class()));
+        //strip SelectorTest - 12 chars - and lowercase
+        $this->yaml_key = strtolower(substr($key, 0, -12));
     }
 
     abstract protected function getSelector();
@@ -35,17 +32,17 @@ abstract class SelectorTestCase extends \PHPUnit_Framework_TestCase
 
     protected function getYaml($name)
     {
-        return $this->yaml[$name][$this->yaml_key];
+        return self::$yaml[$name][$this->yaml_key];
     }
 
     protected function getYamlParams($name)
     {
-        return $this->yaml['params_' . $name];
+        return self::$yaml['params_' . $name];
     }
 
     protected function getPlatformYamlParams($name)
     {
-        return $this->yaml['params_' . $name][$this->yaml_key];
+        return self::$yaml['params_' . $name][$this->yaml_key];
     }
 
     public function testGetConnection()
