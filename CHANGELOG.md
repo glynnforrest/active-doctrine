@@ -1,6 +1,16 @@
 Changelog
 =========
 
+### 0.2.1 2015-01-21
+
+* Fixed bug when passing associative arrays to `whereIn()`,
+  `andWhereIn()` and `orWhereIn()` in selector classes.
+* Adding `unsetRelation()` to Entity. `associateRelation()` calls this
+  method if the value given is not an Entity or EntityCollection.
+* Adding `getRandom()` and `removeRandom()` to EntityCollection.
+* Dramatically speeding up test suite by caching yaml parsing. The
+  entire suite now runs in around 1s instead of 3s.
+
 ### 0.2.0 2014-12-13
 
 * Adding SqliteSelector and sqlite support.
