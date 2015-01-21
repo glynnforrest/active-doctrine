@@ -355,6 +355,28 @@ abstract class SelectorTestCase extends \PHPUnit_Framework_TestCase
         $this->assertSame($this->getYamlParams(__FUNCTION__), $s->getParams());
     }
 
+    public function testWhereInAssociativeArray()
+    {
+        $s = $this->getSelector()
+                  ->whereIn('name', [
+                      'Foo' => 'foo',
+                      'Bar' => 'bar',
+                      'Baz' => 'baz'
+                  ])
+                  ->andWhereIn('id', [
+                      'One' => 1,
+                      'Two' => 2,
+                      'Three' => 3
+                  ])
+                  ->orWhereIn('field', [
+                      'A' => 'a',
+                      'B' => 'b',
+                      'C' => 'c'
+                  ]);
+        $this->assertSame($this->getYaml(__FUNCTION__), $s->getSQL());
+        $this->assertSame($this->getYamlParams(__FUNCTION__), $s->getParams());
+    }
+
     public function testCount()
     {
         $s = $this->getSelector()

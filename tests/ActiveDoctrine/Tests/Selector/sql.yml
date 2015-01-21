@@ -134,6 +134,12 @@ testWhereAndWhereIn:
 
 params_testWhereAndWhereIn: ['bar', 1, 2, 3]
 
+testWhereInAssociativeArray:
+    mysql: "SELECT * FROM `table` WHERE `name` IN (?, ?, ?) AND `id` IN (?, ?, ?) OR `field` IN (?, ?, ?)"
+    sqlite: 'SELECT * FROM "table" WHERE "name" IN (?, ?, ?) AND "id" IN (?, ?, ?) OR "field" IN (?, ?, ?)'
+
+params_testWhereInAssociativeArray: ['foo', 'bar', 'baz', 1, 2, 3, 'a', 'b', 'c']
+
 testCount:
     mysql: "SELECT COUNT(1) FROM `table`"
     sqlite: 'SELECT COUNT(1) FROM "table"'
