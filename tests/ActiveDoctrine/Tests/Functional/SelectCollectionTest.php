@@ -118,4 +118,35 @@ class SelectCollectionTest extends FunctionalTestCase
         $this->assertSame('50', $book->get('id'));
     }
 
+    public function testWhereIn()
+    {
+        $this->loadData('bookshop');
+        $books = Book::select($this->getConn())
+            ->whereIn('id', [3, 4, 5])
+            ->execute();
+        $this->assertInstanceOf('ActiveDoctrine\Entity\EntityCollection', $books);
+        $this->assertSame(3, count($books));
+        $book = $books[0];
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Bookshop\Book', $book);
+        $this->assertSame('3', $book->get('id'));
+        $this->assertSame(['3', '4', '5'], $books->getColumn('id'));
+    }
+
+    public function testWhereInAssociativeArray()
+    {
+        $this->loadData('bookshop');
+        $books = Book::select($this->getConn())
+            ->whereIn('id', [
+                'three' => 3,
+                'four' => 4,
+                'five' => 5
+            ])
+            ->execute();
+        $this->assertInstanceOf('ActiveDoctrine\Entity\EntityCollection', $books);
+        $this->assertSame(3, count($books));
+        $book = $books[0];
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Bookshop\Book', $book);
+        $this->assertSame('3', $book->get('id'));
+        $this->assertSame(['3', '4', '5'], $books->getColumn('id'));
+    }
 }
