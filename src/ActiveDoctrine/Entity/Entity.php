@@ -12,12 +12,12 @@ use ActiveDoctrine\Selector\AbstractSelector;
  **/
 abstract class Entity
 {
-
     protected static $table;
     protected static $primary_key = 'id';
     protected static $fields = [];
     protected static $relations = [];
     protected static $types = [];
+    protected static $callbacks = [];
 
     protected $connection;
     protected $values = [];
@@ -89,6 +89,34 @@ abstract class Entity
         }
 
         return $relation;
+    }
+
+    /**
+     * Call an event on this entity, calling the registering
+     * callbacks.
+     *
+     * @param string $event_name
+     */
+    public function callEvent($event_name)
+    {
+        if (!isset(static::$callbacks[$event_name])) {
+            return;
+        }
+
+        foreach (static::$callbacks[$event_name] as $callback) {
+            $callback($this);
+        }
+    }
+
+    /**
+     * Add a callback to run when calling an event on this entity.
+     *
+     * @param string   $event_name
+     * @param \Closure $callback
+     */
+    public static function addEventCallBack($event_name, \Closure $callback)
+    {
+        static::$callbacks[$event_name][] = $callback;
     }
 
     /**

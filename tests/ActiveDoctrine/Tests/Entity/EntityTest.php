@@ -971,4 +971,32 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($book->getValues(), $fetched->getValues());
         $this->assertSame($details->getValues(), $fetched->details->getValues());
     }
+
+    public function testAddEventCallback()
+    {
+        $callbacks = new \ReflectionProperty('ActiveDoctrine\Tests\Fixtures\Bookshop\Book', 'callbacks');
+        $callbacks->setAccessible(true);
+        $this->assertSame([], $callbacks->getValue());
+
+        $foo = function () {};
+
+        Book::addEventCallBack('foo_event', $foo);
+        $this->assertSame(['foo_event' => [$foo]], $callbacks->getValue());
+
+        Book::addEventCallBack('foo_event', $foo);
+        $this->assertSame(['foo_event' => [$foo, $foo]], $callbacks->getValue());
+    }
+
+    public function testCallEvent()
+    {
+        $book = new Book($this->conn);
+        $this->assertNull($book->foo);
+
+        Book::addEventCallBack('foo_event', function ($book) {
+            $book->foo = 'bar';
+        });
+
+        $book->callEvent('foo_event');
+        $this->assertSame('bar', $book->foo);
+    }
 }
