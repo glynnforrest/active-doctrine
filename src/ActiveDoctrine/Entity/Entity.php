@@ -478,6 +478,8 @@ abstract class Entity
             throw new \LogicException("You may not insert an already stored entity");
         }
 
+        $this->callEvent('insert');
+
         if (empty($this->modified)) {
             return;
         }
