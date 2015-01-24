@@ -11,6 +11,7 @@ use ActiveDoctrine\Entity\Entity;
  **/
 class UpperCase extends Entity
 {
+    protected static $table = 'records';
     protected static $fields = [
         'name',
         'description',

@@ -307,4 +307,19 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
         $this->assertSame([$item1, $item3], $filtered->getEntities());
     }
 
+    public function testDelete()
+    {
+        $one = new UpperCase($this->conn, ['id' => 1]);
+        $two = new UpperCase($this->conn, ['id' => 2]);
+        $collection = new EntityCollection([$one, $two]);
+
+        $this->conn->expects($this->exactly(2))
+                   ->method('delete')
+                   ->with('records', $this->logicalOr(['id' => 1], ['id' => 2]));
+
+        $this->assertSame($collection, $collection->delete());
+
+        //check the entities haven't been removed from the collection
+        $this->assertSame([$one, $two], $collection->getEntities());
+    }
 }

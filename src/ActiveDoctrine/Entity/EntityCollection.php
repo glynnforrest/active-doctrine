@@ -217,6 +217,20 @@ class EntityCollection implements IteratorAggregate, Countable, ArrayAccess
         return $this;
     }
 
+    /**
+     * Delete all entities in this collection.
+     *
+     * @return EntityCollection This collection
+     */
+    public function delete()
+    {
+        foreach ($this->entities as $entity) {
+            $entity->delete();
+        }
+
+        return $this;
+    }
+
     public function getIterator()
     {
         return new ArrayIterator($this->entities);
