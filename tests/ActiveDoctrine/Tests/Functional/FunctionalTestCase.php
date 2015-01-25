@@ -56,12 +56,17 @@ abstract class FunctionalTestCase extends \PHPUnit_Framework_TestCase
                 'password' => $_ENV['db_password'],
                 'host' => $_ENV['db_host'],
                 'dbname' => $_ENV['db_name'],
-                'port' => $_ENV['db_port']
+                'port' => $_ENV['db_port'],
+            ];
+        } elseif (isset($_ENV['db_driver']) && $_ENV['db_driver'] === 'pdo_sqlite' && !isset($_ENV['memory'])) {
+            $connect_params = [
+                'driver' => 'pdo_sqlite',
+                'path' => isset($_ENV['path']) ? $_ENV['path'] : 'active_doctrine_tests.db3',
             ];
         } else {
             $connect_params = [
                 'driver' => 'pdo_sqlite',
-                'memory' => true
+                'memory' => true,
             ];
         }
 
