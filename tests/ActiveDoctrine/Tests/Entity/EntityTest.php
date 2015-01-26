@@ -461,14 +461,14 @@ class EntityTest extends \PHPUnit_Framework_TestCase
                        'books',
                        ['id' => 1]
                    );
-        $obj->delete();
+        $this->assertSame($obj, $obj->delete());
     }
 
     public function testDeleteWithNoPrimaryKey()
     {
         $obj = new Book($this->conn);
         $this->setExpectedException('\LogicException');
-        $obj->delete();
+        $this->assertSame($obj, $obj->delete());
     }
 
     public function testDeleteWithUpdatedPrimaryKey()
@@ -482,7 +482,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
                        'books',
                        ['id' => 1]
                    );
-        $obj->delete();
+        $this->assertSame($obj, $obj->delete());
     }
 
     public function testSaveInsert()

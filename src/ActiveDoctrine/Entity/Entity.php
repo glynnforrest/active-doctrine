@@ -525,12 +525,16 @@ abstract class Entity
 
     /**
      * Delete this entity from the database.
+     *
+     * @return Entity This entity
      */
     public function delete()
     {
         $where = [static::$primary_key => $this->getPrimaryKey()];
 
-        return $this->connection->delete(static::$table, $where);
+        $this->connection->delete(static::$table, $where);
+
+        return $this;
     }
 
     /**
