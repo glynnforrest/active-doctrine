@@ -22,9 +22,11 @@ class DeleteTest extends FunctionalTestCase
         $book = Book::selectOne($this->getConn())
             ->where('id', 1)
             ->execute();
-        $this->assertSame($book, $book->delete());
 
+        $this->assertTrue($book->isStored());
+        $this->assertSame($book, $book->delete());
         $this->assertNull(Book::selectOne($this->getConn())->where('id', 1)->execute());
+        $this->assertFalse($book->isStored());
     }
 
     public function testDeleteCollection()

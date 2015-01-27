@@ -533,6 +533,7 @@ abstract class Entity
         $where = [static::$primary_key => $this->getPrimaryKey()];
 
         $this->connection->delete(static::$table, $where);
+        $this->setStored(false);
 
         return $this;
     }
