@@ -102,7 +102,7 @@ echo $item->getRaw('description');
 
 Use `save()` to persist an Entity to the database. A decision will be
 made to use an insert or update query automatically, though this can
-be overridden by using `insert()` and `update`.
+be overridden by using `insert()` and `update()`.
 
 A query will only be executed if the entity is modified.
 

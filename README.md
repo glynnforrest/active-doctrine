@@ -115,6 +115,18 @@ variables.
     <env name="db_name" value="active_doctrine_tests" />
     <env name="db_port" value="3306" />
   </php>
+
+  <!-- Or for sqlite -->
+  <php>
+    <env name="db_driver" value="pdo_sqlite" />
+    <env name="db_path" value="active_doctrine_tests.db3" />
+  </php>
+
+  <!-- In memory database (the default) -->
+  <php>
+    <env name="db_driver" value="pdo_sqlite" />
+    <env name="db_memory"/>
+  </php>
 </phpunit>
 ```
 
