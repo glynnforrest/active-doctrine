@@ -149,4 +149,14 @@ class SelectCollectionTest extends FunctionalTestCase
         $this->assertSame('3', $book->get('id'));
         $this->assertSame(['3', '4', '5'], $books->getColumn('id'));
     }
+
+    public function testWhereInEmpty()
+    {
+        $this->loadData('bookshop');
+        $books = Book::select($this->getConn())
+            ->whereIn('id', [])
+            ->execute();
+        $this->assertInstanceOf('ActiveDoctrine\Entity\EntityCollection', $books);
+        $this->assertSame(0, count($books));
+    }
 }
