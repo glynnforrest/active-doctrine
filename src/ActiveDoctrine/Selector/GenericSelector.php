@@ -108,6 +108,11 @@ abstract class GenericSelector extends AbstractSelector
 
     protected function addWhereInSegment(&$query, array $where)
     {
+        if (empty($where[2])) {
+            $query .= '0';
+            return;
+        }
+
         $query .= sprintf('%s IN (%s)', $this->quoteIdentifier($where[1]), substr(str_repeat('?, ', count($where[2])), 0, -2));
         $this->addParam($where[1], array_values($where[2]));
     }

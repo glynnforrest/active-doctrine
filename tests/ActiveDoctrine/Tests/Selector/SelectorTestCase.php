@@ -374,6 +374,13 @@ abstract class SelectorTestCase extends \PHPUnit_Framework_TestCase
         $this->assertSame($this->getYamlParams(__FUNCTION__), $s->getParams());
     }
 
+    public function testWhereInEmpty()
+    {
+        $s = $this->getSelector()
+                  ->whereIn('id', []);
+        $this->assertSame($this->getYaml(__FUNCTION__), $s->getSQL());
+    }
+
     public function testCount()
     {
         $s = $this->getSelector()

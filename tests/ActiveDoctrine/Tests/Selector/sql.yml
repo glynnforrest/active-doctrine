@@ -140,6 +140,10 @@ testWhereInAssociativeArray:
 
 params_testWhereInAssociativeArray: ['foo', 'bar', 'baz', 1, 2, 3, 'a', 'b', 'c']
 
+testWhereInEmpty:
+    mysql: "SELECT * FROM `table` WHERE 0"
+    sqlite: 'SELECT * FROM "table" WHERE 0'
+
 testCount:
     mysql: "SELECT COUNT(1) FROM `table`"
     sqlite: 'SELECT COUNT(1) FROM "table"'
