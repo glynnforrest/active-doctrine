@@ -546,7 +546,7 @@ abstract class Entity
     public static function deleteAll(Connection $connection)
     {
         //this feels like a hack, but works for now
-        return $connection->delete(static::$table, [1 => 1]);
+        return $connection->delete(static::$table, [1 => 1], [\PDO::PARAM_INT]);
     }
 
     /**

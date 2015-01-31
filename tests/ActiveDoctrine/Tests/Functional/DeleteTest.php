@@ -52,4 +52,14 @@ class DeleteTest extends FunctionalTestCase
         $this->assertSame(40, count($books_left));
     }
 
+    public function testDeleteAll()
+    {
+        $books = Book::select($this->getConn())->execute();
+        $this->assertSame(50, count($books));
+
+        Book::deleteAll($this->getConn());
+
+        $no_books = Book::select($this->getConn())->execute();
+        $this->assertSame(0, count($no_books));
+    }
 }
