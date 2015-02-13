@@ -971,4 +971,16 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($book->getValues(), $fetched->getValues());
         $this->assertSame($details->getValues(), $fetched->details->getValues());
     }
+
+    public function testSetAndGetConection()
+    {
+        $book = new Book($this->conn);
+        $this->assertSame($this->conn, $book->getConnection());
+
+        $conn = $this->getMockBuilder('Doctrine\DBAL\Connection')
+                     ->disableOriginalConstructor()
+                     ->getMock();
+        $this->assertSame($book, $book->setConnection($conn));
+        $this->assertSame($conn, $book->getConnection());
+    }
 }

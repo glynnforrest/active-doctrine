@@ -51,6 +51,28 @@ abstract class Entity
     }
 
     /**
+     * Set the database connection for this entity.
+     *
+     * @param Connection $connection
+     */
+    public function setConnection(Connection $connection)
+    {
+        $this->connection = $connection;
+
+        return $this;
+    }
+
+    /**
+     * Get the database connection for this entity.
+     *
+     * @return Connection
+     */
+    public function getConnection()
+    {
+        return $this->connection;
+    }
+
+    /**
      * Get the names of all fields.
      *
      * @return array The fields
