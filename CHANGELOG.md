@@ -1,6 +1,13 @@
 Changelog
 =========
 
+### 0.2.2 2015-02-13
+
+* Adding `delete()` to EntityCollection.
+* Fixed bug in Entity `delete()` by setting stored to false.
+* Empty arrays passed to whereIn clauses negate the expression.
+* Adding `getConnection()` and `setConnection` to Entity.
+
 ### 0.2.1 2015-01-21
 
 * Fixed bug when passing associative arrays to `whereIn()`,
