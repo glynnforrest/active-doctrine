@@ -46,7 +46,8 @@ abstract class Entity
     {
         return [
             'values',
-            'relation_objects'
+            'relation_objects',
+            'stored',
         ];
     }
 
