@@ -99,11 +99,12 @@ abstract class Entity
      */
     public function callEvent($event_name)
     {
-        if (!isset(static::$callbacks[$event_name])) {
+        $classname = get_called_class();
+        if (!isset(static::$callbacks[$classname][$event_name])) {
             return;
         }
 
-        foreach (static::$callbacks[$event_name] as $callback) {
+        foreach (static::$callbacks[$classname][$event_name] as $callback) {
             $callback($this);
         }
     }
@@ -116,7 +117,15 @@ abstract class Entity
      */
     public static function addEventCallBack($event_name, \Closure $callback)
     {
-        static::$callbacks[$event_name][] = $callback;
+        static::$callbacks[get_called_class()][$event_name][] = $callback;
+    }
+
+    /**
+     * Remove all event callbacks on this entity.
+     */
+    public static function resetEventCallbacks()
+    {
+        static::$callbacks[get_called_class()] = [];
     }
 
     /**

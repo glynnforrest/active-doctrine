@@ -974,17 +974,20 @@ class EntityTest extends \PHPUnit_Framework_TestCase
 
     public function testAddEventCallback()
     {
-        $callbacks = new \ReflectionProperty('ActiveDoctrine\Tests\Fixtures\Bookshop\Book', 'callbacks');
+        $book_class = 'ActiveDoctrine\Tests\Fixtures\Bookshop\Book';
+        $callbacks = new \ReflectionProperty($book_class, 'callbacks');
         $callbacks->setAccessible(true);
         $this->assertSame([], $callbacks->getValue());
 
         $foo = function () {};
 
         Book::addEventCallBack('foo_event', $foo);
-        $this->assertSame(['foo_event' => [$foo]], $callbacks->getValue());
+        $this->assertSame([$book_class => ['foo_event' => [$foo]]], $callbacks->getValue());
 
         Book::addEventCallBack('foo_event', $foo);
-        $this->assertSame(['foo_event' => [$foo, $foo]], $callbacks->getValue());
+        $this->assertSame([$book_class => ['foo_event' => [$foo, $foo]]], $callbacks->getValue());
+
+        Book::resetEventCallbacks();
     }
 
     public function testCallEvent()
@@ -998,5 +1001,49 @@ class EntityTest extends \PHPUnit_Framework_TestCase
 
         $book->callEvent('foo_event');
         $this->assertSame('bar', $book->foo);
+
+        Book::resetEventCallbacks();
+    }
+
+    public function testResetEventCallbacks()
+    {
+        Book::addEventCallBack('foo_event', function ($book) {
+            $book->foo = 'bar';
+        });
+
+        $book = new Book($this->conn);
+        $book->foo = 'foo';
+        $book->callEvent('foo_event');
+        $this->assertSame('bar', $book->foo);
+
+        Book::resetEventCallbacks();
+
+        $book->foo = 'foo';
+        $book->callEvent('foo_event');
+        $this->assertSame('foo', $book->foo);
+    }
+
+    public function testEventCallbacksAreClassSpecific()
+    {
+        $callbacks = new \ReflectionProperty('ActiveDoctrine\Entity\Entity', 'callbacks');
+        $callbacks->setAccessible(true);
+        $callbacks->setValue([]);
+        $this->assertSame([], $callbacks->getValue());
+
+        $foo = function () {};
+        $bar = function () {};
+
+        Book::addEventCallBack('insert', $foo);
+        Author::addEventCallBack('update', $bar);
+
+        $expected = [
+            'ActiveDoctrine\Tests\Fixtures\Bookshop\Book' => [
+                'insert' => [$foo]
+            ],
+            'ActiveDoctrine\Tests\Fixtures\Bookshop\Author' => [
+                'update' => [$bar]
+            ],
+        ];
+        $this->assertSame($expected, $callbacks->getValue());
     }
 }
