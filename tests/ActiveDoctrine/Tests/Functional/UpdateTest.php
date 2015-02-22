@@ -62,4 +62,28 @@ class UpdateTest extends FunctionalTestCase
         $this->assertSame('Party', $selected->name);
         $this->assertEquals($now, $selected->start_time);
     }
+
+    /**
+     * @dataProvider updateMethodProvider
+     */
+    public function testUpdateCallsUpdateEvent($update_method)
+    {
+        Book::addEventCallBack('update', function($book) {
+            $book->description = 'update-'.$book->description;
+        });
+
+        $this->loadSchema('bookshop');
+        $this->loadData('bookshop');
+
+        $conn = $this->getConn();
+        $book = Book::selectOne($this->getConn())
+            ->where('id', '=', 2)
+            ->execute();
+
+        $book->$update_method();
+
+        $this->assertSame('update-The second book', $book->description);
+
+        Book::resetEventCallbacks();
+    }
 }

@@ -521,6 +521,8 @@ abstract class Entity
      */
     public function update()
     {
+        $this->callEvent('update');
+
         if (empty($this->modified)) {
             return;
         }
