@@ -18,6 +18,7 @@ abstract class Entity
     protected static $relations = [];
     protected static $types = [];
     protected static $callbacks = [];
+    protected static $init = [];
 
     protected $connection;
     protected $values = [];
@@ -37,6 +38,26 @@ abstract class Entity
         if (isset($values[static::$primary_key])) {
             $this->current_index = $this->values[static::$primary_key];
         }
+
+        if (!isset(static::$init[get_class($this)])) {
+            $this->init();
+            static::$init[get_class($this)] = true;
+        }
+    }
+
+    protected function init()
+    {
+        foreach ($this->getClassParents(get_class($this)) as $class) {
+            $method = 'init'.basename(str_replace('\\', '/', $class));
+            if (method_exists($class, $method)) {
+                forward_static_call([$this, $method]);
+            }
+        }
+    }
+
+    protected function getClassParents($class)
+    {
+        return class_uses($class);
     }
 
     /**
