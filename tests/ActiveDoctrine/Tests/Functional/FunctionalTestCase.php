@@ -42,6 +42,16 @@ abstract class FunctionalTestCase extends \PHPUnit_Framework_TestCase
         if (isset(static::$connection)) {
             return static::$connection;
         }
+
+        //set up a special logger that counts queries here
+        $configuration = new Configuration();
+        static::$connection = DriverManager::getConnection($this->getConnectionParams(), $configuration);
+
+        return static::$connection;
+    }
+
+    protected function getConnectionParams()
+    {
         if (isset(
             $_ENV['db_driver'],
             $_ENV['db_user'],
@@ -50,7 +60,7 @@ abstract class FunctionalTestCase extends \PHPUnit_Framework_TestCase
             $_ENV['db_name'],
             $_ENV['db_port']
         )) {
-            $connect_params = [
+            return [
                 'driver' => $_ENV['db_driver'],
                 'user' => $_ENV['db_user'],
                 'password' => $_ENV['db_password'],
@@ -58,23 +68,19 @@ abstract class FunctionalTestCase extends \PHPUnit_Framework_TestCase
                 'dbname' => $_ENV['db_name'],
                 'port' => $_ENV['db_port'],
             ];
-        } elseif (isset($_ENV['db_driver']) && $_ENV['db_driver'] === 'pdo_sqlite' && !isset($_ENV['db_memory'])) {
-            $connect_params = [
+        }
+
+        if (isset($_ENV['db_driver']) && $_ENV['db_driver'] === 'pdo_sqlite' && !isset($_ENV['db_memory'])) {
+            return [
                 'driver' => 'pdo_sqlite',
                 'path' => isset($_ENV['db_path']) ? $_ENV['db_path'] : 'active_doctrine_tests.db3',
             ];
-        } else {
-            $connect_params = [
-                'driver' => 'pdo_sqlite',
-                'memory' => true,
-            ];
         }
 
-        //set up a special logger that counts queries here
-        $configuration = new Configuration();
-        static::$connection = DriverManager::getConnection($connect_params, $configuration);
-
-        return static::$connection;
+        return [
+            'driver' => 'pdo_sqlite',
+            'memory' => true,
+        ];
     }
 
     /**
