@@ -31,11 +31,13 @@ class TimestampTraitTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider insertMethodProvider
      */
-    public function testInsertSetsCreatedAtField($insert_method)
+    public function testInsertSetsCreatedAtAndUpdatedAt($insert_method)
     {
         $article = new Article($this->conn);
         $article->$insert_method();
+
         $this->assertEquals(new \DateTime(), $article->created_at);
+        $this->assertEquals(new \DateTime(), $article->updated_at);
     }
 
     /**
@@ -48,6 +50,18 @@ class TimestampTraitTest extends \PHPUnit_Framework_TestCase
         $article->created_at = $datetime;
         $article->$insert_method();
         $this->assertSame($datetime, $article->created_at);
+    }
+
+    /**
+     * @dataProvider insertMethodProvider
+     */
+    public function testInsertDoesNotOverrideUpdatedAt($insert_method)
+    {
+        $article = new Article($this->conn);
+        $datetime = new \DateTime('2000/1/1');
+        $article->updated_at = $datetime;
+        $article->$insert_method();
+        $this->assertSame($datetime, $article->updated_at);
     }
 
     public function updateMethodProvider()

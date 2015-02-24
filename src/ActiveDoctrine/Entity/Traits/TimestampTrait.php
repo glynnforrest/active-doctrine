@@ -11,11 +11,18 @@ use \DateTime;
  **/
 trait TimestampTrait
 {
+    protected static $timestamps = [
+        'created_at' => 'insert',
+        'updated_at' => 'update',
+    ];
+
     protected static function initTimestampTrait()
     {
         static::addEventCallBack('insert', function($entity) {
-            if (!$entity->created_at) {
-                $entity->created_at = new DateTime();
+            foreach (static::$timestamps as $field => $event) {
+                if (!$entity->getRaw($field)) {
+                    $entity->setRaw($field, new DateTime());
+                }
             }
         });
 
