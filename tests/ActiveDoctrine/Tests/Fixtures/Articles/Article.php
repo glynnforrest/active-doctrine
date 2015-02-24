@@ -13,4 +13,11 @@ use ActiveDoctrine\Entity\Traits\TimestampTrait;
 class Article extends Entity
 {
     use TimestampTrait;
+
+    protected static $fields = [
+        'id',
+        'title',
+        'created_at',
+        'updated_at',
+    ];
 }
