@@ -14,6 +14,20 @@ class Writer extends Entity
 {
     use TimestampTrait;
 
+    protected static $table = 'writers';
+    protected static $fields = [
+        'id',
+        'createdAt',
+        'updatedAt',
+        'anotherCreate',
+        'anotherUpdate',
+    ];
+    protected static $types = [
+        'createdAt' => 'datetime',
+        'updatedAt' => 'datetime',
+        'anotherCreate' => 'datetime',
+        'anotherUpdate' => 'datetime',
+    ];
     protected static $insert_timestamps = [
         'createdAt',
         'anotherCreate',
