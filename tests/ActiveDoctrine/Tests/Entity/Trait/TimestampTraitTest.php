@@ -3,6 +3,7 @@
 namespace ActiveDoctrine\Tests\Entity\Foo;
 
 use ActiveDoctrine\Tests\Fixtures\Articles\Article;
+use ActiveDoctrine\Tests\Fixtures\Articles\Writer;
 
 /**
  * TimestampTraitTest
@@ -24,7 +25,7 @@ class TimestampTraitTest extends \PHPUnit_Framework_TestCase
     {
         return [
             ['insert'],
-            ['save']
+            ['save'],
         ];
     }
 
@@ -64,11 +65,26 @@ class TimestampTraitTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($datetime, $article->updated_at);
     }
 
+    /**
+     * @dataProvider insertMethodProvider
+     */
+    public function testInsertFieldsCanBeConfigured($insert_method)
+    {
+        $writer = new Writer($this->conn);
+        $writer->$insert_method();
+
+        $datetime = new \DateTime();
+        $this->assertEquals($datetime, $writer->createdAt);
+        $this->assertEquals($datetime, $writer->anotherCreate);
+        $this->assertEquals($datetime, $writer->updatedAt);
+        $this->assertEquals($datetime, $writer->anotherUpdate);
+    }
+
     public function updateMethodProvider()
     {
         return [
             ['update'],
-            ['save']
+            ['save'],
         ];
     }
 
@@ -94,5 +110,22 @@ class TimestampTraitTest extends \PHPUnit_Framework_TestCase
         $article->updated_at = $datetime;
         $article->$update_method();
         $this->assertSame($datetime, $article->updated_at);
+    }
+
+    /**
+     * @dataProvider updateMethodProvider
+     */
+    public function testUpdateFieldsCanBeConfigured($update_method)
+    {
+        $writer = new Writer($this->conn, ['id' => 1]);
+        $writer->setStored();
+        $writer->$update_method();
+
+        $datetime = new \DateTime();
+        $this->assertEquals($datetime, $writer->updatedAt);
+        $this->assertEquals($datetime, $writer->anotherUpdate);
+        //check that other fields haven't been set
+        $this->assertNull($writer->createdAt);
+        $this->assertNull($writer->anotherCreate);
     }
 }
