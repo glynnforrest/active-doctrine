@@ -12,12 +12,13 @@ use ActiveDoctrine\Selector\AbstractSelector;
  **/
 abstract class Entity
 {
-
     protected static $table;
     protected static $primary_key = 'id';
     protected static $fields = [];
     protected static $relations = [];
     protected static $types = [];
+    protected static $callbacks = [];
+    protected static $init = [];
 
     protected $connection;
     protected $values = [];
@@ -37,6 +38,26 @@ abstract class Entity
         if (isset($values[static::$primary_key])) {
             $this->current_index = $this->values[static::$primary_key];
         }
+
+        if (!isset(static::$init[get_class($this)])) {
+            $this->init();
+            static::$init[get_class($this)] = true;
+        }
+    }
+
+    protected function init()
+    {
+        foreach ($this->getClassParents(get_class($this)) as $class) {
+            $method = 'init'.basename(str_replace('\\', '/', $class));
+            if (method_exists($class, $method)) {
+                forward_static_call([$this, $method]);
+            }
+        }
+    }
+
+    protected function getClassParents($class)
+    {
+        return class_uses($class);
     }
 
     /**
@@ -112,6 +133,43 @@ abstract class Entity
         }
 
         return $relation;
+    }
+
+    /**
+     * Call an event on this entity, calling the registering
+     * callbacks.
+     *
+     * @param string $event_name
+     */
+    public function callEvent($event_name)
+    {
+        $classname = get_called_class();
+        if (!isset(static::$callbacks[$classname][$event_name])) {
+            return;
+        }
+
+        foreach (static::$callbacks[$classname][$event_name] as $callback) {
+            $callback($this);
+        }
+    }
+
+    /**
+     * Add a callback to run when calling an event on this entity.
+     *
+     * @param string   $event_name
+     * @param \Closure $callback
+     */
+    public static function addEventCallBack($event_name, \Closure $callback)
+    {
+        static::$callbacks[get_called_class()][$event_name][] = $callback;
+    }
+
+    /**
+     * Remove all event callbacks on this entity.
+     */
+    public static function resetEventCallbacks()
+    {
+        static::$callbacks[get_called_class()] = [];
     }
 
     /**
@@ -473,6 +531,8 @@ abstract class Entity
             throw new \LogicException("You may not insert an already stored entity");
         }
 
+        $this->callEvent('insert');
+
         if (empty($this->modified)) {
             return;
         }
@@ -505,6 +565,8 @@ abstract class Entity
      */
     public function update()
     {
+        $this->callEvent('update');
+
         if (empty($this->modified)) {
             return;
         }

@@ -82,4 +82,25 @@ class InsertTest extends FunctionalTestCase
             $this->assertEquals($i, $book->id);
         }
     }
+
+    /**
+     * @dataProvider insertMethodProvider()
+     */
+    public function testInsertCallsInsertEvent($insert_method)
+    {
+        Book::addEventCallBack('insert', function($book) {
+            $book->description = 'description-'.$book->description;
+        });
+
+        $conn = $this->getConn();
+        for ($i = 1; $i < 4; $i++) {
+            $book = new Book($conn, ['name' => 'foo', 'description' => $i, 'authors_id' => 0]);
+            $book->$insert_method();
+        }
+
+        $books = Book::select($conn)->execute();
+        $expected = ['description-1', 'description-2', 'description-3'];
+        $this->assertSame($expected, $books->getColumn('description'));
+        Book::resetEventCallbacks();
+    }
 }
