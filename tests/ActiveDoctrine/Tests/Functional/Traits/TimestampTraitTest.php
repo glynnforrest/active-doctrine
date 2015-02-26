@@ -53,4 +53,33 @@ class TimestampTraitTest extends FunctionalTestCase
         $this->assertNull($article->updatedAt);
         $this->assertNull($article->anotherUpdate);
     }
+
+    public function testAddTimestampsOnUpdate()
+    {
+        $this->loadData('articles');
+        $article = Article::selectOne($this->getConn())->execute();
+
+        $created = $article->created_at;
+        $updated = $article->updated_at;
+
+        $article->title = 'changed';
+        $article->update();
+
+        $this->assertSame($created, $article->created_at);
+        $this->assertNotSame($updated, $article->updated_at);
+    }
+
+    public function testTimestampNotUpdatedIfNotModified()
+    {
+        $this->loadData('articles');
+        $article = Article::selectOne($this->getConn())->execute();
+
+        $created = $article->created_at;
+        $updated = $article->updated_at;
+
+        $article->update();
+
+        $this->assertSame($created, $article->created_at);
+        $this->assertSame($updated, $article->updated_at);
+    }
 }

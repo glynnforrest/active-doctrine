@@ -17,6 +17,8 @@ class Writer extends Entity
     protected static $table = 'writers';
     protected static $fields = [
         'id',
+        'forename',
+        'surname',
         'createdAt',
         'updatedAt',
         'anotherCreate',

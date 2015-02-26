@@ -95,21 +95,9 @@ class TimestampTraitTest extends \PHPUnit_Framework_TestCase
     {
         $article = new Article($this->conn, ['id' => 1]);
         $article->setStored();
+        $article->title = 'foo';
         $article->$update_method();
         $this->assertEquals(new \DateTime(), $article->updated_at);
-    }
-
-    /**
-     * @dataProvider updateMethodProvider
-     */
-    public function testUpdateDoesNotOverrideUpdatedAt($update_method)
-    {
-        $article = new Article($this->conn, ['id' => 1]);
-        $article->setStored();
-        $datetime = new \DateTime('2000/1/1');
-        $article->updated_at = $datetime;
-        $article->$update_method();
-        $this->assertSame($datetime, $article->updated_at);
     }
 
     /**
@@ -119,6 +107,7 @@ class TimestampTraitTest extends \PHPUnit_Framework_TestCase
     {
         $writer = new Writer($this->conn, ['id' => 1]);
         $writer->setStored();
+        $writer->forename = 'Glynn';
         $writer->$update_method();
 
         $datetime = new \DateTime();

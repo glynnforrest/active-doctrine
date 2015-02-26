@@ -45,8 +45,8 @@ trait TimestampTrait
         });
 
         static::addEventCallBack('update', function ($entity) use ($update_timestamps) {
-            foreach ($update_timestamps as $field) {
-                if (!$entity->getRaw($field)) {
+            if ($entity->isModified()) {
+                foreach ($update_timestamps as $field) {
                     $entity->setRaw($field, new DateTime());
                 }
             }
