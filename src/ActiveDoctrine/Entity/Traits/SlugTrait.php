@@ -22,16 +22,19 @@ trait SlugTrait
     {
         $slugs = isset(static::$slugs) ? static::$slugs : ['title' => 'slug'];
 
-        $this->addEventCallBack('insert', function ($entity) use ($slugs) {
+        $slugger = function ($entity) use ($slugs) {
             foreach ($slugs as $column => $slug_column) {
-                //if slug has been modified, override
-                if ($entity->has($slug_column)) {
+                //do nothing if the slug has been manually modified
+                if (in_array($slug_column, $entity->getModifiedFields())) {
                     continue;
                 }
 
                 $entity->setRaw($slug_column, $this->slugify($entity->getRaw($column)));
             }
-        });
+        };
+
+        $this->addEventCallBack('insert', $slugger);
+        $this->addEventCallBack('update', $slugger);
     }
 
     private function slugify($string)

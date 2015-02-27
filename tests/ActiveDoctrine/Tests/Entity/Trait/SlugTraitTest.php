@@ -26,6 +26,14 @@ class SlugTraitTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
+    public function updateMethodProvider()
+    {
+        return [
+            ['update'],
+            ['save'],
+        ];
+    }
+
     /**
      * @dataProvider insertMethodProvider
      */
@@ -43,7 +51,7 @@ class SlugTraitTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider insertMethodProvider
      */
-    public function testSlugIsNotOverridden($insert_method)
+    public function testSlugIsNotOverriddenOnInsert($insert_method)
     {
         $article = new Article($this->conn);
         $article->title = 'Something something foo';
@@ -55,9 +63,37 @@ class SlugTraitTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider insertMethodProvider
+     * @dataProvider updateMethodProvider
      */
     public function testSlugIsUpdated($update_method)
     {
+        $article = new Article($this->conn);
+        $article->id = 3;
+        $article->title = 'Something something foo';
+        $article->slug = 'something-something-foo';
+        $article->setStored();
+
+        $article->title = 'Another title';
+        $article->$update_method();
+
+        $this->assertSame('another-title', $article->slug);
+    }
+
+    /**
+     * @dataProvider updateMethodProvider
+     */
+    public function testSlugIsNotOverriddenOnUpdate($update_method)
+    {
+        $article = new Article($this->conn);
+        $article->id = 3;
+        $article->title = 'Something something foo';
+        $article->slug = 'something-something-foo';
+        $article->setStored();
+
+        $article->title = 'Another title';
+        $article->slug = 'custom-slug';
+        $article->$update_method();
+
+        $this->assertSame('custom-slug', $article->slug);
     }
 }
