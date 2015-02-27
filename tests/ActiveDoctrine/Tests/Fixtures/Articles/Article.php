@@ -4,6 +4,7 @@ namespace ActiveDoctrine\Tests\Fixtures\Articles;
 
 use ActiveDoctrine\Entity\Entity;
 use ActiveDoctrine\Entity\Traits\TimestampTrait;
+use ActiveDoctrine\Entity\Traits\SlugTrait;
 
 /**
  * Article
@@ -13,6 +14,7 @@ use ActiveDoctrine\Entity\Traits\TimestampTrait;
 class Article extends Entity
 {
     use TimestampTrait;
+    use SlugTrait;
 
     protected static $table = 'articles';
     protected static $fields = [
