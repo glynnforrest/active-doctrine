@@ -18,6 +18,7 @@ class Article extends Entity
     protected static $fields = [
         'id',
         'title',
+        'slug',
         'created_at',
         'updated_at',
     ];

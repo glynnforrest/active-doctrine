@@ -23,6 +23,7 @@ class ArticlesData implements DataInterface
         foreach ($records as $r) {
             $connection->insert('articles', [
                 'title' => $r[0],
+                'slug' => $r[0],
                 'created_at' => new \DateTime(),
                 'updated_at' => new \DateTime(),
             ],

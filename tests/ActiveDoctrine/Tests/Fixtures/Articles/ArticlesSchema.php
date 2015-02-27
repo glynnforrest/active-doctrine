@@ -19,6 +19,7 @@ class ArticlesSchema implements SchemaInterface
         $id->setAutoIncrement(true);
         $table->setPrimaryKey(['id']);
         $table->addColumn('title', 'string', ['length' => 255]);
+        $table->addColumn('slug', 'string', ['length' => 255]);
         $table->addColumn('created_at', 'datetime');
         $table->addColumn('updated_at', 'datetime');
 
