@@ -44,6 +44,14 @@ echo $author->age;
 // 80
 ```
 
+Arbitrary fields not included in the Entity definition can be set too.
+
+```php
+$author->foo = 'foo';
+echo $author->foo;
+// foo
+```
+
 Values can also be assigned when creating the entity.
 
 ```php
