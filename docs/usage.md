@@ -98,6 +98,42 @@ echo $item->getRaw('description');
 // bar
 ```
 
+### Has
+
+Use `has()` to check if an Entity column or relation has a value.
+
+```php
+$book = new Book($conn, ['name' => 'The Art of War']);
+
+$book->has('name');
+// true
+
+$book->has('description');
+//false
+```
+
+Related objects will automatically be queried for if they haven't
+been already.
+
+```php
+$book->has('author')
+//query for author
+
+$book = Book::selectOne($conn)->with('author');
+$book->has('author');
+//author already queried for, do not query again
+```
+
+A note about `__isset()`:
+
+It may seem intuitive for `__isset()` to behave like `has()`. However,
+`__isset()` exists solely as a utility method for libraries that
+attempt to access object properties, e.g. Twig. This method always
+returns `true`, just like `get()` never throws an error (returning
+null for no value). This makes it easy for libraries such as Twig to
+access fields using the syntax `entity.field`. Always use `has()` to
+check if an entity column or relation has a value.
+
 ## Insert, update and delete
 
 Use `save()` to persist an Entity to the database. A decision will be

@@ -240,7 +240,7 @@ abstract class Entity
      */
     public function has($key)
     {
-        $result =  $this->get($key);
+        $result = $this->get($key);
 
         //an empty EntityCollection means no related entities
         if ($result instanceof EntityCollection && count($result) === 0) {
