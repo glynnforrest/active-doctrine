@@ -262,6 +262,24 @@ abstract class Entity
     }
 
     /**
+     * Utility method for libraries that attempt to access object
+     * properties, e.g. Twig. This always returns true as
+     * ActiveDoctrine makes no distinction between
+     * $entity->get('column') returning null and
+     * $entity->get('not_a_column') returning null, so fields that are
+     * not included in the table schema can be used. Use has() to
+     * check if an entity column or relation has a value.
+     *
+     * @param string $key
+
+     * @return bool
+     */
+    public function __isset($key)
+    {
+        return true;
+    }
+
+    /**
      * Fetch a related entity from the database.
      *
      * @param array $relation The relation to fetch.

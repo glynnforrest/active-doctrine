@@ -798,6 +798,15 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(5, $details->books_id);
     }
 
+    public function testMagicIsset()
+    {
+        $book = new Book($this->conn, ['id' => 5]);
+        $this->assertTrue(isset($book->id));
+        $this->assertTrue(isset($book->title));
+        $this->assertTrue(isset($book->author));
+        $this->assertTrue(isset($book->not_a_column));
+    }
+
     public function testHas()
     {
         $book = new Book($this->conn);
