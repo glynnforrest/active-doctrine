@@ -200,7 +200,7 @@ abstract class AbstractSelector
             return $this;
         }
 
-        if (!$expression) {
+        if ($expression === null) {
             throw new \InvalidArgumentException('A where clause not containing a closure must have at least 2 arguments.');
         }
 

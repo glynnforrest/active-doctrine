@@ -133,6 +133,15 @@ abstract class SelectorTestCase extends \PHPUnit_Framework_TestCase
         $this->assertSame($this->getYamlParams(__FUNCTION__), $s->getParams());
     }
 
+    public function testWhereEqualsZero()
+    {
+        $s = $this->getSelector()
+           ->where('status', 0)
+           ->andWhere('other_status', 0);
+        $this->assertSame($this->getYaml(__FUNCTION__), $s->getSQL());
+        $this->assertSame($this->getYamlParams(__FUNCTION__), $s->getParams());
+    }
+
     /**
      * @dataProvider whereMethodsProvider
      */
