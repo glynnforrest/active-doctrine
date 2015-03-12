@@ -26,6 +26,12 @@ testWhereEqualsAndLessThan:
 
 params_testWhereEqualsAndLessThan: [4, 10]
 
+testWhereEqualsOr:
+    mysql: "SELECT * FROM `table` WHERE `status` = ? OR `status` = ?"
+    sqlite: 'SELECT * FROM "table" WHERE "status" = ? OR "status" = ?'
+
+params_testWhereEqualsOr: [0, 1]
+
 testWhereMoreThanOrLessThan:
     mysql: "SELECT * FROM `table` WHERE `id` > ? OR `id` < ?"
     sqlite: 'SELECT * FROM "table" WHERE "id" > ? OR "id" < ?'

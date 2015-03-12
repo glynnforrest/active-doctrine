@@ -205,7 +205,7 @@ abstract class AbstractSelector
         }
 
         //assume an equality if only two arguments are provided
-        if (!$value) {
+        if ($value === null) {
             $value = $expression;
             $expression = '=';
         }
