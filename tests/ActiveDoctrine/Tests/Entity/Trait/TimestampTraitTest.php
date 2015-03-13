@@ -1,6 +1,6 @@
 <?php
 
-namespace ActiveDoctrine\Tests\Entity\Foo;
+namespace ActiveDoctrine\Tests\Entity;
 
 use ActiveDoctrine\Tests\Fixtures\Articles\Article;
 use ActiveDoctrine\Tests\Fixtures\Articles\Writer;
