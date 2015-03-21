@@ -128,17 +128,26 @@ class EntityCollection implements IteratorAggregate, Countable, ArrayAccess
      *
      * @param  string $column
      * @param  string $value
+     * @param  bool   $strict use strict comparison when comparing values
      * @return mixed  Entity or NULL
      */
-    public function getOne($column, $value)
+    public function getOne($column, $value, $strict = true)
     {
-        foreach ($this->entities as $entity) {
-            if ($entity->get($column) === $value) {
-                return $entity;
+        if ($strict) {
+            foreach ($this->entities as $entity) {
+                if ($entity->get($column) === $value) {
+                    return $entity;
+                }
+            }
+        } else {
+            foreach ($this->entities as $entity) {
+                if ($entity->get($column) == $value) {
+                    return $entity;
+                }
             }
         }
 
-        return null;
+        return;
     }
 
     /**

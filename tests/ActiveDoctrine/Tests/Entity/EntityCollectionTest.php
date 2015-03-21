@@ -218,6 +218,24 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($collection->getOne('name', 'foo'));
     }
 
+    public function testGetOneUsesStrictComparison()
+    {
+        $collection = new EntityCollection;
+        $collection[] = new UpperCase($this->conn, ['name' => '1']);
+
+        $this->assertNull($collection->getOne('name', 1));
+    }
+
+    public function testGetOneAllowsLooseComparison()
+    {
+        $collection = new EntityCollection;
+        $entity = new UpperCase($this->conn, ['name' => '2']);
+        $collection[] = new UpperCase($this->conn, ['name' => '1']);
+        $collection[] = $entity;
+
+        $this->assertSame($entity, $collection->getOne('name', 2, false));
+    }
+
     public function testRemove()
     {
         for ($i = 1; $i < 4; $i++) {
