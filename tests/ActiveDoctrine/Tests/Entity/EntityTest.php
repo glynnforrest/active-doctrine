@@ -140,6 +140,21 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($expected, $obj->getValuesRaw());
     }
 
+    public function testSetValuesSafe()
+    {
+        $book = new Book($this->conn);
+        $book->setValuesSafe([
+            'id' => 34,
+            'authors_id' => 100,
+            'name' => 'The Art of War',
+            'description' => 'Foo',
+        ]);
+        $this->assertSame([
+            'name' => 'The Art of War',
+            'description' => 'Foo',
+        ], $book->getValues());
+    }
+
     public function testSetAndIsStored()
     {
         $obj = new UpperCase($this->conn);

@@ -25,4 +25,8 @@ class Book extends Entity
         //invalid relation for the sake of testing errors
         'invalid' => 'foo'
     ];
+    protected static $blacklist = [
+        'id',
+        'authors_id'
+    ];
 }

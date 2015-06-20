@@ -16,6 +16,7 @@ abstract class Entity
     protected static $primary_key = 'id';
     protected static $fields = [];
     protected static $relations = [];
+    protected static $blacklist = [];
     protected static $types = [];
     protected static $callbacks = [];
     protected static $init = [];
@@ -518,6 +519,19 @@ abstract class Entity
         }
 
         return $this;
+    }
+
+    /**
+     * Set an array of values, discarding any columns / relations in
+     * the blacklist for this entity.
+     */
+    public function setValuesSafe(array $values = [])
+    {
+        foreach ($values as $key => $value) {
+            if (!in_array($key, static::$blacklist)) {
+                $this->set($key, $values[$key]);
+            }
+        }
     }
 
     /**
