@@ -1013,15 +1013,19 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $book_class = 'ActiveDoctrine\Tests\Fixtures\Bookshop\Book';
         $callbacks = new \ReflectionProperty($book_class, 'callbacks');
         $callbacks->setAccessible(true);
-        $this->assertSame([], $callbacks->getValue());
+
+        //this is a bit of a hack - reset the callbacks, but only for $book_class
+        $value = $callbacks->getValue();
+        unset($value[$book_class]);
+        $callbacks->setValue($value);
 
         $foo = function () {};
 
         Book::addEventCallBack('foo_event', $foo);
-        $this->assertSame([$book_class => ['foo_event' => [$foo]]], $callbacks->getValue());
+        $this->assertSame(['foo_event' => [$foo]], $callbacks->getValue()[$book_class]);
 
         Book::addEventCallBack('foo_event', $foo);
-        $this->assertSame([$book_class => ['foo_event' => [$foo, $foo]]], $callbacks->getValue());
+        $this->assertSame(['foo_event' => [$foo, $foo]], $callbacks->getValue()[$book_class]);
 
         Book::resetEventCallbacks();
     }
@@ -1061,25 +1065,22 @@ class EntityTest extends \PHPUnit_Framework_TestCase
 
     public function testEventCallbacksAreClassSpecific()
     {
-        $callbacks = new \ReflectionProperty('ActiveDoctrine\Entity\Entity', 'callbacks');
-        $callbacks->setAccessible(true);
-        $callbacks->setValue([]);
-        $this->assertSame([], $callbacks->getValue());
-
+        Book::resetEventCallbacks();
+        Author::resetEventCallbacks();
         $foo = function () {};
         $bar = function () {};
 
         Book::addEventCallBack('insert', $foo);
         Author::addEventCallBack('update', $bar);
 
-        $expected = [
-            'ActiveDoctrine\Tests\Fixtures\Bookshop\Book' => [
-                'insert' => [$foo]
-            ],
-            'ActiveDoctrine\Tests\Fixtures\Bookshop\Author' => [
-                'update' => [$bar]
-            ],
-        ];
-        $this->assertSame($expected, $callbacks->getValue());
+        $callbacks = new \ReflectionProperty('ActiveDoctrine\Entity\Entity', 'callbacks');
+        $callbacks->setAccessible(true);
+
+        $this->assertSame([
+            'insert' => [$foo]
+        ], $callbacks->getValue()['ActiveDoctrine\Tests\Fixtures\Bookshop\Book']);
+        $this->assertSame([
+            'update' => [$bar]
+        ], $callbacks->getValue()['ActiveDoctrine\Tests\Fixtures\Bookshop\Author']);
     }
 }
