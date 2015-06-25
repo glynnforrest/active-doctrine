@@ -16,7 +16,8 @@ abstract class Entity
     protected static $primary_key = 'id';
     protected static $fields = [];
     protected static $relations = [];
-    protected static $blacklist = [];
+    //blacklist is not an array to allow for an empty blacklist
+    protected static $blacklist;
     protected static $types = [];
     protected static $callbacks = [];
     protected static $init = [];
@@ -527,8 +528,10 @@ abstract class Entity
      */
     public function setValuesSafe(array $values = [])
     {
+        $blacklist = is_array(static::$blacklist) ? static::$blacklist : [static::$primary_key];
+
         foreach ($values as $key => $value) {
-            if (!in_array($key, static::$blacklist)) {
+            if (!in_array($key, $blacklist)) {
                 $this->set($key, $values[$key]);
             }
         }

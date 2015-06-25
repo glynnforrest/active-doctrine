@@ -7,6 +7,7 @@ use ActiveDoctrine\Tests\Fixtures\SetterGetter\UpperCase;
 use ActiveDoctrine\Tests\Fixtures\Bookshop\Book;
 use ActiveDoctrine\Tests\Fixtures\Bookshop\BookDetails;
 use ActiveDoctrine\Tests\Fixtures\Bookshop\Author;
+use ActiveDoctrine\Tests\Fixtures\Articles\Article;
 
 /**
  * EntityTest
@@ -153,6 +154,48 @@ class EntityTest extends \PHPUnit_Framework_TestCase
             'name' => 'The Art of War',
             'description' => 'Foo',
         ], $book->getValues());
+    }
+
+    public function testSetValuesSafeIgnoresPrimaryKeyByDefault()
+    {
+        $author = new Author($this->conn);
+        $author->setValuesSafe([
+            'id' => 34,
+            'name' => 'Thomas Hardy',
+        ]);
+        $this->assertSame([
+            'name' => 'Thomas Hardy',
+        ], $author->getValues());
+    }
+
+    public function testSetValuesSafeCanSetPrimaryKey()
+    {
+        //blacklist doesn't contain 'id', so id should be allowed
+        $details = new BookDetails($this->conn);
+        $details->setValuesSafe([
+            'id' => 20,
+            'books_id' => 40,
+            'synopsis' => 'foo'
+        ]);
+        $this->assertSame([
+            'id' => 20,
+            'synopsis' => 'foo'
+        ], $details->getValues());
+    }
+
+    public function testSetValuesSafeCanAcceptAnything()
+    {
+        //blacklist is set to [], so should allow anything
+        $article = new Article($this->conn);
+        $values = [
+            'id' => 12,
+            'title' => 'Foo',
+            'slug' => 'foo',
+            'created_at' => new \DateTime(),
+            'updated_at' => new \DateTime(),
+        ];
+        $article->setValuesSafe($values);
+        $this->assertSame($values, $article->getValues());
     }
 
     public function testSetAndIsStored()

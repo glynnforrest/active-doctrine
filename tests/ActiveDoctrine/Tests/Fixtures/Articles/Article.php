@@ -28,4 +28,5 @@ class Article extends Entity
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+    protected static $blacklist = [];
 }

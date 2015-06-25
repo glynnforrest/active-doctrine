@@ -25,5 +25,7 @@ class BookDetails extends Entity
             'belongs_to', 'ActiveDoctrine\Tests\Fixtures\Bookshop\Book', 'id', 'books_id'
         ]
     ];
-
+    protected static $blacklist = [
+        'books_id'
+    ];
 }
