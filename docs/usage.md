@@ -127,7 +127,7 @@ been already.
 $book->has('author')
 //query for author
 
-$book = Book::selectOne($conn)->with('author');
+$book = Book::selectOne($conn)->with('author')->execute();
 $book->has('author');
 //author already queried for, do not query again
 ```
