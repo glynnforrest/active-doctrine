@@ -2,10 +2,10 @@
 
 namespace ActiveDoctrine\Entity;
 
-use \IteratorAggregate;
-use \Countable;
-use \ArrayAccess;
-use \ArrayIterator;
+use IteratorAggregate;
+use Countable;
+use ArrayAccess;
+use ArrayIterator;
 
 /**
  * EntityCollection
@@ -183,7 +183,7 @@ class EntityCollection implements IteratorAggregate, Countable, ArrayAccess
             }
         }
 
-        return null;
+        return;
     }
 
     /**
@@ -276,5 +276,4 @@ class EntityCollection implements IteratorAggregate, Countable, ArrayAccess
     {
         unset($this->entities[$offset]);
     }
-
 }
