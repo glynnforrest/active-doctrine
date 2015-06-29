@@ -226,6 +226,22 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         ], $author->getValues());
     }
 
+    public function testSetValuesSafeAllowsRelations()
+    {
+        $book = new Book($this->conn);
+        $author = new Author($this->conn, ['id' => 1]);
+        $book->setValuesSafe([
+            'id' => 34,
+            'name' => 'Far From The Madding Crowd',
+            'author' => $author,
+        ]);
+        $this->assertSame([
+            'name' => 'Far From The Madding Crowd',
+            'authors_id' => 1,
+        ], $book->getValues());
+        $this->assertSame($author, $book->author);
+    }
+
     public function testSetAndIsStored()
     {
         $obj = new UpperCase($this->conn);
