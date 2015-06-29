@@ -21,6 +21,8 @@ abstract class Entity
     protected static $types = [];
     protected static $callbacks = [];
     protected static $init = [];
+    //used to save calculating the list of columns and relations every time
+    protected static $column_cache = [];
 
     protected $connection;
     protected $values = [];
@@ -55,6 +57,8 @@ abstract class Entity
                 forward_static_call([$this, $method]);
             }
         }
+
+        static::$column_cache[get_class($this)] = array_fill_keys(array_merge(static::$fields, array_keys(static::$relations)), true);
     }
 
     protected function getClassParents($class)
@@ -531,7 +535,7 @@ abstract class Entity
         $blacklist = is_array(static::$blacklist) ? static::$blacklist : [static::$primary_key];
 
         foreach ($values as $key => $value) {
-            if (!in_array($key, $blacklist)) {
+            if (!in_array($key, $blacklist) && isset(self::$column_cache[get_called_class()][$key])) {
                 $this->set($key, $values[$key]);
             }
         }

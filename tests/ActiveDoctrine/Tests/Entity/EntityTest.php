@@ -198,6 +198,34 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($values, $article->getValues());
     }
 
+    public function testSetValuesSafeIgnoresUnknownValues()
+    {
+        $book = new Book($this->conn);
+        $book->setValuesSafe([
+            'id' => 34,
+            'authors_id' => 100,
+            'name' => 'The Art of War',
+            'description' => 'Foo',
+            'foo' => 'bar',
+        ]);
+        $this->assertSame([
+            'name' => 'The Art of War',
+            'description' => 'Foo',
+        ], $book->getValues());
+    }
+
+    public function testSetValuesSafeIgnoresUnknownValuesByDefault()
+    {
+        $author = new Author($this->conn);
+        $author->setValuesSafe([
+            'id' => 34,
+            'name' => 'Thomas Hardy',
+        ]);
+        $this->assertSame([
+            'name' => 'Thomas Hardy',
+        ], $author->getValues());
+    }
+
     public function testSetAndIsStored()
     {
         $obj = new UpperCase($this->conn);
