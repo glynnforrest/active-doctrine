@@ -142,6 +142,59 @@ null for no value). This makes it easy for libraries such as Twig to
 access fields using the syntax `entity.field`. Always use `has()` to
 check if an entity column or relation has a value.
 
+### Setting and getting values in batch
+
+Sometimes you may want to set many values to an entity at once,
+e.g. from an incoming request or a form submission. `setValues()`
+takes an array of values and calls `get()` on each of
+them. `getValues()` returns all values, excluding relations.
+
+```php
+$book = new Book($conn);
+$book->setValues([
+    'name' => 'Godel, Escher, Bach',
+    'synopsis' => 'An enquiry into values',
+]);
+
+$book->getValues();
+//['name' => 'Godel, Escher, Bach', 'synopsis' => 'An enquiry into values']
+```
+
+`setValuesRaw()` and `getValuesRaw()` behave the same, but ignoring
+getter and setter methods.
+
+The static `blacklist` property can be used with `setValuesSafe()` to
+prevent certain columns from being set in batch operations.
+
+```php
+class Book extends Entity
+{
+    //...
+    protected static $blacklist = [
+        'id',
+        'authors_id'
+    ];
+}
+
+```
+
+```php
+$book = new Book($conn);
+$book->setValuesSafe([
+    'name' => 'Godel, Escher, Bach',
+    'synopsis' => 'An enquiry into values',
+    'id' => 100,
+    'authors_id' => 10,
+    'unknown_column' => 'foo',
+]);
+
+$book->getValues();
+//['name' => 'Godel, Escher, Bach', 'synopsis' => 'An enquiry into values']
+```
+
+Note that `setValuesSafe()` also filters out anything that isn't a
+column or a relation (`unknown_column` in the previous example).
+
 ## Insert, update and delete
 
 Use `save()` to persist an Entity to the database. A decision will be
