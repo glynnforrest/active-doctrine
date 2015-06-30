@@ -7,6 +7,7 @@ use ActiveDoctrine\Tests\Fixtures\SetterGetter\UpperCase;
 use ActiveDoctrine\Tests\Fixtures\Bookshop\Book;
 use ActiveDoctrine\Tests\Fixtures\Bookshop\BookDetails;
 use ActiveDoctrine\Tests\Fixtures\Bookshop\Author;
+use ActiveDoctrine\Tests\Fixtures\Articles\Article;
 
 /**
  * EntityTest
@@ -138,6 +139,107 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         //get methods should not be called in getValuesRaw
         $expected = ['name' => 'foo', 'description' => 'bar'];
         $this->assertSame($expected, $obj->getValuesRaw());
+    }
+
+    public function testSetValuesSafe()
+    {
+        $book = new Book($this->conn);
+        $book->setValuesSafe([
+            'id' => 34,
+            'authors_id' => 100,
+            'name' => 'The Art of War',
+            'description' => 'Foo',
+        ]);
+        $this->assertSame([
+            'name' => 'The Art of War',
+            'description' => 'Foo',
+        ], $book->getValues());
+    }
+
+    public function testSetValuesSafeIgnoresPrimaryKeyByDefault()
+    {
+        $author = new Author($this->conn);
+        $author->setValuesSafe([
+            'id' => 34,
+            'name' => 'Thomas Hardy',
+        ]);
+        $this->assertSame([
+            'name' => 'Thomas Hardy',
+        ], $author->getValues());
+    }
+
+    public function testSetValuesSafeCanSetPrimaryKey()
+    {
+        //blacklist doesn't contain 'id', so id should be allowed
+        $details = new BookDetails($this->conn);
+        $details->setValuesSafe([
+            'id' => 20,
+            'books_id' => 40,
+            'synopsis' => 'foo'
+        ]);
+        $this->assertSame([
+            'id' => 20,
+            'synopsis' => 'foo'
+        ], $details->getValues());
+    }
+
+    public function testSetValuesSafeCanAcceptAnything()
+    {
+        //blacklist is set to [], so should allow anything
+        $article = new Article($this->conn);
+        $values = [
+            'id' => 12,
+            'title' => 'Foo',
+            'slug' => 'foo',
+            'created_at' => new \DateTime(),
+            'updated_at' => new \DateTime(),
+        ];
+        $article->setValuesSafe($values);
+        $this->assertSame($values, $article->getValues());
+    }
+
+    public function testSetValuesSafeIgnoresUnknownValues()
+    {
+        $book = new Book($this->conn);
+        $book->setValuesSafe([
+            'id' => 34,
+            'authors_id' => 100,
+            'name' => 'The Art of War',
+            'description' => 'Foo',
+            'foo' => 'bar',
+        ]);
+        $this->assertSame([
+            'name' => 'The Art of War',
+            'description' => 'Foo',
+        ], $book->getValues());
+    }
+
+    public function testSetValuesSafeIgnoresUnknownValuesByDefault()
+    {
+        $author = new Author($this->conn);
+        $author->setValuesSafe([
+            'id' => 34,
+            'name' => 'Thomas Hardy',
+        ]);
+        $this->assertSame([
+            'name' => 'Thomas Hardy',
+        ], $author->getValues());
+    }
+
+    public function testSetValuesSafeAllowsRelations()
+    {
+        $book = new Book($this->conn);
+        $author = new Author($this->conn, ['id' => 1]);
+        $book->setValuesSafe([
+            'id' => 34,
+            'name' => 'Far From The Madding Crowd',
+            'author' => $author,
+        ]);
+        $this->assertSame([
+            'name' => 'Far From The Madding Crowd',
+            'authors_id' => 1,
+        ], $book->getValues());
+        $this->assertSame($author, $book->author);
     }
 
     public function testSetAndIsStored()
@@ -998,15 +1100,19 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $book_class = 'ActiveDoctrine\Tests\Fixtures\Bookshop\Book';
         $callbacks = new \ReflectionProperty($book_class, 'callbacks');
         $callbacks->setAccessible(true);
-        $this->assertSame([], $callbacks->getValue());
+
+        //this is a bit of a hack - reset the callbacks, but only for $book_class
+        $value = $callbacks->getValue();
+        unset($value[$book_class]);
+        $callbacks->setValue($value);
 
         $foo = function () {};
 
         Book::addEventCallBack('foo_event', $foo);
-        $this->assertSame([$book_class => ['foo_event' => [$foo]]], $callbacks->getValue());
+        $this->assertSame(['foo_event' => [$foo]], $callbacks->getValue()[$book_class]);
 
         Book::addEventCallBack('foo_event', $foo);
-        $this->assertSame([$book_class => ['foo_event' => [$foo, $foo]]], $callbacks->getValue());
+        $this->assertSame(['foo_event' => [$foo, $foo]], $callbacks->getValue()[$book_class]);
 
         Book::resetEventCallbacks();
     }
@@ -1046,25 +1152,22 @@ class EntityTest extends \PHPUnit_Framework_TestCase
 
     public function testEventCallbacksAreClassSpecific()
     {
-        $callbacks = new \ReflectionProperty('ActiveDoctrine\Entity\Entity', 'callbacks');
-        $callbacks->setAccessible(true);
-        $callbacks->setValue([]);
-        $this->assertSame([], $callbacks->getValue());
-
+        Book::resetEventCallbacks();
+        Author::resetEventCallbacks();
         $foo = function () {};
         $bar = function () {};
 
         Book::addEventCallBack('insert', $foo);
         Author::addEventCallBack('update', $bar);
 
-        $expected = [
-            'ActiveDoctrine\Tests\Fixtures\Bookshop\Book' => [
-                'insert' => [$foo]
-            ],
-            'ActiveDoctrine\Tests\Fixtures\Bookshop\Author' => [
-                'update' => [$bar]
-            ],
-        ];
-        $this->assertSame($expected, $callbacks->getValue());
+        $callbacks = new \ReflectionProperty('ActiveDoctrine\Entity\Entity', 'callbacks');
+        $callbacks->setAccessible(true);
+
+        $this->assertSame([
+            'insert' => [$foo]
+        ], $callbacks->getValue()['ActiveDoctrine\Tests\Fixtures\Bookshop\Book']);
+        $this->assertSame([
+            'update' => [$bar]
+        ], $callbacks->getValue()['ActiveDoctrine\Tests\Fixtures\Bookshop\Author']);
     }
 }
