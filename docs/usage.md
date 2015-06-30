@@ -17,7 +17,7 @@ $config = [
 $conn = Doctrine\DBAL\DriverManager::getConnection($config);
 ```
 
-## Creating entities
+## Working with entities
 
 Create a new entity by injecting the connection instance.
 
@@ -196,7 +196,7 @@ $old_authors = Author::select($conn)
     ->where('age', '>', 100)
     ->execute();
 
-// SELECT
+// SELECT * FROM authors WHERE age < ? ORDER BY age ASC
 $young_authors = Author::select($conn)
     ->where('age', '<', 25)
     ->orderBy('age', 'ASC')
