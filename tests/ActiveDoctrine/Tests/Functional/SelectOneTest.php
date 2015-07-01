@@ -74,4 +74,11 @@ class SelectOneTest extends FunctionalTestCase
         $this->assertSame('50', $book->id);
     }
 
+    public function testSelectPrimaryKey()
+    {
+        $this->loadData('bookshop');
+        $book = Book::selectPrimaryKey($this->getConn(), 1);
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Bookshop\Book', $book);
+        $this->assertSame(1, (int) $book->id);
+    }
 }

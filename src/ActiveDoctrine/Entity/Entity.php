@@ -784,4 +784,17 @@ abstract class Entity
         return $selector->one();
     }
 
+    /**
+     * Select a single entity matching a primary key.
+     *
+     * @param  Connection  $connection  A connection instance
+     * @param  mixed       $primary_key The primary key
+     * @return Entity|null The entity, or null if not found
+     */
+    public static function selectPrimaryKey(Connection $connection, $primary_key = null)
+    {
+        return static::selectOne($connection)
+            ->where(static::$primary_key, $primary_key)
+            ->execute();
+    }
 }
