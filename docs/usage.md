@@ -274,7 +274,7 @@ $young_authors_with_z = $young_authors->filter(function ($a) {
 });
 ```
 
-### SelectOne
+### Select One
 
 By using `one()` or `selectOne()`, the first entity will be returned
 instead of the whole collection. Null is returned if there is no
@@ -289,4 +289,13 @@ $author = Author::selectOne($conn)->execute();
 
 // SELECT * FROM authors WHERE age < 30 LIMIT 1
 $author = Author::selectOne($conn)->where('age', '<', 30)->execute();
+```
+
+### Select By Primary Key
+
+Use `selectPrimaryKey()` to select a single entity by primary key.
+
+```php
+// SELECT * FROM authors WHERE id = 40 LIMIT 1
+$author = Author::selectPrimaryKey($conn, 40);
 ```
