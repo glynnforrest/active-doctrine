@@ -79,4 +79,17 @@ abstract class AbstractRepository
 
         return $s->execute();
     }
+
+    /**
+     * Find a single entity by primary key.
+     *
+     * @param  mixed       $primary_key The primary key
+     * @return Entity|null The entity, or null if not found
+     */
+    public function find($primary_key)
+    {
+        $class = $this->entity_class;
+
+        return $class::selectPrimaryKey($this->conn, $primary_key);
+    }
 }

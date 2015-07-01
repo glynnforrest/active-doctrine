@@ -64,4 +64,18 @@ class RepositoryTest extends FunctionalTestCase
         $this->assertSame('Book 3 description', $book->description);
         $this->assertSame('3', $book->authors_id);
     }
+
+    public function testFind()
+    {
+        $this->loadData('bookshop');
+        $book = $this->repo->find(3);
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Bookshop\Book', $book);
+        $this->assertSame('Book 3', $book->name);
+
+        $book = $this->repo->find(9);
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Bookshop\Book', $book);
+        $this->assertSame('Book 9', $book->name);
+
+        $this->assertNull($this->repo->find(1000));
+    }
 }
