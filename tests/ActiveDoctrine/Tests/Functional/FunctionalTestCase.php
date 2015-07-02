@@ -5,6 +5,7 @@ namespace ActiveDoctrine\Tests\Functional;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Schema\SchemaException;
+use Doctrine\DBAL\Logging\DebugStack;
 
 /**
  * FunctionalTestCase
@@ -15,6 +16,7 @@ abstract class FunctionalTestCase extends \PHPUnit_Framework_TestCase
 {
 
     protected static $connection;
+    protected static $logger;
     protected $loaded_schemas = [];
 
     public function tearDown()
@@ -37,6 +39,25 @@ abstract class FunctionalTestCase extends \PHPUnit_Framework_TestCase
         }
     }
 
+    protected function getSQLLogger()
+    {
+        if (!isset(static::$logger)) {
+            static::$logger = new DebugStack();
+        }
+
+        return static::$logger;
+    }
+
+    protected function resetQueryCount()
+    {
+        $this->getSQLLogger()->queries = [];
+    }
+
+    protected function getQueryCount()
+    {
+        return count($this->getSQLLogger()->queries);
+    }
+
     public function getConn()
     {
         if (isset(static::$connection)) {
@@ -45,6 +66,7 @@ abstract class FunctionalTestCase extends \PHPUnit_Framework_TestCase
 
         //set up a special logger that counts queries here
         $configuration = new Configuration();
+        $configuration->setSQLLogger($this->getSQLLogger());
         static::$connection = DriverManager::getConnection($this->getConnectionParams(), $configuration);
 
         return static::$connection;
