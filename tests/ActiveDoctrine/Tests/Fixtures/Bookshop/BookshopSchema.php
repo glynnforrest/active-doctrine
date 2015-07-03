@@ -31,12 +31,19 @@ class BookshopSchema implements SchemaInterface
         $table->addColumn('synopsis', 'text');
         $table->addColumn('pages', 'integer', ['unsigned' => true]);
         $table->addColumn('chapters', 'integer', ['unsigned' => true]);
+
+        $table = $schema->createTable('authors');
+        $id = $table->addColumn('id', 'integer', ['unsigned' => true]);
+        $id->setAutoIncrement(true);
+        $table->setPrimaryKey(['id']);
+        $table->addColumn('name', 'string', ['length' => '255']);
     }
 
     public function down(Schema $schema)
     {
         $schema->dropTable('books');
         $schema->dropTable('book_details');
+        $schema->dropTable('authors');
     }
 
 }
