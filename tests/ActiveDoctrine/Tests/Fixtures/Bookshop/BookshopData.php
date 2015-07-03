@@ -34,6 +34,7 @@ class BookshopData implements DataInterface
             ]);
         }
         $this->loadDetails($connection);
+        $this->loadAuthors($connection);
     }
 
     protected function loadDetails(Connection $connection)
@@ -57,6 +58,22 @@ class BookshopData implements DataInterface
                 'synopsis' => $r[1],
                 'pages' => $r[2],
                 'chapters' => $r[3]
+            ]);
+        }
+    }
+
+    protected function loadAuthors(Connection $connection)
+    {
+        $records = [
+            ['Thomas Hardy'],
+            ['Terry Pratchett'],
+            ['Malcolm Gladwell'],
+            ['Charles Dickens'],
+        ];
+
+        foreach ($records as $r) {
+            $connection->insert('authors', [
+                'name' => $r[0]
             ]);
         }
     }
