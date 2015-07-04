@@ -3,6 +3,7 @@
 namespace ActiveDoctrine\Tests\Functional\Traits;
 
 use ActiveDoctrine\Tests\Fixtures\Articles\Article;
+use ActiveDoctrine\Tests\Fixtures\Misc\MultiSlug;
 
 /**
  * SlugTraitTest
@@ -95,5 +96,21 @@ class SlugTraitTest extends \PHPUnit_Framework_TestCase
         $article->$update_method();
 
         $this->assertSame('custom-slug', $article->slug);
+    }
+
+    /**
+     * @dataProvider insertMethodProvider
+     */
+    public function testMultipleSlugFieldsAreSetOnInsert($insert_method)
+    {
+        $obj = new MultiSlug($this->conn);
+        $obj->foo = 'Foo foo foo';
+        $obj->bar = 'Bar bar bar';
+        $obj->baz = 'Baz_baz-bAz';
+
+        $obj->$insert_method();
+        $this->assertSame('foo-foo-foo', $obj->foo_slug);
+        $this->assertSame('bar-bar-bar', $obj->bar_slug);
+        $this->assertSame('baz-baz-baz', $obj->baz_slug);
     }
 }
