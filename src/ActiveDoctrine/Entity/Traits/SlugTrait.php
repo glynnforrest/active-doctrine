@@ -39,6 +39,6 @@ trait SlugTrait
 
     private function slugify($string)
     {
-        return preg_replace('/[^a-z0-9]/', '-', strtolower($string));
+        return preg_replace('/[^a-z0-9]+/', '-', strtolower($string));
     }
 }

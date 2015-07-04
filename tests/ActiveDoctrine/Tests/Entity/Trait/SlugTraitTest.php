@@ -105,7 +105,7 @@ class SlugTraitTest extends \PHPUnit_Framework_TestCase
     {
         $obj = new MultiSlug($this->conn);
         $obj->foo = 'Foo foo foo';
-        $obj->bar = 'Bar bar bar';
+        $obj->bar = 'Bar bar      bar';
         $obj->baz = 'Baz_baz-bAz';
 
         $obj->$insert_method();
