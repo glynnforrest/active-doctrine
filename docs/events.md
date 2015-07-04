@@ -43,4 +43,4 @@ are any changes to the values in the database).
 ## Traits
 
 ActiveDoctrine contains some built in traits for reusable
-functionality using events. See `ActiveDoctrine\Entity\Traits`.
+functionality using events. See `traits.md`.
