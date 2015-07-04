@@ -71,3 +71,44 @@ class Writer extends Entity
     ];
 }
 ```
+
+## Slugs
+
+`ActiveDoctrine\Entity\Traits\SlugTrait` sets the slugs of one or more
+fields to an entity. A good example is storing the slug of an article
+title so it can be used in a url.
+
+Set the static `$slugs` property in the entity definition as an array,
+with source columns as the keys and slug columns as the values. All
+source and slug columns must be defined fields.
+
+When the entity is saved, the value of each source column will be
+slugified and set to the corresponding slug column. A slug column will
+be skipped if it has been modified, making it easy to override the
+slug name.
+
+### Usage
+
+```php
+
+use ActiveDoctrine\Entity\Entity;
+use ActiveDoctrine\Entity\Traits\SlugTrait;
+
+class Article extends Entity
+{
+    use SlugTrait;
+
+    protected static $table = 'articles';
+    protected static $fields = [
+        'id',
+        'title',
+        'slug',
+        'subtitle',
+        'subtitle_slug',
+    ];
+    protected static $slugs = [
+        'title => 'slug',
+        'subtitle => 'subtitle_slug',
+    ];
+}
+```
