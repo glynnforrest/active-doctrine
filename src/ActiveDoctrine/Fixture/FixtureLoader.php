@@ -2,7 +2,6 @@
 
 namespace ActiveDoctrine\Fixture;
 
-use ActiveDoctrine\Fixture\FixtureInterface;
 use Doctrine\DBAL\Connection;
 
 /**
@@ -31,8 +30,32 @@ class FixtureLoader
      */
     public function run(Connection $connection)
     {
-        foreach ($this->fixtures as $fixture) {
+        foreach ($this->getSortedFixtures() as $fixture) {
             $fixture->load($connection);
         }
+    }
+
+    protected function getSortedFixtures()
+    {
+        $fixtures = $this->fixtures;
+        usort($fixtures, function ($a, $b) {
+            if ($a instanceof OrderedFixtureInterface && $b instanceof OrderedFixtureInterface) {
+                if ($a->getOrder() === $b->getOrder()) {
+                    return 0;
+                }
+
+                return $a->getOrder() < $b->getOrder() ? -1 : 1;
+            }
+            if ($a instanceof OrderedFixtureInterface) {
+                return $a->getOrder() === 0 ? 0 : 1;
+            }
+            if ($b instanceof OrderedFixtureInterface) {
+                return $b->getOrder() === 0 ? 0 : -1;
+            }
+
+            return 1;
+        });
+
+        return $fixtures;
     }
 }

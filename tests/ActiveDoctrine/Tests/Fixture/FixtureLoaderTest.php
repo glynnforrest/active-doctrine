@@ -50,4 +50,20 @@ class FixtureLoaderTest extends \PHPUnit_Framework_TestCase
 
         $this->loader->run($this->conn);
     }
+
+    public function testRunOrderedFixtures()
+    {
+        //loaded out of order
+        $this->loader->addFixture(new OrderedFixtureTwo());
+        $this->loader->addFixture(new OrderedFixtureOne());
+
+        $this->conn->expects($this->exactly(2))
+            ->method('insert')
+            ->withConsecutive(
+                [$this->equalTo('table'), $this->equalTo(['one' => 1])],
+                [$this->equalTo('table'), $this->equalTo(['two' => 2])]
+            );
+
+        $this->loader->run($this->conn);
+    }
 }
