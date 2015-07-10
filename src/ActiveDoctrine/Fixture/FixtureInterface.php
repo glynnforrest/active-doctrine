@@ -11,5 +11,10 @@ use Doctrine\DBAL\Connection;
  **/
 interface FixtureInterface
 {
+    /**
+     * Load the data for this fixture into the database.
+     *
+     * @param Connection $connection
+     */
     function load(Connection $connection);
 }
