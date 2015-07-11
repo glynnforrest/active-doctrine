@@ -11,6 +11,7 @@ use Doctrine\DBAL\Connection;
  **/
 class FixtureLoader
 {
+    protected $dropTables = [];
     protected $fixtures = [];
 
     /**
@@ -20,6 +21,7 @@ class FixtureLoader
      */
     public function addFixture(FixtureInterface $fixture)
     {
+        $this->dropTables = array_merge($this->dropTables, $fixture->getTables());
         $this->fixtures[] = $fixture;
     }
 
@@ -30,6 +32,11 @@ class FixtureLoader
      */
     public function run(Connection $connection)
     {
+        //in the future, resolve key constraints here
+        foreach (array_unique($this->dropTables) as $table) {
+            $connection->delete($table, [1 => 1], [\PDO::PARAM_INT]);
+        }
+
         foreach ($this->getSortedFixtures() as $fixture) {
             $fixture->load($connection);
         }

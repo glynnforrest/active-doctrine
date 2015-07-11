@@ -66,4 +66,16 @@ class FixtureLoaderTest extends \PHPUnit_Framework_TestCase
 
         $this->loader->run($this->conn);
     }
+
+    public function testTablesAreEmptied()
+    {
+        $this->loader->addFixture(new FixtureOne());
+        $this->loader->addFixture(new OrderedFixtureOne());
+
+        $this->conn->expects($this->once())
+            ->method('delete')
+            ->with('table', [1 => 1], [\PDO::PARAM_INT]);
+
+        $this->loader->run($this->conn);
+    }
 }
