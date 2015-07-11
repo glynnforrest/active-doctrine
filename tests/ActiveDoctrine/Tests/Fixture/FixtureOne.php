@@ -18,4 +18,9 @@ class FixtureOne implements FixtureInterface
             'one' => 1
         ]);
     }
+
+    public function getTables()
+    {
+        return ['table'];
+    }
 }

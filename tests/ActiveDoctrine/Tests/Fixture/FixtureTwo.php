@@ -18,4 +18,9 @@ class FixtureTwo implements FixtureInterface
             'two' => 2
         ]);
     }
+
+    public function getTables()
+    {
+        return ['table'];
+    }
 }

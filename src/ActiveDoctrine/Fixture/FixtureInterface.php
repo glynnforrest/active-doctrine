@@ -17,4 +17,10 @@ interface FixtureInterface
      * @param Connection $connection
      */
     function load(Connection $connection);
+
+    /**
+     * Get the tables that this fixture loads data into. This is used
+     * to selectively delete data from affected tables only.
+     */
+    function getTables();
 }

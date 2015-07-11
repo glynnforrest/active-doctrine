@@ -19,6 +19,11 @@ class OrderedFixtureOne implements OrderedFixtureInterface
         ]);
     }
 
+    public function getTables()
+    {
+        return ['table'];
+    }
+
     public function getOrder()
     {
         return 1;
