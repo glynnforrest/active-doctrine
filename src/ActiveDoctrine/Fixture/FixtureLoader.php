@@ -29,12 +29,15 @@ class FixtureLoader
      * Run all fixtures.
      *
      * @param Connection $connection
+     * @param bool       $append     Don't empty tables before loading
      */
-    public function run(Connection $connection)
+    public function run(Connection $connection, $append = false)
     {
-        //in the future, resolve key constraints here
-        foreach (array_unique($this->dropTables) as $table) {
-            $connection->delete($table, [1 => 1], [\PDO::PARAM_INT]);
+        if (!$append) {
+            //in the future, resolve key constraints here
+            foreach (array_unique($this->dropTables) as $table) {
+                $connection->delete($table, [1 => 1], [\PDO::PARAM_INT]);
+            }
         }
 
         foreach ($this->getSortedFixtures() as $fixture) {
