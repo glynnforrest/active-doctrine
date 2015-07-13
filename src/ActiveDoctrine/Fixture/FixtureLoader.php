@@ -41,8 +41,19 @@ class FixtureLoader
         }
 
         foreach ($this->getSortedFixtures() as $fixture) {
-            $fixture->load($connection);
+            $this->runFixture($connection, $fixture);
         }
+    }
+
+    /**
+     * Run a fixture. Override this method to add logging, etc.
+     *
+     * @param Connection       $connection
+     * @param FixtureInterface $fixture
+     */
+    protected function runFixture(Connection $connection, FixtureInterface $fixture)
+    {
+        $fixture->load($connection);
     }
 
     protected function getSortedFixtures()
