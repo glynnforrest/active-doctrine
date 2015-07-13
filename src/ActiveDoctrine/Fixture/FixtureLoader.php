@@ -21,7 +21,7 @@ class FixtureLoader
      */
     public function addFixture(FixtureInterface $fixture)
     {
-        $this->dropTables = array_merge($this->dropTables, $fixture->getTables());
+        $this->dropTables = array_merge($this->dropTables, (array) $fixture->getTables());
         $this->fixtures[] = $fixture;
     }
 
