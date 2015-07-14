@@ -3,17 +3,16 @@
 namespace ActiveDoctrine\Tests\Fixtures\Bookshop;
 
 use Doctrine\DBAL\Connection;
-use ActiveDoctrine\Tests\Fixtures\DataInterface;
+use ActiveDoctrine\Fixture\FixtureInterface;
 
 /**
  * BookshopData
  *
  * @author Glynn Forrest <me@glynnforrest.com>
  **/
-class BookshopData implements DataInterface
+class BookshopData implements FixtureInterface
 {
-
-    public function loadData(Connection $connection)
+    public function load(Connection $connection)
     {
         $records = [
             ['Book 1', 'The very first book', 1],
@@ -76,5 +75,14 @@ class BookshopData implements DataInterface
                 'name' => $r[0]
             ]);
         }
+    }
+
+    public function getTables()
+    {
+        return [
+            'books',
+            'book_details',
+            'authors',
+        ];
     }
 }
