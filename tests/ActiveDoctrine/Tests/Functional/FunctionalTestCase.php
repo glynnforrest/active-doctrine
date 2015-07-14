@@ -149,7 +149,7 @@ abstract class FunctionalTestCase extends \PHPUnit_Framework_TestCase
         $entity_group = $this->normalize($entity_group);
         $data_class = sprintf('ActiveDoctrine\Tests\Fixtures\%s\%sData', $entity_group, $entity_group);
         $data = new $data_class();
-        $data->loadData($this->getConn());
+        $data->load($this->getConn());
 
         return $data;
     }
