@@ -3,20 +3,20 @@
 namespace ActiveDoctrine\Tests\Fixtures\Articles;
 
 use Doctrine\DBAL\Connection;
-use ActiveDoctrine\Tests\Fixtures\DataInterface;
+use ActiveDoctrine\Fixture\FixtureInterface;
 
 /**
  * ArticlesData
  *
  * @author Glynn Forrest <me@glynnforrest.com>
  **/
-class ArticlesData implements DataInterface
+class ArticlesData implements FixtureInterface
 {
-    public function loadData(Connection $connection)
+    public function load(Connection $connection)
     {
         $records = [];
 
-        for ($i = 1; $i < 21; $i++) {
+        for ($i = 1; $i < 21; ++$i) {
             $records[] = ["Article $i"];
         }
 
@@ -32,5 +32,10 @@ class ArticlesData implements DataInterface
                 'updated_at' => 'datetime',
             ]);
         }
+    }
+
+    public function getTables()
+    {
+        return ['articles'];
     }
 }
