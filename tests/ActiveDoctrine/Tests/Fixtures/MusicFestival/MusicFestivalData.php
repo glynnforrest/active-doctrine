@@ -3,16 +3,16 @@
 namespace ActiveDoctrine\Tests\Fixtures\MusicFestival;
 
 use Doctrine\DBAL\Connection;
-use ActiveDoctrine\Tests\Fixtures\DataInterface;
+use ActiveDoctrine\Fixture\FixtureInterface;
 
 /**
  * MusicFestivalData
  *
  * @author Glynn Forrest <me@glynnforrest.com>
  **/
-class MusicFestivalData implements DataInterface
+class MusicFestivalData implements FixtureInterface
 {
-    public function loadData(Connection $connection)
+    public function load(Connection $connection)
     {
         $records = [
             ['Today', new \DateTime()],
@@ -35,4 +35,10 @@ class MusicFestivalData implements DataInterface
             ]);
         }
     }
+
+    public function getTables()
+    {
+        return ['performances'];
+    }
+
 }
