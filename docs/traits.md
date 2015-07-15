@@ -107,8 +107,8 @@ class Article extends Entity
         'subtitle_slug',
     ];
     protected static $slugs = [
-        'title => 'slug',
-        'subtitle => 'subtitle_slug',
+        'title' => 'slug',
+        'subtitle' => 'subtitle_slug',
     ];
 }
 ```
