@@ -142,6 +142,16 @@ abstract class Entity
     }
 
     /**
+     * Get the entity table.
+     *
+     * @return string
+     */
+    public static function getTable()
+    {
+        return static::$table;
+    }
+
+    /**
      * Call an event on this entity, calling the registering
      * callbacks.
      *
