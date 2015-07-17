@@ -17,6 +17,9 @@ class Node extends Entity
         'value',
     ];
     protected static $table = 'nodes';
+    protected static $types = [
+        'id' => 'integer'
+    ];
     protected static $relations = [
         'parent' => [
             'belongs_to', 'ActiveDoctrine\Tests\Fixtures\Nodes\Node', 'id', 'parent_id'

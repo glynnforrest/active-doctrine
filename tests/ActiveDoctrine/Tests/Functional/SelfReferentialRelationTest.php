@@ -33,4 +33,17 @@ class SelfReferentialRelationTest extends FunctionalTestCase
             $this->assertSame("Child $i", $child->value);
         }
     }
+
+    public function testSelectParent()
+    {
+        $this->loadData('nodes');
+        $child = Node::selectOne($this->getConn())
+                ->where('id', 3)
+                ->execute();
+
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Nodes\Node', $child);
+        $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Nodes\Node', $child->parent);
+        $this->assertSame(1, $child->parent->id);
+        $this->assertSame(5, count($child->parent->children));
+    }
 }
