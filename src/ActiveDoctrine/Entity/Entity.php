@@ -237,7 +237,7 @@ abstract class Entity
      */
     public function getRelation($name)
     {
-        if (isset($this->relation_objects[$name])) {
+        if (array_key_exists($name, $this->relation_objects)) {
             return $this->relation_objects[$name];
         }
 

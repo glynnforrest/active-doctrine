@@ -81,4 +81,17 @@ class SelectOneTest extends FunctionalTestCase
         $this->assertInstanceOf('ActiveDoctrine\Tests\Fixtures\Bookshop\Book', $book);
         $this->assertSame(1, (int) $book->id);
     }
+
+    public function testNullRelationIsNotQueriedManyTimes()
+    {
+        $this->loadData('bookshop');
+        $book = Book::selectPrimaryKey($this->getConn(), 50);
+        $this->resetQueryCount();
+        $this->assertNull($book->details);
+        //make sure null has been saved and not queried for again
+        $book->details;
+        $book->details;
+        $book->details;
+        $this->assertSame(1, $this->getQueryCount());
+    }
 }
