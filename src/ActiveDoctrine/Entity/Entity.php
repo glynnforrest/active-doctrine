@@ -801,7 +801,7 @@ abstract class Entity
      * @param  mixed       $primary_key The primary key
      * @return Entity|null The entity, or null if not found
      */
-    public static function selectPrimaryKey(Connection $connection, $primary_key = null)
+    public static function selectPrimaryKey(Connection $connection, $primary_key)
     {
         return static::selectOne($connection)
             ->where(static::$primary_key, $primary_key)
