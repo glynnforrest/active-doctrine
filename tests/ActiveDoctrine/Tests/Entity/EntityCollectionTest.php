@@ -176,7 +176,7 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
         $collection[] = new UpperCase($this->conn, ['name' => 'foo']);
         $collection[] = new UpperCase($this->conn);
         $collection[] = new UpperCase($this->conn, ['name' => 'bar']);
-        $collection->setColumn('name', 'changed');
+        $this->assertSame($collection, $collection->setColumn('name', 'changed'));
         $this->assertSame(['CHANGED', 'CHANGED', 'CHANGED'], $collection->getColumn('name'));
     }
 
@@ -186,7 +186,7 @@ class EntityCollectionTest extends \PHPUnit_Framework_TestCase
         $collection[] = new UpperCase($this->conn, ['name' => 'foo']);
         $collection[] = new UpperCase($this->conn);
         $collection[] = new UpperCase($this->conn, ['name' => 'bar']);
-        $collection->setColumnRaw('name', 'changed');
+        $this->assertSame($collection, $collection->setColumnRaw('name', 'changed'));
         $this->assertSame(['changed', 'changed', 'changed'], $collection->getColumn('name'));
     }
 

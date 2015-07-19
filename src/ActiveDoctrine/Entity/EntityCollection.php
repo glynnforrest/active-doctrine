@@ -70,6 +70,8 @@ class EntityCollection implements IteratorAggregate, Countable, ArrayAccess
         foreach ($this->entities as $entity) {
             $entity->set($name, $value);
         }
+
+        return $this;
     }
 
     /**
@@ -85,6 +87,8 @@ class EntityCollection implements IteratorAggregate, Countable, ArrayAccess
         foreach ($this->entities as $entity) {
             $entity->setRaw($name, $value);
         }
+
+        return $this;
     }
 
     /**
