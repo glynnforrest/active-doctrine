@@ -67,6 +67,17 @@ abstract class Entity
     }
 
     /**
+     * Remove primary key and mark as not stored when cloning.
+     */
+    public function __clone()
+    {
+        $this->stored = false;
+        $this->modified = array_fill_keys(array_intersect(array_keys($this->values), static::$fields), true);
+        unset($this->values[static::$primary_key]);
+        unset($this->modified[static::$primary_key]);
+    }
+
+    /**
      * Save a small subset of properties when serializing.
      */
     public function __sleep()

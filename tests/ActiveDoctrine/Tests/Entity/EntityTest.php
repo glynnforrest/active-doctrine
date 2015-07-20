@@ -1175,4 +1175,29 @@ class EntityTest extends \PHPUnit_Framework_TestCase
             'update' => [$bar]
         ], $callbacks->getValue()['ActiveDoctrine\Tests\Fixtures\Bookshop\Author']);
     }
+
+    public function testClone()
+    {
+        $book = new Book($this->conn, [
+            'id' => 1,
+            'name' => 'title',
+            'description' => 'description',
+            'authors_id' => 30
+        ]);
+        $book->setStored();
+
+        $copy = clone $book;
+        $this->assertFalse($copy->isStored());
+        $this->assertSame([
+            'name',
+            'description',
+            'authors_id',
+        ], $copy->getModifiedFields());
+        $this->assertSame([
+            'name' => 'title',
+            'description' => 'description',
+            'authors_id' => 30
+        ], $copy->getValues());
+    }
+
 }
