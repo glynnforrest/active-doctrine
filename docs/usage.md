@@ -233,6 +233,29 @@ Use `delete()` to remove the entity from the database.
 $author->delete();
 ```
 
+### Cloning
+
+When cloning an entity, it will be marked as new. `save()` will insert
+a new row with a new primary key.
+
+```php
+$book = Book::selectPrimaryKey($this->getConn(), 1);
+$copy = clone $book;
+
+$book->isStored();
+//true
+$copy->isStored();
+//false
+
+$copy->save();
+//inserted with a new primary key
+
+$book->name === $copy->name
+//true
+$book->id === $copy->id
+//false
+```
+
 ## Select
 
 Use `select()` to select entities from the database. This creates an
