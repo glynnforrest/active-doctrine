@@ -256,6 +256,47 @@ $book->id === $copy->id
 //false
 ```
 
+Warning - by default, all references to objects are shared between the
+entity and the clone. This is default PHP behaviour.
+
+```php
+$book = new Book();
+$book->published_date = new \DateTime('2015-01-01');
+
+$copy = clone $book;
+
+$book->published_date === $copy->published_date
+//true
+
+$book->published_date->modify('+1 day');
+echo $copy->format('Y-m-d');
+//2015-01-02
+```
+
+To prevent this behaviour, extend `__clone()` and copy the required
+child objects to the clone.
+
+```php
+public function __clone()
+{
+    parent::__clone();
+    $this->published_date = clone $this->published_date;
+}
+```
+
+Be sure to call `parent::__clone()` to ensure the cloned entity is
+saved to the database correctly.
+
+No attempt is made by Active Doctrine to guess the child objects to
+copy, as it is often specific to the domain.
+
+For example, when cloning an `Author` entity, we probably don't want
+all of the author's `Book` instances cloned too.
+However, it would probably make sense to copy all `Sections` when
+cloning an `Article` entity.
+
+These decisions are left entirely up to you.
+
 ## Select
 
 Use `select()` to select entities from the database. This creates an
