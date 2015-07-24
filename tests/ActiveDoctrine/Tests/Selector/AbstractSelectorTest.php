@@ -27,13 +27,13 @@ class AbstractSelectorTest extends \PHPUnit_Framework_TestCase
     public function testFromConnection($name, $class)
     {
         $driver = $this->getMock('Doctrine\DBAL\Driver');
-        $driver->expects($this->once())
+        $driver->expects($this->any())
                ->method('getName')
                ->will($this->returnValue($name));
         $conn = $this->getMockBuilder('Doctrine\DBAL\Connection')
                      ->disableOriginalConstructor()
                      ->getMock();
-        $conn->expects($this->once())
+        $conn->expects($this->any())
              ->method('getDriver')
              ->will($this->returnValue($driver));
 
@@ -44,13 +44,13 @@ class AbstractSelectorTest extends \PHPUnit_Framework_TestCase
     public function testFromConnectionThrowsException()
     {
         $driver = $this->getMock('Doctrine\DBAL\Driver');
-        $driver->expects($this->once())
+        $driver->expects($this->any())
                ->method('getName')
                ->will($this->returnValue('foo'));
         $conn = $this->getMockBuilder('Doctrine\DBAL\Connection')
                      ->disableOriginalConstructor()
                      ->getMock();
-        $conn->expects($this->once())
+        $conn->expects($this->any())
              ->method('getDriver')
              ->will($this->returnValue($driver));
 

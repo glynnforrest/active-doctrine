@@ -731,10 +731,10 @@ class EntityTest extends \PHPUnit_Framework_TestCase
     protected function expectDriver()
     {
         $driver = $this->getMock('Doctrine\DBAL\Driver');
-        $driver->expects($this->once())
+        $driver->expects($this->any())
                ->method('getName')
                ->will($this->returnValue('pdo_mysql'));
-        $this->conn->expects($this->once())
+        $this->conn->expects($this->any())
              ->method('getDriver')
              ->will($this->returnValue($driver));
     }
