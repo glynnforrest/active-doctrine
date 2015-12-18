@@ -620,6 +620,14 @@ abstract class Entity
     }
 
     /**
+     * @return string
+     */
+    public static function getPrimaryKeyName()
+    {
+        return static::$primary_key;
+    }
+
+    /**
      * Update this entity in the database.
      */
     public function update()

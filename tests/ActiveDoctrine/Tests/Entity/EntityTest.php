@@ -45,6 +45,11 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('books', Book::getTable());
     }
 
+    public function testGetPrimaryKeyName()
+    {
+        $this->assertSame('id', Book::getPrimaryKeyName());
+    }
+
     public function testGetAndSetRaw()
     {
         $obj = new UpperCase($this->conn);
