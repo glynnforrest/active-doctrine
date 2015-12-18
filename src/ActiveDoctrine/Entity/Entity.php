@@ -12,13 +12,17 @@ use ActiveDoctrine\Selector\AbstractSelector;
  **/
 abstract class Entity
 {
+    //configurable in child classes
     protected static $table;
     protected static $primary_key = 'id';
     protected static $fields = [];
+    protected static $types = [];
+    protected static $field_settings = [];
     protected static $relations = [];
     //blacklist is not an array to allow for an empty blacklist
     protected static $blacklist;
-    protected static $types = [];
+
+    //internal
     protected static $callbacks = [];
     protected static $init = [];
     //combined list of fields and relations, to save calculating the list every time
@@ -118,6 +122,16 @@ abstract class Entity
     public static function getTypes()
     {
         return static::$types;
+    }
+
+    /**
+     * Get the field settings, if defined.
+     *
+     * @return array
+     */
+    public static function getFieldSettings()
+    {
+        return static::$field_settings;
     }
 
     /**
