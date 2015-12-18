@@ -714,17 +714,27 @@ abstract class Entity
      * Select all entities matching an SQL query, and return the
      * results as a collection.
      *
-     * @param  Connection       $connection A connection instance
-     * @param  string           $sql        The SQL query
-     * @param  array            $parameters Any bound parameters required for the query
+     * @param Connection $connection   A connection instance
+     * @param string     $sql          The SQL query
+     * @param array      $parameters   Any bound parameters required for the query
+     * @param array      $fieldMapping An array of database columns => entity fields
+     *
      * @return EntityCollection A collection containing the selected entities
      */
-    public static function selectSQL(Connection $connection, $sql, array $parameters = array())
+    public static function selectSQL(Connection $connection, $sql, array $parameters = [], array $fieldMapping = [])
     {
         $stmt = $connection->prepare($sql);
         $stmt->execute($parameters);
         $results = array();
         while ($result = $stmt->fetch()) {
+            foreach ($fieldMapping as $db_column => $entity_field) {
+                if (!isset($result[$db_column])) {
+                    continue;
+                }
+                $result[$entity_field] = $result[$db_column];
+                unset($result[$db_column]);
+            }
+
             foreach (static::$types as $column => $type) {
                 if (isset($result[$column])) {
                     $result[$column] = $connection->convertToPHPValue($result[$column], $type);
