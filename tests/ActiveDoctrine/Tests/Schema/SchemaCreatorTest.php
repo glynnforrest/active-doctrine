@@ -51,4 +51,18 @@ class SchemaCreatorTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($id->getAutoincrement());
         $this->assertSame(['id'], $table->getPrimaryKey()->getColumns());
     }
+
+    public function testAddEntityDirectory()
+    {
+        $this->creator->addEntityDirectory('ActiveDoctrine\Tests\Fixtures\Misc', __DIR__.'/../Fixtures/Misc');
+        $schema = $this->creator->createSchema();
+
+        $this->assertTrue($schema->hasTable('no_types'));
+        $table = $schema->getTable('no_types');
+        $this->assertTrue($table->hasColumn('id'));
+
+        $this->assertTrue($schema->hasTable('multi_slug'));
+        $table = $schema->getTable('multi_slug');
+        $this->assertTrue($table->hasColumn('foo_slug'));
+    }
 }
