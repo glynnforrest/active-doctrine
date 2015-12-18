@@ -13,11 +13,8 @@ class Performance extends Entity
 {
     protected static $table = 'performances';
     protected static $fields = [
-        'id',
+        'id' => 'integer',
         'name',
-        'start_time',
-    ];
-    protected static $types = [
         'start_time' => 'datetime',
     ];
 }

@@ -18,10 +18,10 @@ abstract class Entity
     protected static $relations = [];
     //blacklist is not an array to allow for an empty blacklist
     protected static $blacklist;
-    protected static $types = [];
+    private static $types = [];
     protected static $callbacks = [];
     protected static $init = [];
-    //used to save calculating the list of columns and relations every time
+    //combined list of fields and relations, to save calculating the list every time
     protected static $column_cache = [];
 
     protected $connection;
@@ -52,15 +52,17 @@ abstract class Entity
     protected function init()
     {
         $fields = [];
+        self::$types[get_class($this)] = [];
+
         foreach (static::$fields as $field => $type) {
             if (is_int($field)) {
                 $fields[] = $type;
                 continue;
             }
-            self::$types[$field] = $type;
+            self::$types[get_class($this)][$field] = $type;
             $fields[] = $field;
         }
-        static::$fields = $fields;
+        static::$fields[] = $fields;
 
         foreach ($this->getClassParents(get_class($this)) as $class) {
             $method = 'init'.basename(str_replace('\\', '/', $class));
@@ -598,7 +600,7 @@ abstract class Entity
         }
 
         $values = array_intersect_key($this->values, $this->modified);
-        $this->connection->insert(static::$table, $values, static::$types);
+        $this->connection->insert(static::$table, $values, self::$types[get_class($this)]);
         //this will only work with some database vendors for now.
         $this->values[static::$primary_key] = $this->connection->lastInsertId();
         $this->setStored();
@@ -632,7 +634,7 @@ abstract class Entity
         }
         $values = array_intersect_key($this->values, $this->modified);
         $where = [static::$primary_key => $this->getPrimaryKey()];
-        $this->connection->update(static::$table, $values, $where, static::$types);
+        $this->connection->update(static::$table, $values, $where, self::$types[get_class($this)]);
         $this->setStored();
     }
 
@@ -746,7 +748,7 @@ abstract class Entity
                 unset($result[$result_column]);
             }
 
-            foreach (static::$types as $column => $type) {
+            foreach (self::$types[get_class($this)] as $column => $type) {
                 if (isset($result[$column])) {
                     $result[$column] = $connection->convertToPHPValue($result[$column], $type);
                 }
@@ -788,7 +790,7 @@ abstract class Entity
                 unset($result[$result_column]);
             }
 
-            foreach (static::$types as $column => $type) {
+            foreach (self::$types[get_class($this)] as $column => $type) {
                 if (isset($result[$column])) {
                     $result[$column] = $connection->convertToPHPValue($result[$column], $type);
                 }
@@ -809,7 +811,7 @@ abstract class Entity
      */
     public static function select(Connection $connection)
     {
-        return new EntitySelector(AbstractSelector::fromConnection($connection, static::$table, static::$types), get_called_class());
+        return new EntitySelector(AbstractSelector::fromConnection($connection, static::$table, self::$types[get_called_class()]), get_called_class());
     }
 
     /**
@@ -820,7 +822,7 @@ abstract class Entity
      */
     public static function selectOne(Connection $connection)
     {
-        $selector = new EntitySelector(AbstractSelector::fromConnection($connection, static::$table, static::$types), get_called_class());
+        $selector = new EntitySelector(AbstractSelector::fromConnection($connection, static::$table, self::$types[get_called_class()]), get_called_class());
 
         return $selector->one();
     }
