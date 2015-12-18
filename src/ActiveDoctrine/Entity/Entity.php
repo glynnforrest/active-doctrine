@@ -717,22 +717,22 @@ abstract class Entity
      * @param Connection $connection   A connection instance
      * @param string     $sql          The SQL query
      * @param array      $parameters   Any bound parameters required for the query
-     * @param array      $fieldMapping An array of database columns => entity fields
+     * @param array      $field_mapping An array of result columns => entity fields
      *
      * @return EntityCollection A collection containing the selected entities
      */
-    public static function selectSQL(Connection $connection, $sql, array $parameters = [], array $fieldMapping = [])
+    public static function selectSQL(Connection $connection, $sql, array $parameters = [], array $field_mapping = [])
     {
         $stmt = $connection->prepare($sql);
         $stmt->execute($parameters);
         $results = array();
         while ($result = $stmt->fetch()) {
-            foreach ($fieldMapping as $db_column => $entity_field) {
-                if (!isset($result[$db_column])) {
+            foreach ($field_mapping as $result_column => $entity_field) {
+                if (!isset($result[$result_column])) {
                     continue;
                 }
-                $result[$entity_field] = $result[$db_column];
-                unset($result[$db_column]);
+                $result[$entity_field] = $result[$result_column];
+                unset($result[$result_column]);
             }
 
             foreach (static::$types as $column => $type) {
