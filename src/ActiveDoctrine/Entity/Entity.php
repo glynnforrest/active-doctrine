@@ -714,17 +714,27 @@ abstract class Entity
      * Select all entities matching an SQL query, and return the
      * results as a collection.
      *
-     * @param  Connection       $connection A connection instance
-     * @param  string           $sql        The SQL query
-     * @param  array            $parameters Any bound parameters required for the query
+     * @param Connection $connection   A connection instance
+     * @param string     $sql          The SQL query
+     * @param array      $parameters   Any bound parameters required for the query
+     * @param array      $field_mapping An array of result columns => entity fields
+     *
      * @return EntityCollection A collection containing the selected entities
      */
-    public static function selectSQL(Connection $connection, $sql, array $parameters = array())
+    public static function selectSQL(Connection $connection, $sql, array $parameters = [], array $field_mapping = [])
     {
         $stmt = $connection->prepare($sql);
         $stmt->execute($parameters);
         $results = array();
         while ($result = $stmt->fetch()) {
+            foreach ($field_mapping as $result_column => $entity_field) {
+                if (!isset($result[$result_column])) {
+                    continue;
+                }
+                $result[$entity_field] = $result[$result_column];
+                unset($result[$result_column]);
+            }
+
             foreach (static::$types as $column => $type) {
                 if (isset($result[$column])) {
                     $result[$column] = $connection->convertToPHPValue($result[$column], $type);
@@ -746,17 +756,27 @@ abstract class Entity
      * row is matched by the query, only the first entity will be
      * returned.
      *
-     * @param  Connection  $connection A connection instance
-     * @param  string      $sql        The SQL query
-     * @param  array       $parameters Any bound parameters required for the query
+     * @param Connection $connection    A connection instance
+     * @param string     $sql           The SQL query
+     * @param array      $parameters    Any bound parameters required for the query
+     * @param array      $field_mapping An array of result columns => entity fields
+     *
      * @return Entity|null The selected Entity, or null if no entity was found
      */
-    public static function selectOneSQL(Connection $connection, $sql, array $parameters = [])
+    public static function selectOneSQL(Connection $connection, $sql, array $parameters = [], array $field_mapping = [])
     {
         $stmt = $connection->prepare($sql);
         $stmt->execute($parameters);
         $result = $stmt->fetch();
         if ($result) {
+            foreach ($field_mapping as $result_column => $entity_field) {
+                if (!isset($result[$result_column])) {
+                    continue;
+                }
+                $result[$entity_field] = $result[$result_column];
+                unset($result[$result_column]);
+            }
+
             foreach (static::$types as $column => $type) {
                 if (isset($result[$column])) {
                     $result[$column] = $connection->convertToPHPValue($result[$column], $type);

@@ -299,3 +299,35 @@ Use `selectPrimaryKey()` to select a single entity by primary key.
 // SELECT * FROM authors WHERE id = 40 LIMIT 1
 $author = Author::selectPrimaryKey($conn, 40);
 ```
+
+### Select with SQL Query
+
+Use `selectSQL()` to drop back to SQL when using more involved select
+queries.
+
+```php
+$authors = Author::selectSQL($conn, 'SELECT * FROM authors WHERE age < 30 LIMIT 10');
+```
+
+Use the 3rd argument to add parameters.
+
+```php
+$authors = Author::selectSQL($conn, 'SELECT * FROM authors WHERE age > ?', [18]);
+```
+
+If your query uses joins or selects from a different database table,
+the columns might not match up with the entity.
+Use the 4th argument to pass an array of result columns => entity
+fields to map the results to the entity.
+
+```php
+$query = 'SELECT b.id as i, b.name as n, b.description as d, b.authors_id as a FROM books b JOIN authors a ON b.authors_id = a.id';
+$books = Book::selectSQL($this->getConn(), $query, [], [
+    'i' => 'id',
+    'n' => 'name',
+    'd' => 'description',
+    'a' => 'authors_id',
+]);
+```
+
+`selectOneSQL()` works in the same way, but returns a single entity or null.
