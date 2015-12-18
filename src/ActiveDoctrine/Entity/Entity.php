@@ -21,7 +21,7 @@ abstract class Entity
     protected static $types = [];
     protected static $callbacks = [];
     protected static $init = [];
-    //used to save calculating the list of columns and relations every time
+    //combined list of fields and relations, to save calculating the list every time
     protected static $column_cache = [];
 
     protected $connection;
@@ -108,6 +108,16 @@ abstract class Entity
     public static function getFields()
     {
         return static::$fields;
+    }
+
+    /**
+     * Get the field types, if defined.
+     *
+     * @return array
+     */
+    public static function getTypes()
+    {
+        return static::$types;
     }
 
     /**

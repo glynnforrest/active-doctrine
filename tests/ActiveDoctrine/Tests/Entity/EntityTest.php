@@ -30,6 +30,16 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(['id', 'name', 'description', 'authors_id'], Book::getFields());
     }
 
+    public function testGetTypes()
+    {
+        $this->assertSame([], Book::getTypes());
+        $this->assertSame([
+            'id' => 'integer',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+        ], Article::getTypes());
+    }
+
     public function testGetTable()
     {
         $this->assertSame('books', Book::getTable());
