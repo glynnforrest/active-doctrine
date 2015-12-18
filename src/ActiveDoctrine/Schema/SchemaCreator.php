@@ -22,6 +22,8 @@ class SchemaCreator
         foreach ($this->classes as $classname) {
             $table = $schema->createTable($classname::getTable());
             $types = $classname::getTypes();
+            $field_settings = $classname::getFieldSettings();
+
             foreach ($classname::getFields() as $field) {
                 $type = isset($types[$field]) ? $types[$field] : 'text';
 
@@ -29,7 +31,9 @@ class SchemaCreator
                     $type = 'integer';
                 }
 
-                $column = $table->addColumn($field, $type);
+                $settings = isset($field_settings[$field]) ? $field_settings[$field] : [];
+
+                $column = $table->addColumn($field, $type, $settings);
 
                 if ($field === $classname::getPrimaryKeyName()) {
                     $column->setAutoincrement(true);

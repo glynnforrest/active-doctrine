@@ -52,6 +52,15 @@ class SchemaCreatorTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(['id'], $table->getPrimaryKey()->getColumns());
     }
 
+    public function testFieldSettingsAreUsed()
+    {
+        $this->creator->addEntityClass('ActiveDoctrine\Tests\Fixtures\Articles\Article');
+        $schema = $this->creator->createSchema();
+
+        $table = $schema->getTable('articles');
+        $this->assertSame(5, $table->getColumn('id')->getLength());
+    }
+
     public function testAddEntityDirectory()
     {
         $this->creator->addEntityDirectory('ActiveDoctrine\Tests\Fixtures\Misc', __DIR__.'/../Fixtures/Misc');
