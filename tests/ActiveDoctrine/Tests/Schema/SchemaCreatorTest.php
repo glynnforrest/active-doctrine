@@ -65,4 +65,36 @@ class SchemaCreatorTest extends \PHPUnit_Framework_TestCase
         $table = $schema->getTable('multi_slug');
         $this->assertTrue($table->hasColumn('foo_slug'));
     }
+
+    public function testAddEntityDirectoryRecursive()
+    {
+        $this->creator->addEntityDirectory('ActiveDoctrine\Tests\Fixtures', __DIR__.'/../Fixtures');
+        $schema = $this->creator->createSchema();
+
+        $this->assertTrue($schema->hasTable('no_types'));
+        $table = $schema->getTable('no_types');
+        $this->assertTrue($table->hasColumn('id'));
+
+        $this->assertTrue($schema->hasTable('books'));
+        $table = $schema->getTable('books');
+        $this->assertTrue($table->hasColumn('name'));
+
+        $this->assertTrue($schema->hasTable('performances'));
+        $table = $schema->getTable('performances');
+        $this->assertTrue($table->hasColumn('start_time'));
+
+        $this->assertTrue($schema->hasTable('records'));
+        $table = $schema->getTable('records');
+        $this->assertTrue($table->hasColumn('description'));
+
+        $this->assertTrue($schema->hasTable('nested'));
+        $table = $schema->getTable('nested');
+        $this->assertTrue($table->hasColumn('something'));
+        $this->assertSame('datetime', $table->getColumn('something')->getType()->getName());
+
+        $this->assertTrue($schema->hasTable('really_nested'));
+        $table = $schema->getTable('really_nested');
+        $this->assertTrue($table->hasColumn('something_else'));
+        $this->assertSame('float', $table->getColumn('something_else')->getType()->getName());
+    }
 }

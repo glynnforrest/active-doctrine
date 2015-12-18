@@ -60,6 +60,11 @@ class SchemaCreator
         $files = new \DirectoryIterator($directory);
 
         foreach ($files as $file) {
+            if ($file->isDir() && !$file->isDot()) {
+                $this->addEntityDirectory($namespace.'\\'.basename($file->getPathname()) , $file->getPathname());
+                continue;
+            }
+
             if (!$file->isFile()) {
                 continue;
             }
