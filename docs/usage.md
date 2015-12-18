@@ -329,3 +329,5 @@ $books = Book::selectSQL($this->getConn(), $query, [], [
     'a' => 'authors_id',
 ]);
 ```
+
+`selectOneSQL()` works in the same way, but returns a single entity or null.
