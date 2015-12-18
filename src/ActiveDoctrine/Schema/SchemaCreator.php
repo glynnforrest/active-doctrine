@@ -24,7 +24,17 @@ class SchemaCreator
             $types = $classname::getTypes();
             foreach ($classname::getFields() as $field) {
                 $type = isset($types[$field]) ? $types[$field] : 'text';
-                $table->addColumn($field, $type);
+
+                if ($field === $classname::getPrimaryKeyName() && !isset($types[$field])) {
+                    $type = 'integer';
+                }
+
+                $column = $table->addColumn($field, $type);
+
+                if ($field === $classname::getPrimaryKeyName()) {
+                    $column->setAutoincrement(true);
+                    $table->setPrimaryKey([$field]);
+                }
             }
         }
 

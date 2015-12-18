@@ -37,4 +37,18 @@ class SchemaCreatorTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('integer', $table->getColumn('id')->getType()->getName());
         $this->assertSame('datetime', $table->getColumn('created_at')->getType()->getName());
     }
+
+    public function testPrimaryKeyDefaultsToIncrementingInteger()
+    {
+        $this->creator->addEntityClass('ActiveDoctrine\Tests\Fixtures\Misc\NoTypes');
+        $schema = $this->creator->createSchema();
+        $this->assertTrue($schema->hasTable('no_types'));
+        $table = $schema->getTable('no_types');
+
+        $this->assertTrue($table->hasColumn('id'));
+        $id = $table->getColumn('id');
+        $this->assertSame('integer', $id->getType()->getName());
+        $this->assertTrue($id->getAutoincrement());
+        $this->assertSame(['id'], $table->getPrimaryKey()->getColumns());
+    }
 }
