@@ -51,6 +51,17 @@ abstract class Entity
 
     protected function init()
     {
+        $fields = [];
+        foreach (static::$fields as $field => $type) {
+            if (is_int($field)) {
+                $fields[] = $type;
+                continue;
+            }
+            self::$types[$field] = $type;
+            $fields[] = $field;
+        }
+        static::$fields = $fields;
+
         foreach ($this->getClassParents(get_class($this)) as $class) {
             $method = 'init'.basename(str_replace('\\', '/', $class));
             if (method_exists($class, $method)) {
