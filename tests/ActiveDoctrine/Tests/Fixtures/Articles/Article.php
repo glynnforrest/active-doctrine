@@ -25,6 +25,7 @@ class Article extends Entity
         'updated_at',
     ];
     protected static $types = [
+        'id' => 'integer',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];

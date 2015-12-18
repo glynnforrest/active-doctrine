@@ -21,8 +21,10 @@ class SchemaCreator
         $schema = new Schema();
         foreach ($this->classes as $classname) {
             $table = $schema->createTable($classname::getTable());
+            $types = $classname::getTypes();
             foreach ($classname::getFields() as $field) {
-                $table->addColumn($field, 'text');
+                $type = isset($types[$field]) ? $types[$field] : 'text';
+                $table->addColumn($field, $type);
             }
         }
 
