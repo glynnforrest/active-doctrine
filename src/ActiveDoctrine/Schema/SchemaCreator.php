@@ -25,7 +25,7 @@ class SchemaCreator
             $field_settings = $classname::getFieldSettings();
 
             foreach ($classname::getFields() as $field) {
-                $type = isset($types[$field]) ? $types[$field] : 'text';
+                $type = isset($types[$field]) ? $types[$field] : 'string';
 
                 if ($field === $classname::getPrimaryKeyName() && !isset($types[$field])) {
                     $type = 'integer';

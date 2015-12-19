@@ -38,6 +38,16 @@ class SchemaCreatorTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('datetime', $table->getColumn('created_at')->getType()->getName());
     }
 
+    public function testColumnsDefaultToString()
+    {
+        $this->creator->addEntityClass('ActiveDoctrine\Tests\Fixtures\Misc\NoTypes');
+        $schema = $this->creator->createSchema();
+        $this->assertTrue($schema->hasTable('no_types'));
+        $table = $schema->getTable('no_types');
+
+        $this->assertSame('string', $table->getColumn('name')->getType()->getName());
+    }
+
     public function testPrimaryKeyDefaultsToIncrementingInteger()
     {
         $this->creator->addEntityClass('ActiveDoctrine\Tests\Fixtures\Misc\NoTypes');
