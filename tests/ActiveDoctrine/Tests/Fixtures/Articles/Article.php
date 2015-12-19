@@ -25,8 +25,14 @@ class Article extends Entity
         'updated_at',
     ];
     protected static $types = [
+        'id' => 'integer',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
+    ];
+    protected static $field_settings = [
+        'id' => [
+            'length' => 5,
+        ],
     ];
     protected static $blacklist = [];
 }
