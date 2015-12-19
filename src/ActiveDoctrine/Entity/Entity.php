@@ -539,6 +539,8 @@ abstract class Entity
     /**
      * Set an array of values, discarding any columns / relations in
      * the blacklist for this entity.
+     *
+     * The primary key is discarded if no blacklist if set.
      */
     public function setValuesSafe(array $values = [])
     {
