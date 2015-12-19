@@ -61,6 +61,9 @@ class SchemaCreator
      */
     public function addEntityDirectory($namespace, $directory)
     {
+        if (!is_dir($directory)) {
+            return;
+        }
         $files = new \DirectoryIterator($directory);
 
         foreach ($files as $file) {

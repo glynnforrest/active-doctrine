@@ -116,4 +116,9 @@ class SchemaCreatorTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($table->hasColumn('something_else'));
         $this->assertSame('float', $table->getColumn('something_else')->getType()->getName());
     }
+
+    public function testAddNonExistingEntityDirectory()
+    {
+        $this->creator->addEntityDirectory('ActiveDoctrine', 'something_random');
+    }
 }
