@@ -165,12 +165,16 @@ class EntitySelector
 
     public function where($column, $expression = null, $value = null)
     {
-        if ($expression instanceof Entity) {
+        if ($expression instanceof Entity || $value instanceof Entity) {
             $entity_class = $this->entity_class;
             $relation = $entity_class::getRelationDefinition($column);
             $column = $relation[3];
             $relation_column = $relation[2];
-            $expression = $expression->getRaw($relation_column);
+            if ($expression instanceof Entity) {
+                $expression = $expression->getRaw($relation_column);
+            } else {
+                $value = $value->getRaw($relation_column);
+            }
         }
 
         $this->selector->where($column, $expression, $value);

@@ -542,4 +542,24 @@ class EntitySelectorTest extends \PHPUnit_Framework_TestCase
                ->limit(10)
                ->execute();
     }
+
+    public function testWhereWithHasOneRelationLongForm()
+    {
+        $statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $statement->expects($this->once())
+            ->method('execute')
+            ->with([1]);
+        $sql = 'SELECT * FROM `books` WHERE `authors_id` != ? LIMIT 10';
+        $this->conn->expects($this->once())
+                   ->method('prepare')
+                   ->with($sql)
+                   ->will($this->returnValue($statement));
+        $author = new Author($this->conn, ['id' => 1]);
+
+        $books = $this->selector->where('author', '!=', $author)
+               ->limit(10)
+               ->execute();
+    }
 }
