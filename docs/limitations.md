@@ -61,3 +61,19 @@ often for no reason, since there is no 'load' step
 (unlike Doctrine2 for instance, which loads metadata configuration once only).
 The compromise therefore is to define $fields, $types and $field_settings in entities,
 the bare minimum of which will be used during normal use.
+
+## There is no global entity tracking
+
+There is no concept of an 'object manager' to keep track of entities.
+
+Entities may be queried for again even if an identical object is loaded.
+For example, a related entity with an id of 2 may be fetched from the
+database more than once in a loop through a collection if eager
+loading isn't used.
+
+In addition to this, relationships are one way
+(e.g. `$author->book->author !== $author`).
+Assuming good entity management you shouldn't ever need to traverse an
+entity relationship back to the original
+(e.g. book -> author -> book),
+but it is something to be aware of.
