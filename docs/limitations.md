@@ -15,7 +15,49 @@ This violates single responsibility principle and can make business logic harder
 since the classes are dependent on the database.
 
 A design decision was made early on to always inject the database connection
-and not to rely on a magic way to access a database connection from within entities.
+and not to rely on a magic way to access it from within entities.
 This improves the testing situation slightly because you can create a
 mock database connection and inject it into the entity to test,
 instead of having to set up a stub database.
+
+## Field names need to repeated when defining entities
+
+If you define types and schema definitions, a field can be repeated up to three times:
+
+```php
+class Article extends Entity
+{
+    protected static $table = 'articles';
+    protected static $fields = [
+        'id',
+        'title',
+        'slug',
+        'created_at',
+        'updated_at',
+    ];
+    protected static $types = [
+        'id' => 'integer',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+    protected static $field_settings = [
+        'id' => [
+            'length' => 5,
+        ],
+    ];
+}
+```
+
+`id` has been repeated 3 times in the different properties of the
+class.
+
+Initial steps were made to try and mitigate this,
+but were subsequently scrapped in the name of performance.
+If mapping configuration was loaded together all at once,
+the parsing of column settings, index definitions, etc would be
+required each time an entity is loaded.
+This process would need to be repeated for every entity at run-time,
+often for no reason, since there is no 'load' step
+(unlike Doctrine2 for instance, which loads metadata configuration once only).
+The compromise therefore is to define $fields, $types and $field_settings in entities,
+the bare minimum of which will be used during normal use.
