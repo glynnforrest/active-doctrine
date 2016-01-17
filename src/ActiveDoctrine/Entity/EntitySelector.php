@@ -163,6 +163,21 @@ class EntitySelector
         return $result;
     }
 
+    public function where($column, $expression = null, $value = null)
+    {
+        if ($expression instanceof Entity) {
+            $entity_class = $this->entity_class;
+            $relation = $entity_class::getRelationDefinition($column);
+            $column = $relation[3];
+            $relation_column = $relation[2];
+            $expression = $expression->getRaw($relation_column);
+        }
+
+        $this->selector->where($column, $expression, $value);
+
+        return $this;
+    }
+
     protected function executeCollection($entity_class)
     {
         $collection = $entity_class::selectSQL($this->connection, $this->selector->getSQL(), $this->selector->getParams());
