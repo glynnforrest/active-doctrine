@@ -36,6 +36,10 @@ class EntitySelector
      */
     public function __call($method, array $args)
     {
+        if (in_array($method, ['where', 'andWhere', 'orWhere'], true)) {
+            $this->decorateWhere($method, $args);
+        }
+
         call_user_func_array(array($this->selector, $method), $args);
 
         return $this;
@@ -95,6 +99,36 @@ class EntitySelector
         $this->with[$relation] = $callback;
 
         return $this;
+    }
+
+    /**
+     * Modify the arguments of a where method to account for selecting
+     * by entity objects.
+     *
+     * @param $method The where method being called
+     * @param $args The arguments
+     */
+    protected function decorateWhere($method, &$args)
+    {
+        $column = $args[0];
+        $expression = isset($args[1]) ? $args[1] : null;
+        $value = isset($args[2]) ? $args[2] : null;
+
+        if (!$expression instanceof Entity && !$value instanceof Entity) {
+            return;
+        }
+
+        $entity_class = $this->entity_class;
+        $relation = $entity_class::getRelationDefinition($column);
+        $column = $relation[3];
+        $relation_column = $relation[2];
+        if ($expression instanceof Entity) {
+            $expression = $expression->getRaw($relation_column);
+        } else {
+            $value = $value->getRaw($relation_column);
+        }
+
+        $args = [$column, $expression, $value];
     }
 
     /**

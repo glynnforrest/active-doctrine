@@ -4,6 +4,7 @@ namespace ActiveDoctrine\Tests\Entity;
 
 use ActiveDoctrine\Entity\EntitySelector;
 use ActiveDoctrine\Selector\MysqlSelector;
+use ActiveDoctrine\Tests\Fixtures\Bookshop\Author;
 
 /**
  * EntitySelectorTest
@@ -522,4 +523,127 @@ class EntitySelectorTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(140, $count);
     }
 
+    public function testWhereWithHasOneRelation()
+    {
+        $statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $statement->expects($this->once())
+            ->method('execute')
+            ->with([1]);
+        $sql = 'SELECT * FROM `books` WHERE `authors_id` = ? LIMIT 10';
+        $this->conn->expects($this->once())
+                   ->method('prepare')
+                   ->with($sql)
+                   ->will($this->returnValue($statement));
+        $author = new Author($this->conn, ['id' => 1]);
+
+        $books = $this->selector->where('author', $author)
+               ->limit(10)
+               ->execute();
+    }
+
+    public function testWhereWithHasOneRelationLongForm()
+    {
+        $statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $statement->expects($this->once())
+            ->method('execute')
+            ->with([1]);
+        $sql = 'SELECT * FROM `books` WHERE `authors_id` != ? LIMIT 10';
+        $this->conn->expects($this->once())
+                   ->method('prepare')
+                   ->with($sql)
+                   ->will($this->returnValue($statement));
+        $author = new Author($this->conn, ['id' => 1]);
+
+        $books = $this->selector->where('author', '!=', $author)
+               ->limit(10)
+               ->execute();
+    }
+
+    public function testAndWhereWithHasOneRelation()
+    {
+        $statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $statement->expects($this->once())
+            ->method('execute')
+            ->with([100, 1]);
+        $sql = 'SELECT * FROM `books` WHERE `id` = ? AND `authors_id` = ? LIMIT 10';
+        $this->conn->expects($this->once())
+                   ->method('prepare')
+                   ->with($sql)
+                   ->will($this->returnValue($statement));
+        $author = new Author($this->conn, ['id' => 1]);
+
+        $books = $this->selector->where('id', 100)
+               ->andWhere('author', $author)
+               ->limit(10)
+               ->execute();
+    }
+
+    public function testAndWhereWithHasOneRelationLongForm()
+    {
+        $statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $statement->expects($this->once())
+            ->method('execute')
+            ->with([100, 1]);
+        $sql = 'SELECT * FROM `books` WHERE `id` > ? AND `authors_id` = ? LIMIT 10';
+        $this->conn->expects($this->once())
+                   ->method('prepare')
+                   ->with($sql)
+                   ->will($this->returnValue($statement));
+        $author = new Author($this->conn, ['id' => 1]);
+
+        $books = $this->selector->where('id', '>', 100)
+               ->andWhere('author', $author)
+               ->limit(10)
+               ->execute();
+    }
+
+    public function testOrWhereWithHasOneRelation()
+    {
+        $statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $statement->expects($this->once())
+            ->method('execute')
+            ->with([100, 1]);
+        $sql = 'SELECT * FROM `books` WHERE `id` = ? OR `authors_id` = ? LIMIT 10';
+        $this->conn->expects($this->once())
+                   ->method('prepare')
+                   ->with($sql)
+                   ->will($this->returnValue($statement));
+        $author = new Author($this->conn, ['id' => 1]);
+
+        $books = $this->selector->where('id', 100)
+               ->orWhere('author', $author)
+               ->limit(10)
+               ->execute();
+    }
+
+    public function testOrWhereWithHasOneRelationLongForm()
+    {
+        $statement = $this->getMockBuilder('Doctrine\DBAL\Statement')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $statement->expects($this->once())
+            ->method('execute')
+            ->with([100, 1]);
+        $sql = 'SELECT * FROM `books` WHERE `id` > ? OR `authors_id` = ? LIMIT 10';
+        $this->conn->expects($this->once())
+                   ->method('prepare')
+                   ->with($sql)
+                   ->will($this->returnValue($statement));
+        $author = new Author($this->conn, ['id' => 1]);
+
+        $books = $this->selector->where('id', '>', 100)
+               ->orWhere('author', $author)
+               ->limit(10)
+               ->execute();
+    }
 }
